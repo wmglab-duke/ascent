@@ -1,5 +1,6 @@
 ffmpeg
 matplotlib
+nd_line
 numpy
 opencv-python
 openpyxl

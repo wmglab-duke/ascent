@@ -3,7 +3,6 @@
   "n_dimensions": 1,
   "active_srcs": {
     "CorTec300.json": [1, -1],
-    "default": [1, -1],
     "cuff_index": 0,
     "cyl_MicroLeads_300b.json": [[1, -1]]
   },
@@ -102,7 +101,6 @@
   },
   "active_recs": {
     "CorTec300.json": [1, -1],
-    "default": [1, -1],
     "cuff_index": 1,
     "cyl_MicroLeads_300t.json": [[1, 0, 0]]
   }

@@ -59,6 +59,8 @@ following syntax:
         "seed": Integer
       },
 
+      "mode": String,
+      "fiber_z_shift": Integer,
       "min": Double,
       "max": Double,
       "full_nerve_length": Boolean,
@@ -92,6 +94,12 @@ following syntax:
     // EXAMPLE XY Parameters for EXPLICIT
     "xy_parameters": {
       "mode": "EXPLICIT",
+      "explicit_fiberset_index" : Integer
+    },
+
+    // EXAMPLE XY Parameters for EXPLICIT_3D
+    "xy_parameters": {
+      "mode": "EXPLICIT_3D",
       "explicit_fiberset_index" : Integer
     },
 
@@ -188,7 +196,8 @@ following syntax:
       "loc_max": Double,
       "threshold": Double
     }
-    "runtimes": Boolean
+    "runtimes": Boolean,
+    "3D_fiber_intermediate_data": Boolean
   },
 
   // EXAMPLE PROTOCOL for FINITE_AMPLITUDES
@@ -331,7 +340,7 @@ length of the fiber). Required.
 
 - `“xy_trace_buffer”`: The value (Double, units: micrometer) indicates
   the minimum required distance between the (x,y)-coordinates of a
-  given fiber and the inner’s boundary. Since the domain boundaries
+  given fiber and the fascicle's inner boundary. Since the domain boundaries
   are modeled in COMSOL as an interpolation curve, the exact
   morphology boundary coordinates read into COMSOL will be very close
   to (but not exactly equal to) those used in Python to seed fiber
@@ -359,6 +368,16 @@ length of the fiber). Required.
         - `“upper”`: The value (Double, units micrometer) is the upper limit on the distribution of diameters. Required.
         - `“lower”`: The value (Double, units micrometer) is the lower limit on the distribution of diameters. Required.
         - `“seed”`: The value (Integer) seeds the random number generator before sampling fiber diameters.
+
+  - `“mode”`: The value (String) is the `“FiberZMode”` that tells the program how to seed fiber z-locations along the length of the FEM model. Required.
+
+    As listed in [Enums](../../Code_Hierarchy/Python.md#enums), implemented modes include
+
+    - `“EXTRUSION”`: Creates straight fibers along the length of the model by extruding the xy- fiber locations defined by `“FiberXYMode”`.
+
+    - `“EXPLICIT”`: Creates curved fibers within a 2D extrusion model by importing explicit 3D fiber coordinates from a file. When this mode is used, `"FiberXYMode"` must be `"EXPLICIT_3D"`.
+
+      - `“fiber_z_shift"`: The value (Integer) specifies the longitudinal shift of the fiber coordinates from the model's center. This is shift is only applicable if the fibers are shorter than the model and are being extruded; the fiber_z_shift must be equal to or less than the extrusion length, such that all user-provided fiber coordinates remain within the model length. (optional)
 
   - `“min”`: the value (Double or List\[Double\], units: micrometer)
     is the distal extent of the seeded fiber along the length of the
@@ -397,11 +416,11 @@ length of the fiber). Required.
 
 - `“xy_parameters”`: The value is a JSON Object containing key-value
   pairs to instruct the system in seeding fiber locations at which to
-  sample potentials inside inners in the nerve cross-section ([Fig 3B](https://doi.org/10.1371/journal.pcbi.1009285.g003)). Include only _one_ version of this block in your `sim.json`
+  sample potentials inside fascicle inners in the nerve cross-section ([Fig 3B](https://doi.org/10.1371/journal.pcbi.1009285.g003)). Include only _one_ version of this block in your `sim.json`
   file. Required.
 
   `“mode”`: The value (String) is the `“FiberXYMode”` that tells the
-  program how to seed fiber locations inside each inner in the nerve
+  program how to seed fiber locations inside each fascicle inner in the nerve
   cross-section. Required.
 
 - As listed in [Enums](../../Code_Hierarchy/Python.md#enums), known modes include
@@ -448,7 +467,16 @@ length of the fiber). Required.
       degrees. If false, the program interprets `“angle_offset”` in
       radians. Required.
 
-  - `“EXPLICIT”`: The mode looks for a `“<explicit_index>.txt”` file in the user created directory (`samples/<sample_index>/explicit_fibersets`) for user-specified fiber (x,y)-coordinates (see `config/templates/explicit.txt`). Note, this file is only required if the user is using the `“EXPLICIT”` `“FiberXYMode”`. An error is thrown if any explicitly defined coordinates are not inside any inners.
+  - `“EXPLICIT”`: The mode looks for a `“<explicit_index>.txt”` file in the user-created directory (`input/<input sample name>/explicit_fibersets`, where `<input sample name>` is the `sample` parameter in **_Sample_**) for user-specified fiber (x,y)-coordinates (see `config/templates/explicit.txt`). Note, this file is only required if the user is using the `“EXPLICIT”` `“FiberXYMode”`. An error is thrown if any explicitly defined coordinates are not inside any fascicle inner boundaries.
+
+    - `“explicit_fiberset_index”`: The value (Integer) indicates which explicit index file to use.
+
+  - `“EXPLICIT_3D”`: The mode looks for a `“<explicit_index>.npy”` file in the user-created directory
+    (`input/<input sample name>/explicit_fibersets`, where `<input sample name>` is the `sample` parameter in **_Sample_**) for user-specified fiber (x,y,z)-coordinates in microns (see `config/templates/explicit_3D.npy`). Note, this file is only required if the user is using the `“EXPLICIT_3D”` `“FiberXYMode”`. The explicit coordinates data structure in the pickled `.npy` file must be a numpy array of fibers, where each index contains a 2D np.array of fiber xyz-points (e.g., np.array(np.array(fiber 1 xyz-coords), ..., np.array(fiber N xyz-coords)). The lengths fibers may be differ. An error is thrown if any explicitly defined coordinates are not inside any fascicle inner boundaries. If the fibers are shorter than the length of the model, the whole population of the provided fiber coordinates is centered longitudinally by default, and each fiber is individually extruded to the length of the model.
+
+    To visualize the `explicit_3D.npy` template, open a command-line window and change directories to `config/templates/`. Enter `python` to start an interactive python session and enter `import numpy as np`. Then run the `np.load('explicit_3D.npy', allow_pickle=True)` to load and print the file contents to the consol. The template file contains two short fibers of varying lengths, and is compatible with the ascent tutorial.
+
+    To generate a 3D coordinate file: Create a python list of fibers, where each index is a 2D np.array of xyz values. To save a python list of np.arrays of varying lengths to a .npy file, use `np.save('<file name>.npy', np.array(<list of fiber arrays>, dtype=object), allow_pickle=True)`.)
 
     - `“explicit_fiberset_index”`: The value (Integer) indicates which explicit index file to use.
 
@@ -760,6 +788,8 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
   the NEURON runtime for either the finite amplitude or bisection search for
   threshold simulation. If this key-value pair is omitted, the default
   behavior is False.
+
+- `"3D_fiber_intermediate_data"`: The value (Boolean), if true, tells the program to save the fiber lengths and longitudinal coordinate compartment spacings for sampled potentials into directories within the sample called `tracto_lengths/`, `tracto_coords/`, `3D_tracto_fiberset/` respectively.
 
 - `“cap_recording”`:
 

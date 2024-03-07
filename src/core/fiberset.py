@@ -18,6 +18,7 @@ from typing import List, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as stats
+from nd_line.nd_line import nd_line
 from shapely.affinity import scale
 from shapely.geometry import LineString, Point
 from shapely.ops import unary_union
@@ -55,6 +56,8 @@ class FiberSet(Configurable, Saveable):
         # initialize empty lists of fiber points
         self.sample = sample
         self.fibers = None
+        self.xy_mode = None
+        self.z_mode = None
         self.out_to_fib = None
         self.out_to_in = None
         self.add(
@@ -74,18 +77,53 @@ class FiberSet(Configurable, Saveable):
         return self
 
     def generate(self, sim_directory: str, super_sample: bool = False):
-        """Create xy coordinates for the fibers, map them to the fascicles, create z coordinates, and validate them.
+        """Create xy(z) fiber coordinates, fiber-to-fascicle map, longitudinal coordinates, and validate fiber dataset.
 
         :param sim_directory: The directory to save the simulation files to.
         :param super_sample: Whether to generate a super sample.
+        :raises NotImplementedError: If the z mode is not supported.
         :return: self
         """
-        fibers_xy = self._generate_xy(sim_directory)
-        self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
-        self.fibers = self._generate_z(fibers_xy, super_sample=super_sample)
-        self.validate()
-        self.plot_fibers_on_sample(fibers_xy, sim_directory)
+        # Load fiber xy and z modes
+        xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
+        self.xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
+        try:
+            fiber_z_mode_name: str = self.search(Config.SIM, 'fibers', 'z_parameters', 'mode')
+            # If fiber z mode is in SIM file, cast to Enum FiberZMode object to maintain enum code consistency
+            # (eventhough this can easily be done without enums & using string equality).
+            self.z_mode: FiberZMode = [mode for mode in FiberZMode if str(mode).split('.')[-1] == fiber_z_mode_name][0]
+        except KeyError:  # Backwards compatibility.
+            # If fiber z mode doesn't exist in new position under Sim > fibers > z_parameters > mode,
+            # look for it where it use to be located (in model.json) in previous ascent versions
+            warnings.warn(
+                'No fiber_z mode specified in sim.json under "fibers" > "z_parameters" > "mode". '
+                'Proceeding with fiber_z mode from location in model.json.',
+                stacklevel=2,
+            )
+            self.z_mode = self.search_mode(FiberZMode, Config.MODEL)
 
+        # Generate fibers accordingly depending on fiber z mode.
+        if self.z_mode == FiberZMode.EXTRUSION:
+            fibers_xy = self._generate_xy(sim_directory)
+            self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
+            self.fibers = self._generate_longitudinal(fibers_xy, super_sample=super_sample)
+            self.plot_fibers_on_sample(sim_directory)
+
+        elif self.z_mode == FiberZMode.EXPLICIT:
+            fibers_xyz = self._generate_xyz(sim_directory)  # 3d fibers structure: (fiber #, z-index #, xyz-coordinates)
+            # Assigns fiber to fascicle mapping based on xy coordinates of first z-index.
+            # We are able to do this because fibers must be contained within a single contiguous fascicle
+            # (this is checked when loading fibers in load_explicit_coords function).
+            self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xyz[:, 0, 0:2])
+            self.fibers = self._generate_3d_longitudinal(fibers_xyz, sim_directory, super_sample=super_sample)
+            # Save fibers_xy figure of first z-index (by default) to visually align with fiber-to-fascicle mapping.
+            self.plot_fibers_on_sample(sim_directory)
+            self.plot_3d_fibers_on_sample(self.fibers)  # Visualize 3D fibers
+
+        else:
+            raise NotImplementedError("That FiberZMode is not yet implemented.")
+
+        self.validate()
         return self
 
     def write(self, mode: WriteMode, path: str):
@@ -167,8 +205,6 @@ class FiberSet(Configurable, Saveable):
         :return: xy coordinates of the fibers
         """
         # get required parameters from configuration JSON (using inherited Configurable methods)
-        xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
-        self.xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
         xy_parameters: dict = self.search(Config.SIM, 'fibers', 'xy_parameters')
         my_xy_seed: int = xy_parameters.get('seed', 0)
 
@@ -176,28 +212,40 @@ class FiberSet(Configurable, Saveable):
         buffer: float = self.search(Config.SIM, 'fibers', 'xy_trace_buffer')
 
         # perform implemented mode
-        if self.search_mode(FiberZMode, Config.MODEL) == FiberZMode.EXTRUSION:
-            # error if an invalid mode is selected
-            if self.xy_mode not in FiberXYMode:
-                raise NotImplementedError("Invalid FiberXYMode in Sim.")
+        # error if an invalid mode is selected
+        if self.xy_mode not in FiberXYMode:
+            raise NotImplementedError("Invalid FiberXYMode in Sim.")
 
-            if self.xy_mode == FiberXYMode.CENTROID:
-                points = self.generate_centroid_points()
+        elif self.xy_mode == FiberXYMode.CENTROID:
+            points = self.generate_centroid_points()
 
-            elif self.xy_mode == FiberXYMode.UNIFORM_DENSITY:
-                points = self.generate_uniform_density_points(buffer, my_xy_seed)
+        elif self.xy_mode == FiberXYMode.UNIFORM_DENSITY:
+            points = self.generate_uniform_density_points(buffer, my_xy_seed)
 
-            elif self.xy_mode == FiberXYMode.UNIFORM_COUNT:
-                points = self.generate_uniform_count_points(buffer, my_xy_seed)
+        elif self.xy_mode == FiberXYMode.UNIFORM_COUNT:
+            points = self.generate_uniform_count_points(buffer, my_xy_seed)
 
-            elif self.xy_mode == FiberXYMode.WHEEL:
-                points = self.generate_wheel_points(buffer)
+        elif self.xy_mode == FiberXYMode.WHEEL:
+            points = self.generate_wheel_points(buffer)
 
-            elif self.xy_mode == FiberXYMode.EXPLICIT:
-                points = self.load_explicit_coords(sim_directory)
+        elif self.xy_mode == FiberXYMode.EXPLICIT:
+            points = self.load_explicit_coords(sim_directory)
+
+        return points
+
+    def _generate_xyz(self, sim_directory: str) -> np.ndarray:
+        """Generate the xyz coordinates of the fibers.
+
+        :param sim_directory: The directory of the simulation.
+        :raises NotImplementedError: If a mode is not supported.
+        :return: xy coordinates of the fibers
+        """
+        if self.xy_mode == FiberXYMode.EXPLICIT_3D:
+            points = self.load_explicit_coords(sim_directory, is_3d=True)
         else:
-            raise NotImplementedError("That FiberZMode is not yet implemented.")
-
+            raise NotImplementedError(
+                "Invalid FiberXYMode in Sim. FiberXYMode must be 'EXPLICIT_3D' when FiberZMode is 'EXPLICIT'."
+            )
         return points
 
     def generate_centroid_points(self):
@@ -344,30 +392,24 @@ class FiberSet(Configurable, Saveable):
                         points.append(point)
         return points
 
-    def load_explicit_coords(self, sim_directory):
-        """Load the xy coordinates of the fibers from an explicit file.
+    def load_explicit_coords(self, sim_directory, is_3d=False):
+        """Load the xy(z) coordinates of the fibers from an explicit file.
 
         :param sim_directory: The directory of the simulation.
+        :param is_3d: Boolean indicating if explicit file contains 3D xyz-coordinates. Optional. Default: False.
         :raises FileNotFoundError: If the coordinates file is not found.
         :raises MorphologyError: If any of the coordinates fall outside of the fascicles.
         :return: The xy coordinates of the fibers.
         """
-        explicit_index = self.search(
-            Config.SIM,
-            'fibers',
-            'xy_parameters',
-            'explicit_fiberset_index',
-            optional=True,
-        )
+        explicit_index = self.search(Config.SIM, 'fibers', 'xy_parameters', 'explicit_fiberset_index')
+        # 3D fiber file format is stored in .npy pickled files; can't be stored in .txt file.
+        file_extension = 'npy' if is_3d else 'txt'
         if explicit_index is not None:
+            input_sample_name = self.sample.configs['sample']['sample']
             explicit_source = os.path.join(
-                sim_directory.split(os.sep)[0],
-                os.sep,
-                *sim_directory.split(os.sep)[1:-4],
-                'explicit_fibersets',
-                f'{explicit_index}.txt',
+                'input', input_sample_name, 'explicit_fibersets', f'{explicit_index}.{file_extension}'
             )
-            explicit_dest = os.path.join(sim_directory, 'explicit.txt')
+            explicit_dest = os.path.join(sim_directory, f'explicit.{file_extension}')
             shutil.copyfile(explicit_source, explicit_dest)
         else:
             print(
@@ -375,31 +417,118 @@ class FiberSet(Configurable, Saveable):
                 '\n\t\tProceeding with backwards compatible check for explicit.txt in:'
                 f'\n\t\t{sim_directory}'
             )
-        if not os.path.exists(os.path.join(sim_directory, 'explicit.txt')):
+        if not os.path.exists(os.path.join(sim_directory, f'explicit.{file_extension}')):
             raise FileNotFoundError(
-                "FiberXYMode is EXPLICIT in Sim but no explicit.txt file with coordinates is in the Sim directory. "
-                "See config/system/templates/explicit.txt for example of this file's required format."
+                f"FiberXYMode is EXPLICIT or EXPLICIT_3D in Sim, but no explicit.{file_extension} file with "
+                "coordinates is in the Sim directory. See config/system/templates/explicit.txt for example "
+                "of this file's required format."
             )
-        with open(os.path.join(sim_directory, 'explicit.txt')) as f:
-            # advance header
-            next(f)
-            reader = csv.reader(f, delimiter=" ")
-            points = [(float(row[0]), float(row[1])) for row in reader]
+
+        if is_3d:
+            points = np.load(explicit_dest, allow_pickle=True)
+            # Center 3D coordinates and extrude ends if provided coordinate lengths aren't long enough for model.
+            points = self.preprocess_3d_coords(points)
+        else:
+            with open(explicit_dest) as f:
+                # advance header
+                next(f)
+                reader = csv.reader(f, delimiter=" ")
+                points = [(float(row[0]), float(row[1])) for row in reader]
+
         # check that all fibers are within exactly one inner
         for fiber in points:
+            shapely_obj = LineString if is_3d else Point
             if not any(
-                Point(fiber).within(inner.polygon())
+                shapely_obj(fiber).within(inner.polygon())
                 for fascicle in self.sample.slides[0].fascicles
                 for inner in fascicle.inners
             ):
+                fiber_min = self.configs['sims']['fibers']['z_parameters']['min']
+                fiber_max = self.configs['sims']['fibers']['z_parameters']['max']
+                plotted_fiber = [fiber] if is_3d else [[fiber + (fiber_min,), fiber + (fiber_max,)]]
+                self.plot_3d_fibers_on_sample(plotted_fiber, title="Explicit fiber outside of nerve")
                 raise MorphologyError(f"Explicit fiber coordinate: {fiber} does not fall in an inner")
         return points
 
-    def plot_fibers_on_sample(self, points, sim_directory):
+    def preprocess_3d_coords(self, points):
+        """Centers 3D coordinates in xy plane to align with nerve morphology and extrudes fibers if applicable.
+
+        :param points: The fiber points.
+        :raises ValueError: If any explicit fiber is longer than the model length.
+        :return: The preprocessed xyz coordinates of the fibers.
+        """
+        # Calculate fiber length
+        min_fiber_z = self.search(Config.SIM, 'fibers', 'z_parameters', 'min', optional=True)
+        max_fiber_z = self.search(Config.SIM, 'fibers', 'z_parameters', 'max', optional=True)
+        if not (min_fiber_z and max_fiber_z):
+            desired_fiber_length = self.search(Config.MODEL, 'medium', 'proximal', 'length')
+        else:
+            desired_fiber_length = max_fiber_z - min_fiber_z
+
+        provided_fiber_lengths = np.array([p[-1, 2] - p[0, 2] for p in points])
+        if np.any(provided_fiber_lengths > desired_fiber_length):
+            raise ValueError(
+                'At least one fiber is longer than the desired fiber length '
+                '(provided by either the proximal medium length by default, '
+                'or the "fibers">"z_parameters">"min"/"max" variables in sim.json.)'
+                'Please extend your model length, or shorten your fibers.'
+            )
+        elif np.any(provided_fiber_lengths < desired_fiber_length):
+            warnings.warn(
+                'Extruding explicit 3d fiber lengths. At least one fiber is shorter than desired fiber length '
+                '(provided by either the proximal medium length by default, '
+                'or the "fibers">"z_parameters">"min"/"max" variables in sim.json.)',
+                stacklevel=2,
+            )
+
+        for fib_idx, fiber in enumerate(points):
+            fiber_length = provided_fiber_lengths[fib_idx]
+
+            # Extrude fiber to desired length, if applicable
+            if fiber_length < desired_fiber_length:
+                # Shift z-coordinates based on longest fiber length to maintain fiber z-axis allignment
+                # Default to no shift occuring
+                fiber_z_shift = self.search(Config.SIM, 'fibers', 'z_parameters', 'fiber_z_shift', optional=True) or 0
+                base_extrusion_dist = (desired_fiber_length - provided_fiber_lengths.max()) / 2
+                assert abs(fiber_z_shift) <= base_extrusion_dist, (
+                    f'fiber_z_shift magnitude ({abs(fiber_z_shift)}) it too large (must be <={base_extrusion_dist}). '
+                    'Fibers will get shifted outside of model length.'
+                )
+                extrusion_dist_superior = base_extrusion_dist + fiber_z_shift  # [um].
+                z_shifted = fiber[:, 2] + extrusion_dist_superior
+
+                # Build values for extrusion superior to fiber end point
+                inferred_z_spacing = np.mean(np.diff(fiber[:, 2]))  # [um]
+                superior_pad_values = np.arange(min_fiber_z, extrusion_dist_superior, inferred_z_spacing)
+
+                # Create extruded z points based on each fiber's individual length
+                z_extruded = np.hstack(
+                    (superior_pad_values, z_shifted, np.arange(z_shifted[-1], max_fiber_z + 1, inferred_z_spacing))
+                )
+
+                # Create corresponding extruded xy points by replicating end-points for each fiber.
+                # (Z points by default will be replicated too)
+                padded_fiber = np.pad(
+                    fiber,
+                    (
+                        (len(superior_pad_values), len(np.arange(z_shifted[-1], max_fiber_z + 1, inferred_z_spacing))),
+                        (0, 0),
+                    ),
+                    mode='edge',
+                )
+
+                points[fib_idx] = np.array(padded_fiber)
+                points[fib_idx][:, 2] = np.array(z_extruded)  # Update z points with extruded coordinates
+
+        # Transform from list of arrays to 3D array now that all fibers are the same length
+        points = np.stack(points)
+        return points
+
+    def plot_fibers_on_sample(self, sim_directory, z_index=0):
         """Plot the xy coordinates of the fibers on the sample.
 
-        :param points: The xy coordinates of the fibers.
         :param sim_directory: The directory of the simulation.
+        :param z_index: Optional index to plot fiber points at this z-location
         """
         fig = plt.figure()
         self.sample.slides[0].plot(
@@ -408,21 +537,58 @@ class FiberSet(Configurable, Saveable):
             axlabel="\u03bcm",
             title='Fiber locations for nerve model',
         )
-        self.plot()
+        self.plot(z_index=z_index)
         plt.savefig(sim_directory + '/plots/fibers_xy.png', dpi=300)
         if self.search(Config.RUN, 'popup_plots', optional=True) is False:
             plt.close(fig)
         else:
             plt.show()
 
+    def plot_3d_fibers_on_sample(self, fibers, title='3D Fibers on Nerve Sample'):
+        """Plot the xyz coordinates of the fibers with inner outlines.
+
+        :param fibers: The xyz coordinates of the fibers.
+        :param title: The plot title.
+        """
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        sample_slide = self.sample.slides[0]
+        fascicles = sample_slide.fascicles
+        # Plot all inner traces on 3D plot
+        for fasc in fascicles:
+            for inner in fasc.inners:
+                ax.plot(inner.points[:, 0], inner.points[:, 1], inner.points[:, 2], c='black', alpha=0.5)
+
+        # If the sample contains a nerve, plot it
+        if sample_slide.nerve:
+            nerve_points = sample_slide.nerve.points
+            nerve_x, nerve_y, nerve_z = nerve_points.T
+            ax.plot(nerve_x, nerve_y, nerve_z, c='black', alpha=0.5)
+
+        # Define fiber colormap and plot fibers
+        cmap = plt.cm.jet(np.linspace(0, 1, len(fibers)))
+        for i, fiber_data in enumerate(fibers):
+            fiber = fiber_data['fiber'] if isinstance(fiber_data, dict) else fiber_data
+            fiber_color = cmap[i]  # Use the colormap to get the color
+            x, y, z = zip(*fiber)
+            ax.plot(x, y, z, color=fiber_color)
+
+        ax.set_xlabel('x (um)')
+        ax.set_ylabel('y (um)')
+        ax.set_zlabel('z (um)')
+        plt.title(title)
+        plt.show()
+
     def plot(
         self,
         ax: plt.Axes = None,
+        z_index=0,
         scatter_kws: dict = None,
     ):
         """Plot the xy coordinates of the fibers.
 
         :param ax: The axis to plot on. If None, use the current axis.
+        :param z_index: Optional index to plot fiber data at this specific point on the z-axis.
         :param scatter_kws: The matplotlib keyword arguments for the scatter plot.
         """
         if ax is None:
@@ -432,29 +598,23 @@ class FiberSet(Configurable, Saveable):
         scatter_kws.setdefault('c', 'red')
         scatter_kws.setdefault('s', 10)
         scatter_kws.setdefault('marker', 'o')
-        x, y = self.xy_points(split_xy=True)
+        x, y = self.xy_points(split_xy=True, z_index=z_index)
         ax.scatter(
             x,
             y,
             **scatter_kws,
         )
 
-    def _generate_z(  # noqa: C901
+    def _generate_longitudinal(  # noqa: C901
         self, fibers_xy: np.ndarray, override_length=None, super_sample: bool = False
     ) -> np.ndarray:
-        """Generate the z coordinates of the fibers.
+        """Generate the 1D longitudinal coordinates of the fibers.
 
         :param fibers_xy: The xy coordinates of the fibers.
         :param override_length: The length of the fibers (forced).
         :param super_sample: Whether to use supersampling.
-        :raises NotImplementedError: If the z mode is not supported.
-        :return: The z coordinates of the fibers.
+        :return: The longitudinal coordinates of the fibers.
         """
-        # get top-level fiber z generation
-        fiber_z_mode: FiberZMode = self.search_mode(FiberZMode, Config.MODEL)
-        # all functionality is only defined for EXTRUSION as of now
-        if fiber_z_mode != FiberZMode.EXTRUSION:
-            raise NotImplementedError(f"{fiber_z_mode} FiberZMode is not yet implemented.")
 
         def clip(values: list, start, end, myel: bool, is_points: bool = False) -> list:
             step = 1
@@ -739,6 +899,54 @@ class FiberSet(Configurable, Saveable):
 
         return fibers
 
+    def _generate_3d_longitudinal(  # noqa: C901
+        self, fibers_xyz: np.ndarray, sim_directory: str, super_sample: bool = False
+    ) -> np.ndarray:
+        """Generate the 1D longitudinal coordinates for each invidual 3D fiber.
+
+        :param fibers_xyz: The xyz coordinates of the fibers.
+        :param sim_directory: The directory to save the simulation files to.
+        :param super_sample: Whether to use supersampling.
+        :return: The longitudinal coordinates of the fibers.
+        """
+        save = self.search(Config.SIM, 'saving', '3D_fiber_intermediate_data', optional=True)
+        if save:
+            [
+                os.makedirs(os.path.join(sim_directory, s), exist_ok=True)
+                for s in ['3D_fiber_lengths', '3D_fiber_coords']
+            ]
+
+        # Generate the longitudinal coordinate points for sampling potentials, depending on individual fiber's length
+        fibers = []
+        for idx, fiber in enumerate(fibers_xyz):
+            nd = nd_line(fiber)
+            le = nd.length  # Euclidean fiber length
+            fiber_dict = self._generate_longitudinal([(0, 0)], super_sample=super_sample, override_length=le)[0]
+            longitudinal_coords = fiber_dict['fiber']
+            longitudinal_coords = np.vstack(longitudinal_coords)[:, -1]  # Reshape
+            coords = np.zeros([len(longitudinal_coords), 3])
+            coords[:, 2] = longitudinal_coords
+
+            # Map compartment coordinates to points along the 3D nerve to obtain where to sample potentials
+            sample_points = [tuple(nd.interp(p)) for p in longitudinal_coords]
+            fiber_dict['fiber'] = sample_points
+            fibers.append(fiber_dict)
+
+            if save:
+                np.savetxt(
+                    f'{sim_directory}/3D_fiber_lengths/{idx}.dat',
+                    [le],
+                )
+                np.savetxt(  # Seems unnecessary, but 3D pipeline did it so maintained functionality here.
+                    f'{sim_directory}/3D_fiber_coords/{idx}.dat',
+                    coords,
+                    delimiter=' ',
+                    fmt='%.10f',
+                    header=str(len(longitudinal_coords)),
+                    comments='',
+                )
+        return fibers
+
     def calculate_fiber_diams(self, diameter, fiber_geometry_mode_name, fibers_xy, super_sample):
         """Calculate the diameters of the fibers.
 
@@ -750,7 +958,7 @@ class FiberSet(Configurable, Saveable):
         :raises ValueError: If lower_fiber_diam is too low
         :return: The diameters of the fibers.
         """
-        diam_distribution: bool = type(diameter) is dict
+        diam_distribution: bool = isinstance(diameter, dict)
         diams = []
 
         if super_sample:
@@ -906,27 +1114,30 @@ class FiberSet(Configurable, Saveable):
         else:
             warnings.warn("Ignoring xy_trace_buffer since xy_mode is centroid", stacklevel=2)
         allpoly = unary_union([inner.polygon().buffer(0) for inner in all_inners])
-        if not np.all(
-            [
-                Point(fiber['fiber'][0][:-1]).within(allpoly) if type(fiber) is dict else Point(fiber).within(allpoly)
-                for fiber in self.fibers
-            ]
-        ):
-            raise MorphologyError(
-                "Fiber points were detected too close to an inner boundary (as defined by xy_trace_buffer in SIM)."
-            )
-        # add other checks below
+        # I would make this a list of boolean values True, if invalid, False if not, then np.any check after
+        invalid_fibers = []
+        for fiber in self.fibers:
+            fib_data = fiber['fiber'] if isinstance(fiber, dict) else fiber
+            if not all(Point(p).within(allpoly) for p in fib_data):
+                invalid_fibers.append(fib_data)
 
-    def xy_points(self, split_xy=False):
+        if np.any(invalid_fibers):
+            self.plot_3d_fibers_on_sample(invalid_fibers, title="Invalid fibers too close to inner boundaries")
+            raise MorphologyError(
+                'Fiber points were detected too close to an inner boundary (as defined by xy_trace_buffer in SIM),'
+            )
+
+    def xy_points(self, split_xy=False, z_index=0):
         """Get the xy points of the fibers.
 
         :param split_xy: Whether or not to split the xy points into separate arrays.
-        :return: The xy points of the fibers.
+        :param z_index: Get xy points at this z index. Wouldn't affect extrusion models. Optional.
+        :return: The xy points of the fibers at z_index (if provided) or at the first index by default.
         """
         if isinstance(self.fibers[0], dict):
-            points = [(f['fiber'][0][0], f['fiber'][0][1]) for f in self.fibers]
+            points = [(f['fiber'][z_index][0], f['fiber'][z_index][1]) for f in self.fibers]
         else:
-            points = [(f[0][0], f[0][1]) for f in self.fibers]
+            points = [(f[z_index][0], f[z_index][1]) for f in self.fibers]
 
         if split_xy:
             return list(zip(*points))[0], list(zip(*points))[1]

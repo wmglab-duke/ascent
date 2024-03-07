@@ -26,4 +26,4 @@ q = Query(
     {'partial_matches': False, 'include_downstream': True, 'indices': {'sample': [0], 'model': [0], 'sim': [0]}}
 ).run()
 
-ap_loctime(q, plot=False, save=True, nodes_only=True, amp=0)
+ap_loctime(q, plot=True, plot_distribution=False, save=False, nodes_only=True, amp=0)
