@@ -476,7 +476,7 @@ length of the fiber). Required.
 
     To visualize the `explicit_3D.npy` template, open a command-line window and change directories to `config/templates/`. Enter `python` to start an interactive python session and enter `import numpy as np`. Then run the `np.load('explicit_3D.npy', allow_pickle=True)` to load and print the file contents to the consol. The template file contains two short fibers of varying lengths, and is compatible with the ascent tutorial.
 
-    To generate a 3D coordinate file: Create a python list of fibers, where each index is a 2D np.array of xyz values. To save a python list of np.arrays of varying lengths to a .npy file, use `np.save('<file name>.npy', np.array(<list of fiber arrays>, dtype=object), allow_pickle=True)`.)
+    To generate a 3D coordinate file: Create a python list of fibers, where each index is a 2D np.array of xyz values. To save a python list of np.arrays of varying lengths to a .npy file, use `np.save('<file name>.npy', np.array(<list of fiber arrays>, dtype=object), allow_pickle=True)`.
 
     - `“explicit_fiberset_index”`: The value (Integer) indicates which explicit index file to use.
 

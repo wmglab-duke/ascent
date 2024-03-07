@@ -9,6 +9,7 @@
     "mode": "MRG_DISCRETE",
     "xy_trace_buffer": 5.0,
     "z_parameters": {
+      "mode": "EXTRUSION",
       "diameter": [1, 2, 5.7, 7.3, 8.7, 10],
       "min": 0,
       "max": 12500,
