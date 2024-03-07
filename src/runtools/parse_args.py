@@ -148,7 +148,7 @@ install_parser.add_argument('--no-conda', action='store_true', help='Skip conda 
 # parser for env setup
 env_parser = subparsers.add_parser('env_setup', help='Set ASCENT environment variables')
 
-# parser for biuld_dataset
+# parser for build_dataset
 bd_parser = subparsers.add_parser('build_dataset', help='Export dataset from ASCENT runs in SPARC format')
 bd_parser.add_argument(
     'dataset_indices',
@@ -156,6 +156,11 @@ bd_parser.add_argument(
     type=int,
     help='Space separated dataset indices to export',
 )
+# add subparsers for each script
+bd_subcommands = bd_parser.add_subparsers(help='build_dataset stage', dest='stage', required=True)
+bd_query_parser = bd_subcommands.add_parser('query', help='Use query criteria to build excel output')
+bd_generate_parser = bd_subcommands.add_parser('generate', help='Generate dataset (keeps files) from excel output')
+bd_generate_parser.add_argument('-f', '--force', action='store_true', help='Overwrite existing dataset')
 
 
 def parse():

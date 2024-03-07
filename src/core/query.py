@@ -463,7 +463,7 @@ class Query(Configurable, Saveable):
                     ) in enumerate(sim_object.master_product_indices):
                         (
                             active_src_index,
-                            active_rec_index,
+                            *active_rec_index,
                             fiberset_index,
                         ) = sim_object.potentials_product[potentials_product_index]
                         # fetch outer->inner->fiber and out->inner maps

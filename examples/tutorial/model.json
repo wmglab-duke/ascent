@@ -3,7 +3,6 @@
   "modes": {
     "use_ci": true,
     "cuff_shift": "AUTO_ROTATION_MIN_CIRCLE_BOUNDARY",
-    "fiber_z": "EXTRUSION",
     "rho_perineurium": "RHO_WEERASURIYA"
   },
   "medium": {
@@ -35,7 +34,8 @@
       "x": 0,
       "y": 0,
       "z": 0
-    }
+    },
+    "index": 0
   },
   "mesh": {
     "quality_measure": "vollength",

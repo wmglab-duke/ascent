@@ -11,13 +11,13 @@ RUN THIS FROM REPOSITORY ROOT
 import os
 import sys
 
+sys.path.append(os.path.sep.join([os.getcwd(), '']))
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 from src.core.plotter import ap_loctime
 from src.core.query import Query
-
-sys.path.append(os.path.sep.join([os.getcwd(), '']))
 
 # set default fig size
 plt.rcParams['figure.figsize'] = list(np.array([16.8, 10.14]) / 2)
@@ -26,4 +26,4 @@ q = Query(
     {'partial_matches': False, 'include_downstream': True, 'indices': {'sample': [0], 'model': [0], 'sim': [0]}}
 ).run()
 
-ap_loctime(q, plot=False, save=True, nodes_only=True, amp=0)
+ap_loctime(q, plot=True, plot_distribution=False, save=False, nodes_only=True, amp=0)

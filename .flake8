@@ -7,6 +7,7 @@ per-file-ignores =
     __init__.py: F401, F403
     enums.py: D
     map.py: D,RST,DAR
+    examples/analysis/*:E402
 docstring-style: SPHINX
 max-line-length = 120
 max-complexity = 18

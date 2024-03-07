@@ -496,5 +496,5 @@ modes:
 [f3]: https://chart.apis.google.com/chart?cht=tx&chl=(V_{1}-V_{2})
 [f4]: https://chart.apis.google.com/chart?cht=tx&chl=(\rho_{s})
 [f5]: https://chart.apis.google.com/chart?cht=tx&chl=(\vec{n}\cdot\vec{J_{1}})
-[f6]: https://chart.apis.google.com/chart?cht=tx&chl=(\d_{s})
+[f6]: https://chart.apis.google.com/chart?cht=tx&chl=(d_{s})
 [f7]: https://chart.apis.google.com/chart?cht=tx&chl=(\sigma_{s})

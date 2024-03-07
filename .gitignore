@@ -139,6 +139,7 @@ data/tmp/
 data/*.pickle
 data/
 input/
+output/
 */user/*
 
 # samples

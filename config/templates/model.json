@@ -3,7 +3,6 @@
   "modes": {
     "rho_perineurium": "RHO_WEERASURIYA",
     "cuff_shift": "AUTO_ROTATION_MIN_CIRCLE_BOUNDARY",
-    "fiber_z": "EXTRUSION",
     "use_ci": true
   },
   "medium": {

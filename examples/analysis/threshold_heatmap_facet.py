@@ -8,6 +8,9 @@ RUN THIS FROM REPOSITORY ROOT
 """
 
 import os
+import sys
+
+sys.path.append(os.path.sep.join([os.getcwd(), '']))
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -34,7 +37,7 @@ g = sns.FacetGrid(fdata, row='model', col='nsim', sharex=False, sharey=False)
 g.map(heatmaps, *fdata.columns, **heatmap_kws)
 
 # Title and clear axis labels
-plt.subplots_adjust(top=0.9)
+plt.subplots_adjust(top=0.8)
 plt.suptitle('Grid of activation threshold heatmaps')
 for ax in g.axes.ravel():
     ax.set_xlabel('')

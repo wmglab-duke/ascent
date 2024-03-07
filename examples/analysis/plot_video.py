@@ -12,6 +12,8 @@ import os
 import shutil
 import sys
 
+sys.path.append(os.path.sep.join([os.getcwd(), '']))
+
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.animation import FuncAnimation
