@@ -2241,7 +2241,7 @@ public class ModelWrapper {
                         String bases_name = currentIDs
                             .getJSONObject(Integer.toString(cu + 1))
                             .getString("name");
-                        File basisFile = new File(bases_directory + "/" + bases_name + ".mph");
+                        File basisFile = new File(bases_directory + "/" + cu + "_" + bases_name + ".mph");
                         basesValid[cu] = basisFile.exists();
                     }
                 }
