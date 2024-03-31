@@ -403,13 +403,13 @@ class Query(Configurable, Saveable):
                                             'waveform_index': waveform_index,
                                             'active_src_index': active_src_index,
                                             'active_rec_index': active_rec_index,
-                                            'SFAP_times': row[0] - 1.2,
+                                            'SFAP_times': row[0],
                                             'SFAP0': row[1],
                                         }
                                     )
 
         sfap_data = pd.DataFrame(sfap_data)
-        output = sfap_data.loc[sfap_data.fiberset_index.isin(fiber_indices)] if not all_fibers else sfap_data
+        output = sfap_data.loc[sfap_data['index'].isin(fiber_indices)] if not all_fibers else sfap_data
         return output
 
     def threshold_data(

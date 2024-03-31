@@ -9,7 +9,7 @@ repository: https://github.com/wmglab-duke/ascent
 """
 
 import copy
-import distutils.dir_util as du
+import distutils as du
 import itertools
 import json
 import os
@@ -831,7 +831,7 @@ class Simulation(Configurable, Saveable):
 
         try:
             # neuron files
-            du.copy_tree(
+            du.dir_util.copy_tree(
                 os.path.join(os.environ[Env.PROJECT_PATH.value], 'src', 'neuron'),
                 target,
             )
