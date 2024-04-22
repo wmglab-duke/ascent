@@ -410,7 +410,7 @@ class Simulation(Configurable, Saveable):
         # get source, waveform, and fiberset values for the corresponding neuron simulation t
         assert (
             len(self.potentials_product[potentials_ind]) == 3
-        ), "Sim.obj file from previous version of ascent. Please regenerate sim.obj."
+        ), "Sim.obj file from ASCENT <v1.3.0. Please regenerate sim.obj."
         active_src_ind, active_rec_ind, fiberset_ind = self.potentials_product[potentials_ind]
         active_src_vals = [self.stim_product[active_src_ind]]
         active_rec_vals = [self.rec_product[active_rec_ind]]
