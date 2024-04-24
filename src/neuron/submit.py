@@ -423,8 +423,9 @@ def make_task(
                 lines.remove(f'cd "{sim_p}\"\n')
 
             # copy special files ahead of time to avoid 'text file busy error'
-            if not os.path.exists('special'):
-                shutil.copy(os.path.join('MOD_Files', 'x86_64', 'special'), sim_p)
+            for specialfile in ['special', 'special.nrn']:
+                if not os.path.exists(specialfile):
+                    shutil.copy(os.path.join('MOD_Files', 'x86_64', specialfile), sim_p)
 
         else:  # OS is 'WINDOWS'
             sim_path_win = os.path.join(*sim_p.split(os.pathsep)).replace('\\', '\\\\')
