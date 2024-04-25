@@ -7,7 +7,7 @@ source $CONDA_BASE
 conda create -n ascent
 eval "$(conda shell.bash hook)"
 conda activate ascent
-conda install python=3.10
+conda install python=3.11
 $CONDA_ENVPY -m pip install --upgrade pip setuptools wheel
 $CONDA_ENVPY -m pip install -r requirements.txt
 conda install -c conda-forge ffmpeg
