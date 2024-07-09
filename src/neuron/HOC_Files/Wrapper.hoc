@@ -262,7 +262,7 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 
 	// Save membrane current matrix
 	if (saveflag_Imem==1) {
-        sprint(Imembrane_fname_output, "../%s/data/outputs/Imembrane_axon%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
+        sprint(Imembrane_fname_output, "../%s/data/outputs/Imembrane_inner%d_fiber%d_amp%d.dat", sim_path, myinner, myfiber, amp_ind)
         Imembrane = new File()
         Imembrane.wopen(Imembrane_fname_output)
 
@@ -277,12 +277,6 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 	// Save data
 	Saving()
 
-    if (saveflag_runtime == 1) {
-        // Save individual run time (for each simulation)
-        trun_individual = startsw() - trun_individual
-        Saving_Runtime()
-	}
-
 	if (saveflag_ap_loctime == 1) {
 		Saving_APLocTime()
 	}
@@ -290,6 +284,12 @@ proc run_all(){local myinner, myfiber, myamp, amp_ind
 
 	if (saveflag_end_ap_times==1) {
 		Saving_Ap_end_times()
+	}
+
+	if (saveflag_runtime == 1) {
+        // Save individual run time (for each simulation)
+        trun_individual = startsw() - trun_individual
+        Saving_Runtime()
 	}
 }
 
