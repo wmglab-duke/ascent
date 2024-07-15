@@ -43,7 +43,7 @@ public class ModelSearcher {
         throws IOException {
         for (Path file : Files.walk(this.root).toArray(Path[]::new)) {
             String[] fileParts;
-            String os = System.getProperty("os.name").toLowerCase(); // https://www.techiedelight.com/determine-operating-system-and-its-version-java/
+            String os = System.getProperty("os.name").toLowerCase();
             if (os.contains("win")) {
                 // if windows
                 fileParts = file.toString().split("\\\\");

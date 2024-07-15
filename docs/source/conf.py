@@ -54,7 +54,7 @@ source_suffix = {
     '.md': 'markdown',
 }
 
-MOCK_MODULES = ['numpy', 'pandas']
+MOCK_MODULES = ['numpy', 'pandas', 'tqdm']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
@@ -73,6 +73,7 @@ autodoc_mock_imports = [
     'pymunk',
     'quantiphy',
     'nd_line',
+    'tqdm',
 ]
 
 # Add any paths that contain templates here, relative to this directory.

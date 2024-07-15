@@ -20,7 +20,6 @@ Variables that must be defined in wrapper/params file:
 
 objref output_file_aptimes
 
-// https://www.neuron.yale.edu/neuron/static/new_doc/programming/ockeywor.html
 func max() {
     if ($1 > $2){
             return $1
