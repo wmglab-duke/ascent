@@ -743,7 +743,7 @@ class Query(Configurable, Saveable):
         imembrane_file_name = os.path.join(
             os.getcwd(),
             f"samples/{sample_results['index']}/models/{model_results['index']}/sims/{sim}/n_sims/"
-            f"{nsim}/data/outputs/Imembrane_axon0_fiber0_amp0.dat",
+            f"{nsim}/data/outputs/Imembrane_inner0_fiber0_amp0.dat",
         )
 
         with open(imembrane_file_name, 'rb') as file:
