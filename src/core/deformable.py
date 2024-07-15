@@ -17,6 +17,7 @@ import pymunk.pygame_util
 from pygame.colordict import THECOLORS
 from pygame.locals import DOUBLEBUF, HWSURFACE, K_ESCAPE, KEYDOWN, QUIT, RESIZABLE
 from shapely.geometry import LineString, Point
+from tqdm import tqdm
 
 from src.core import Slide, Trace
 from src.utils import ReshapeNerveMode
@@ -173,16 +174,13 @@ class Deformable:
             options, drawsurf, screen, im_ratio = self.setup_pygame_render()
 
         # MORPHING LOOP
-        for morph_index, morph_step in enumerate(morph_steps):
-            if progress_bar:
-                # if the loop count is divisible by the index step, update morph
-                Deformable.print_progress_bar(
-                    morph_index + 1,
-                    len(morph_steps),
-                    prefix='\t\tdeforming',
-                    suffix='complete',
-                    length=50,
-                )
+        for morph_index, morph_step in tqdm(
+            enumerate(morph_steps),
+            total=len(morph_steps),
+            dynamic_ncols=True,
+            disable=(not progress_bar),
+            desc='deforming',
+        ):
 
             # add new nerve trace
             add_boundary(space, morph_step)
@@ -316,24 +314,3 @@ class Deformable:
 
         # return new object
         return Deformable(boundary_start, boundary_end, contents)
-
-    # copied from https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
-    @staticmethod
-    def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█'):
-        """Create and update a terminal progress bar.
-
-        :param iteration: current iteration
-        :param total: total iterations
-        :param prefix: prefix string
-        :param suffix: suffix string
-        :param decimals: number of decimals in percent complete
-        :param length: character length of bar
-        :param fill: bar fill character
-        """
-        percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-        filled_length = int(length * iteration // total)
-        bar = fill * filled_length + '-' * (length - filled_length)
-        print(f'\r{prefix} |{bar}| {percent}% {suffix}', end='')
-        # Print New Line on Complete
-        if iteration == total:
-            print()
