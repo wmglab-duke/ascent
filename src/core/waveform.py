@@ -11,7 +11,6 @@ https://github.com/wmglab-duke/ascent
 import csv
 import math
 import os
-import sys
 import warnings
 
 import matplotlib.pyplot as plt
@@ -474,8 +473,8 @@ class Waveform(Configurable, Saveable):
         """
         digits = self.search(Config.SIM, 'waveform', self.mode_str, 'digits')
 
-        dt_all, dt_post = precision_and_scale(self.dt)
-        stop_all, stop_post = precision_and_scale(self.stop)
+        dt_all, dt_post = num_digits_precision(self.dt)
+        stop_all, stop_post = num_digits_precision(self.stop)
 
         with open(path + WriteMode.file_endings.value[mode.value], "ab") as f:
             np.savetxt(f, [self.dt], fmt=f'%{dt_all - dt_post}.{dt_post}f')
@@ -491,23 +490,27 @@ class Waveform(Configurable, Saveable):
         return self
 
 
-def precision_and_scale(x):
+def num_digits_precision(x):
     """Return the number of digits and the scale of the number.
-
-    # https://stackoverflow.com/questions/3018758/determine-precision-and-scale-of-particular-number-in-python
 
     :param x: number
     :return: number of digits, scale
     """
-    max_digits = sys.float_info.dig
-    int_part = int(abs(x))
-    magnitude = 1 if int_part == 0 else int(math.log10(int_part)) + 1
-    if magnitude >= max_digits:
-        return magnitude, 0
-    frac_part = abs(x) - int_part
-    multiplier = 10 ** (max_digits - magnitude)
-    frac_digits = multiplier + int(multiplier * frac_part + 0.5)
-    while frac_digits % 10 == 0:
-        frac_digits /= 10
-    scale = int(math.log10(frac_digits))
-    return magnitude + scale, scale
+    # integral component
+    intx = math.floor(abs(x))
+    if intx == 0:
+        n_int = 0
+    else:
+        n_int = math.floor(math.log10(intx)) + 1
+
+    # fractional component
+    fracx = abs(x) - intx
+    if fracx == 0:
+        n_prec = 0
+    else:
+        n_prec = 1
+        while ((10**n_prec) * fracx) % 1 > 0:
+            n_prec += 1
+    n_digits = n_int + n_prec
+
+    return n_digits, n_prec
