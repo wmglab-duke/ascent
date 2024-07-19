@@ -917,8 +917,8 @@ class Simulation(Configurable, Saveable):
                 nsim_dir = os.path.join(source, dirname)
                 outdir = os.path.join(nsim_dir, 'data', 'outputs')
                 indir = os.path.join(nsim_dir, 'data', 'inputs')
-                for file in [f for f in os.listdir(indir) if f.startswith('inner') and f.endswith('.dat')]:
-                    if not os.path.exists(os.path.join(outdir, 'thresh_' + file)):
+                for file in [f for f in os.listdir(indir) if f.startswith('src_inner') and f.endswith('.dat')]:
+                    if not os.path.exists(os.path.join(outdir, 'thresh_' + file.replace('src_', ''))):
                         print(f"Missing threshold {os.path.join(outdir, 'thresh_' + file)}")
                         allthresh = False
         return allthresh
@@ -941,9 +941,11 @@ class Simulation(Configurable, Saveable):
                 nsim_dir = os.path.join(source, dirname)
                 outdir = os.path.join(nsim_dir, 'data', 'outputs')
                 indir = os.path.join(nsim_dir, 'data', 'inputs')
-                for file in [f for f in os.listdir(indir) if f.startswith('inner') and f.endswith('.dat')]:
+                for file in [f for f in os.listdir(indir) if f.startswith('src_inner') and f.endswith('.dat')]:
                     for amp in range(n_amps):
-                        target = os.path.join(outdir, 'activation_' + file.replace('.dat', f'_amp{amp}.dat'))
+                        target = os.path.join(
+                            outdir, 'activation_' + file.replace('src_', '').replace('.dat', f'_amp{amp}.dat')
+                        )
                         if not os.path.exists(target):
                             print(f'Missing finite amp {target}')
                             allamp = False
