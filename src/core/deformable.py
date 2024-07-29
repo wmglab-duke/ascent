@@ -9,7 +9,6 @@ repository: https://github.com/wmglab-duke/ascent
 """
 
 import sys
-from typing import List, Tuple
 
 import numpy as np
 import pygame
@@ -30,7 +29,7 @@ class Deformable:
         self,
         boundary_start: Trace,
         boundary_end: Trace,
-        contents: List[Trace],
+        contents: list[Trace],
     ):
         """Initialize the class.
 
@@ -45,10 +44,10 @@ class Deformable:
         self.contents = contents
 
         # init vector of start and end positions
-        self.start_positions: List[np.ndarray] = []
-        self.start_rotations: List[float] = []
-        self.end_positions: List[np.ndarray] = []
-        self.end_rotations: List[float] = []
+        self.start_positions: list[np.ndarray] = []
+        self.start_rotations: list[float] = []
+        self.end_positions: list[np.ndarray] = []
+        self.end_rotations: list[float] = []
 
     def setup_pygame_render(self):
         """Initialize the debug render mediated by pygame.
@@ -141,7 +140,7 @@ class Deformable:
         minimum_distance: float = 0.0,
         ratio: float = None,
         progress_bar: bool = True,
-    ) -> Tuple[List[tuple], List[float]]:
+    ) -> tuple[list[tuple], list[float]]:
         """Run the main deformation algorithm.
 
         :param morph_count: number of incremental traces including the start and end of boundary
@@ -214,7 +213,7 @@ class Deformable:
         end: Trace,
         count: int = 2,
         deform_ratio: float = 1.0,
-    ) -> List[Trace]:
+    ) -> list[Trace]:
         """Calculate morph steps between two traces.
 
         :param start: start trace
@@ -276,11 +275,9 @@ class Deformable:
             for i, point in enumerate(trace.points):
                 point += vectors[i] * ratio
             traces.append(trace)
-        if deform_ratio != 0:
-            def_traces = traces[: int((deform_ratio if deform_ratio is not None else 1) * count)]
-        else:  # still need fascicle sep physics with deform_ratio = 0, so pass starting trace only
-            def_traces = [traces[0]]
-        return def_traces
+        if deform_ratio == 0:  # still need fascicle sep physics with deform_ratio = 0, so pass starting trace only
+            return [traces[0]]
+        return traces[: int((deform_ratio if deform_ratio is not None else 1) * count)]
 
     @staticmethod
     def from_slide(slide: Slide, mode: ReshapeNerveMode, sep_nerve: float = None) -> 'Deformable':

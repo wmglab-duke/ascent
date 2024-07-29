@@ -1,90 +1,133 @@
 {
-  "n_dimensions": 3,
   "active_srcs": {
-    "Purdue.json": [[1, -1]],
-    "Enteromedics.json": [[1]],
-    "CorTec300.json": [[1, -1]],
-    "CorTec400.json": [[1, -1]],
-    "MicroLeads300.json": [[1, -1]],
-    "MicroLeads400.json": [[1, -1]],
-    "MicroLeads500.json": [[1, -1]],
-    "default": [[1, -1]]
+    "CorTec300.json": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "CorTec400.json": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "Enteromedics.json": [
+      [
+        1
+      ]
+    ],
+    "MicroLeads300.json": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "MicroLeads400.json": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "MicroLeads500.json": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "Purdue.json": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "default": [
+      [
+        1,
+        -1
+      ]
+    ]
   },
   "fibers": {
-    "plot": true,
     "mode": "MRG_DISCRETE",
+    "plot": true,
+    "xy_parameters": {
+      "maximum_number": 100,
+      "minimum_number": 1,
+      "mode": "UNIFORM_DENSITY",
+      "seed": 123,
+      "target_density": 0.0001,
+      "target_number": 50,
+      "top_down": true
+    },
     "xy_trace_buffer": 5.0,
     "z_parameters": {
       "diameter": 10,
-      "min": 0,
       "max": 50000,
+      "min": 0,
       "offset": 0,
       "seed": 123
-    },
-    "xy_parameters": {
-      "mode": "UNIFORM_DENSITY",
-      "top_down": true,
-      "minimum_number": 1,
-      "maximum_number": 100,
-      "target_density": 0.0001,
-      "target_number": 50,
-      "seed": 123
-    }
-  },
-  "waveform": {
-    "plot": true,
-    "global": {
-      "unit": "ms",
-      "dt": 0.001,
-      "start": 0,
-      "on": 1,
-      "off": 99,
-      "stop": 100,
-      "initSS": -200,
-      "dt_initSS": 10
-    },
-    "BIPHASIC_FULL_DUTY": {
-      "pulse_repetition_freq": 20000,
-      "digits": 1
     }
   },
   "intracellular_stim": {
-    "times": {
-      "pw": 0.1,
-      "IntraStim_PulseTrain_delay": 50
-    },
-    "pulse_repetition_freq": 1,
     "amp": 5,
-    "ind": 2
-  },
-  "saving": {
-    "space": {
-      "vm": false,
-      "gating": false,
-      "times": [0]
-    },
-    "time": {
-      "vm": false,
-      "gating": false,
-      "istim": false,
-      "locs": [0]
+    "ind": 2,
+    "pulse_repetition_freq": 1,
+    "times": {
+      "IntraStim_PulseTrain_delay": 50,
+      "pw": 0.1
     }
   },
+  "n_dimensions": 3,
   "protocol": {
-    "mode": "BLOCK_THRESHOLD",
-    "threshold": {
-      "value": -30,
-      "n_min_aps": 1
-    },
     "bounds_search": {
+      "bottom": -0.8,
       "mode": "PERCENT_INCREMENT",
       "step": 10,
-      "top": -1.2,
-      "bottom": -0.8
+      "top": -1.2
     },
+    "mode": "BLOCK_THRESHOLD",
     "termination_criteria": {
       "mode": "PERCENT_DIFFERENCE",
       "percent": 0.01
+    },
+    "threshold": {
+      "n_min_aps": 1,
+      "value": -30
     }
+  },
+  "saving": {
+    "space": {
+      "gating": false,
+      "times": [
+        0
+      ],
+      "vm": false
+    },
+    "time": {
+      "gating": false,
+      "istim": false,
+      "locs": [
+        0
+      ],
+      "vm": false
+    }
+  },
+  "waveform": {
+    "BIPHASIC_FULL_DUTY": {
+      "digits": 1,
+      "pulse_repetition_freq": 20000
+    },
+    "global": {
+      "dt": 0.001,
+      "dt_initSS": 10,
+      "initSS": -200,
+      "off": 99,
+      "on": 1,
+      "start": 0,
+      "stop": 100,
+      "unit": "ms"
+    },
+    "plot": true
   }
 }

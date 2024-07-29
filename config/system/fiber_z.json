@@ -1,102 +1,138 @@
 {
   "fiber_type_parameters": {
     "MRG_DISCRETE": {
-      "neuron_flag": 2,
+      "delta_zs": [
+        100,
+        200,
+        500,
+        750,
+        1000,
+        1150,
+        1250,
+        1350,
+        1400,
+        1450,
+        1500
+      ],
+      "diameters": [
+        1.0,
+        2.0,
+        5.7,
+        7.3,
+        8.7,
+        10.0,
+        11.5,
+        12.8,
+        14.0,
+        15.0,
+        16.0
+      ],
+      "fiber_type": 2,
       "geom_determination_method": 0,
+      "inter_length": "(delta_z - node_length - (2 * paranodal_length_1) - (2 * paranodal_length_2)) / 6",
       "myelinated": true,
-      "sampling": "discrete",
+      "neuron_flag": 2,
+      "node_channels": 0,
       "node_length": 1.0,
       "paranodal_length_1": 3.0,
-      "diameters": [1.0, 2.0, 5.7, 7.3, 8.7, 10.0, 11.5, 12.8, 14.0, 15.0, 16.0],
-      "delta_zs": [100, 200, 500, 750, 1000, 1150, 1250, 1350, 1400, 1450, 1500],
-      "paranodal_length_2s": [5, 10, 35, 38, 40, 46, 50, 54, 56, 58, 60],
-      "inter_length": "(delta_z - node_length - (2 * paranodal_length_1) - (2 * paranodal_length_2)) / 6",
-      "node_channels": 0,
-      "fiber_type": 2,
-      "passive_end_nodes": 1
+      "paranodal_length_2s": [
+        5,
+        10,
+        35,
+        38,
+        40,
+        46,
+        50,
+        54,
+        56,
+        58,
+        60
+      ],
+      "passive_end_nodes": 1,
+      "sampling": "discrete"
     },
     "MRG_INTERPOLATION": {
-      "neuron_flag": 2,
-      "geom_determination_method": 1,
-      "myelinated": true,
-      "sampling": "interp",
-      "diameter": true,
-      "node_length": 1.0,
-      "paranodal_length_1": 3.0,
-      "paranodal_length_2": "-0.1652*diameter**2 + 6.354*diameter - 0.2862",
       "delta_z": {
         "diameter_greater_or_equal_5.643um": "-8.215*diameter**2 + 272.4*diameter - 780.2",
         "diameter_less_5.643um": "81.08*diameter + 37.84"
       },
-      "inter_length": "(delta_z - node_length - (2 * paranodal_length_1) - (2 * paranodal_length_2)) / 6",
-      "node_channels": 0,
+      "diameter": true,
       "fiber_type": 2,
-      "passive_end_nodes": 1
+      "geom_determination_method": 1,
+      "inter_length": "(delta_z - node_length - (2 * paranodal_length_1) - (2 * paranodal_length_2)) / 6",
+      "myelinated": true,
+      "neuron_flag": 2,
+      "node_channels": 0,
+      "node_length": 1.0,
+      "paranodal_length_1": 3.0,
+      "paranodal_length_2": "-0.1652*diameter**2 + 6.354*diameter - 0.2862",
+      "passive_end_nodes": 1,
+      "sampling": "interp"
+    },
+    "RATTAY": {
+      "channels_type": 3,
+      "delta_zs": 8.333,
+      "fiber_type": 3,
+      "myelinated": false,
+      "neuron_flag": 3,
+      "node_channels": 0,
+      "passive_end_nodes": 1,
+      "sampling": "discrete"
+    },
+    "SCHILD94": {
+      "channels_type": 5,
+      "delta_zs": 8.333,
+      "fiber_type": 3,
+      "myelinated": false,
+      "neuron_flag": 3,
+      "node_channels": 1,
+      "passive_end_nodes": 1,
+      "sampling": "discrete"
+    },
+    "SCHILD97": {
+      "channels_type": 4,
+      "delta_zs": 8.333,
+      "fiber_type": 3,
+      "myelinated": false,
+      "neuron_flag": 3,
+      "node_channels": 1,
+      "passive_end_nodes": 1,
+      "sampling": "discrete"
     },
     "SMALL_MRG_INTERPOLATION_V1": {
-      "neuron_flag": 2,
-      "geom_determination_method": 2,
-      "myelinated": true,
-      "sampling": "interp",
+      "delta_z": "-3.22*diameter**2 + 148*diameter - 128",
       "diameter": true,
+      "fiber_type": 2,
+      "geom_determination_method": 2,
+      "inter_length": "(delta_z - node_length - (2 * paranodal_length_1) - (2 * paranodal_length_2)) / 6",
+      "myelinated": true,
+      "neuron_flag": 2,
+      "node_channels": 0,
       "node_length": 1.0,
       "paranodal_length_1": 3.0,
       "paranodal_length_2": "-0.171*diameter**2 + 6.48*diameter - 0.935",
-      "delta_z": "-3.22*diameter**2 + 148*diameter - 128",
-      "inter_length": "(delta_z - node_length - (2 * paranodal_length_1) - (2 * paranodal_length_2)) / 6",
-      "node_channels": 0,
-      "fiber_type": 2,
-      "passive_end_nodes": 1
+      "passive_end_nodes": 1,
+      "sampling": "interp"
     },
     "SUNDT": {
-      "neuron_flag": 3,
-      "myelinated": false,
-      "sampling": "discrete",
+      "channels_type": 1,
       "delta_zs": 8.333,
-      "node_channels": 0,
       "fiber_type": 3,
+      "myelinated": false,
+      "neuron_flag": 3,
+      "node_channels": 0,
       "passive_end_nodes": 1,
-      "channels_type": 1
+      "sampling": "discrete"
     },
     "TIGERHOLM": {
-      "neuron_flag": 3,
-      "myelinated": false,
-      "sampling": "discrete",
+      "channels_type": 2,
       "delta_zs": 8.333,
-      "node_channels": 0,
       "fiber_type": 3,
+      "myelinated": false,
+      "neuron_flag": 3,
+      "node_channels": 0,
       "passive_end_nodes": 0,
-      "channels_type": 2
-    },
-    "RATTAY": {
-      "neuron_flag": 3,
-      "myelinated": false,
-      "sampling": "discrete",
-      "delta_zs": 8.333,
-      "node_channels": 0,
-      "fiber_type": 3,
-      "passive_end_nodes": 1,
-      "channels_type": 3
-    },
-    "SCHILD97": {
-      "neuron_flag": 3,
-      "myelinated": false,
-      "sampling": "discrete",
-      "delta_zs": 8.333,
-      "node_channels": 1,
-      "fiber_type": 3,
-      "passive_end_nodes": 1,
-      "channels_type": 4
-    },
-    "SCHILD94": {
-      "neuron_flag": 3,
-      "myelinated": false,
-      "sampling": "discrete",
-      "delta_zs": 8.333,
-      "node_channels": 1,
-      "fiber_type": 3,
-      "passive_end_nodes": 1,
-      "channels_type": 5
+      "sampling": "discrete"
     }
   }
 }

@@ -1,25 +1,25 @@
 {
-  "sample": "tutorial",
-  "pseudonym": "tutorial sample",
-  "sex": "M",
-  "level": "Cervical",
-  "scale": {
-    "scale_bar_length": 100,
-    "shrinkage": 0.2
-  },
+  "Morphology": null,
   "boundary_separation": {
     "fascicles": 0,
     "nerve": 0
   },
+  "level": "Cervical",
   "modes": {
-    "mask_input": "INNER_AND_OUTER_COMPILED",
-    "scale_input": "MASK",
-    "nerve": "NOT_PRESENT",
-    "deform": "NONE",
     "ci_perineurium_thickness": "MEASURED",
+    "contour_approximation": "SIMPLE",
+    "deform": "NONE",
+    "mask_input": "INNER_AND_OUTER_COMPILED",
+    "nerve": "NOT_PRESENT",
     "reshape_nerve": "NONE",
-    "shrinkage_definition": "LENGTH_FORWARDS",
-    "contour_approximation": "SIMPLE"
+    "scale_input": "MASK",
+    "shrinkage_definition": "LENGTH_FORWARDS"
   },
-  "Morphology": null
+  "pseudonym": "tutorial sample",
+  "sample": "tutorial",
+  "scale": {
+    "scale_bar_length": 100,
+    "shrinkage": 0.2
+  },
+  "sex": "M"
 }

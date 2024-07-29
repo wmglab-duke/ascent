@@ -1,8 +1,13 @@
 [
   {
     "cassette": 0,
+    "directory": [
+      "data",
+      "input",
+      "samples",
+      "SAMPLE_NAME"
+    ],
     "number": 0,
-    "position": 0,
-    "directory": ["data", "input", "samples", "SAMPLE_NAME"]
+    "position": 0
   }
 ]

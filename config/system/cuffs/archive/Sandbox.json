@@ -1,97 +1,98 @@
 {
+  "angle_to_contacts_deg": 144,
   "code": "SB",
+  "expandable": true,
   "instances": [
     {
-      "type": "CuffFill_Primitive",
-      "label": "Purdue Cuff Fill",
       "def": {
+        "Center": "Center_P",
+        "L": "L_P",
         "Radius": "R_in_P",
         "Thk": "Thk_fill_P",
-        "L": "L_P",
-        "Center": "Center_P",
         "x_shift": "0",
         "y_shift": "0"
       },
+      "label": "Purdue Cuff Fill",
       "materials": [
         {
           "info": "fill",
           "label_index": 0
         }
-      ]
+      ],
+      "type": "CuffFill_Primitive"
     },
     {
-      "type": "TubeCuff_Primitive",
-      "label": "Purdue Cuff",
       "def": {
-        "N_holes": "N_holes_P",
-        "Tube_theta": "Theta_P",
+        "Buffer_hole": "Buffer_hole_P",
         "Center": "Center_P",
+        "D_hole": "D_hole_P",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_P",
+        "N_holes": "N_holes_P",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_P",
         "R_in": "R_in_P",
         "R_out": "R_out_P",
-        "Tube_L": "L_P",
         "Rot_def": "Rot_def_P",
-        "D_hole": "D_hole_P",
-        "Buffer_hole": "Buffer_hole_P",
-        "L_holecenter_cuffseam": "L_holecenter_cuffseam_P",
-        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_P"
+        "Tube_L": "L_P",
+        "Tube_theta": "Theta_P"
       },
+      "label": "Purdue Cuff",
       "materials": [
         {
           "info": "insulator",
           "label_index": 2
         }
-      ]
+      ],
+      "type": "TubeCuff_Primitive"
     },
     {
-      "type": "WireContact_Primitive",
-      "label": "Purdue Contact 1",
       "def": {
-        "Wire_r": "r_wire_P",
-        "R_in": "R_in_P",
         "Center": "Center_P-(Pitch_P/2)",
         "Pitch": "Pitch_P",
+        "R_in": "R_in_P",
+        "Wire_r": "r_wire_P",
         "Wire_sep": "sep_wire_P",
         "Wire_theta": "theta_wire_P"
       },
+      "label": "Purdue Contact 1",
       "materials": [
         {
           "info": "conductor",
           "label_index": 1
         }
-      ]
+      ],
+      "type": "WireContact_Primitive"
     },
     {
-      "type": "WireContact_Primitive",
-      "label": "Purdue Contact 2",
       "def": {
-        "Wire_r": "r_wire_P",
-        "R_in": "R_in_P",
         "Center": "Center_P+(Pitch_P/2)",
         "Pitch": "Pitch_P",
+        "R_in": "R_in_P",
+        "Wire_r": "r_wire_P",
         "Wire_sep": "sep_wire_P",
         "Wire_theta": "theta_wire_P"
       },
+      "label": "Purdue Contact 2",
       "materials": [
         {
           "info": "conductor",
           "label_index": 1
         }
-      ]
+      ],
+      "type": "WireContact_Primitive"
     },
     {
-      "type": "CircleContact_Primitive",
-      "label": "Circle Contact 1",
       "def": {
-        "Circle_recess": "Recess_ITC",
-        "Rotation_angle": "ang_cuffseam_contactcenter_ITC",
         "Center": "Center_IT-length_contactcenter_contactcenter_ITC",
         "Circle_def": "Round_def_ITC",
-        "R_in": "R_in_ITI",
-        "Circle_thk": "Contact_depth_ITC",
-        "Overshoot": "Overshoot_ITC",
         "Circle_diam": "diam_contact_ITC",
-        "L": "L_IT"
+        "Circle_recess": "Recess_ITC",
+        "Circle_thk": "Contact_depth_ITC",
+        "L": "L_IT",
+        "Overshoot": "Overshoot_ITC",
+        "R_in": "R_in_ITI",
+        "Rotation_angle": "ang_cuffseam_contactcenter_ITC"
       },
+      "label": "Circle Contact 1",
       "materials": [
         {
           "info": "conductor",
@@ -101,23 +102,23 @@
           "info": "recess",
           "label_index": 2
         }
-      ]
+      ],
+      "type": "CircleContact_Primitive"
     },
     {
-      "type": "RectangleContact_Primitive",
-      "label": "Pitt Contact 1",
       "def": {
         "Center": "Center_Pitt+(pitch_Pitt/2)",
-        "Rotation_angle": "theta_pos_contact1_Pitt [deg]",
-        "Rect_w": "w_contact_Pitt",
-        "Rect_z": "z_contact_Pitt",
-        "Rect_fillet": "fillet_contact_Pitt",
         "L_cuff": "L_cuff_Pitt",
         "R_in": "R_in_Pitt",
+        "Rect_def": "Rect_def_Pitt",
+        "Rect_fillet": "fillet_contact_Pitt",
         "Rect_recess": "recess_Pitt",
         "Rect_thk": "thk_contact_Pitt",
-        "Rect_def": "Rect_def_Pitt"
+        "Rect_w": "w_contact_Pitt",
+        "Rect_z": "z_contact_Pitt",
+        "Rotation_angle": "theta_pos_contact1_Pitt [deg]"
       },
+      "label": "Pitt Contact 1",
       "materials": [
         {
           "info": "conductor",
@@ -127,20 +128,20 @@
           "info": "recess",
           "label_index": 6
         }
-      ]
+      ],
+      "type": "RectangleContact_Primitive"
     },
     {
-      "type": "RibbonContact_Primitive",
-      "label": "CorTec Contact 1",
       "def": {
-        "Ribbon_thk": "Thk_elec_CT",
-        "Ribbon_z": "L_elec_CT",
+        "Center": "Center_CT+(Pitch_CT/2)",
         "R_in": "R_in_CT",
         "Ribbon_recess": "Recess_CT",
-        "Center": "Center_CT+(Pitch_CT/2)",
         "Ribbon_theta": "Theta_contact_CT",
+        "Ribbon_thk": "Thk_elec_CT",
+        "Ribbon_z": "L_elec_CT",
         "Rot_def": "Rot_def_contact_CT"
       },
+      "label": "CorTec Contact 1",
       "materials": [
         {
           "info": "conductor",
@@ -150,79 +151,79 @@
           "info": "recess",
           "label_index": 4
         }
-      ]
+      ],
+      "type": "RibbonContact_Primitive"
     },
     {
-      "type": "uContact_Primitive",
-      "label": "MicroLeads300 Contact 1",
       "def": {
         "Center": "z_center_U300-(Pitch_U300/2)",
         "R_in": "R_in_U300",
+        "U_recess": "recess_U300",
         "U_tangent": "Tangent_U300",
         "U_thk": "thk_contact_U300",
-        "U_z": "z_contact_U300",
-        "U_recess": "recess_U300"
+        "U_z": "z_contact_U300"
       },
+      "label": "MicroLeads300 Contact 1",
       "materials": [
         {
           "info": "conductor",
           "label_index": 1
         }
-      ]
+      ],
+      "type": "uContact_Primitive"
     },
     {
-      "type": "uCuff_Primitive",
-      "label": "MicroLeads300 Cuff",
       "def": {
         "Center": "z_center_U300",
         "R_in": "R_in_U300",
-        "U_tangent": "Tangent_U300",
         "R_out": "R_out_U300",
         "U_L": "L_U300",
+        "U_gap": "gap_U300",
         "U_shift_x": "x_shift",
         "U_shift_y": "y_shift",
-        "U_gap": "gap_U300"
+        "U_tangent": "Tangent_U300"
       },
+      "label": "MicroLeads300 Cuff",
       "materials": [
         {
           "info": "insulator",
           "label_index": 1
         }
-      ]
+      ],
+      "type": "uCuff_Primitive"
     },
     {
-      "type": "uCuffTrap_Primitive",
-      "label": "MicroLeads100 Cuff",
       "def": {
         "Center": "z_center_U100",
         "R_in": "R_in_U100",
-        "Ut_tangent": "Tangent_U100",
         "Rt_out": "R_out_U100",
         "Ut_L": "L_U100",
+        "Ut_gap": "gap_U100",
         "Ut_shift_x": "x_shift_U100",
         "Ut_shift_y": "y_shift_U100",
-        "Ut_gap": "gap_U100",
+        "Ut_tangent": "Tangent_U100",
         "Ut_trap_base": "trap_base_U100"
       },
+      "label": "MicroLeads100 Cuff",
       "materials": [
         {
           "info": "insulator",
           "label_index": 1
         }
-      ]
+      ],
+      "type": "uCuffTrap_Primitive"
     },
     {
-      "type": "uContactTrap_Primitive",
-      "label": "MicroLeads100 Contact",
       "def": {
         "Center": "z_center_U100-(Pitch_U100/2)",
         "R_in": "R_in_U100",
+        "Ut_recess": "recess_U100",
         "Ut_tangent": "Tangent_U100",
         "Ut_thk": "thk_contact_U100",
-        "Ut_z": "z_contact_U100",
-        "Ut_recess": "recess_U100",
-        "Ut_trap_base": "trap_base_U100"
+        "Ut_trap_base": "trap_base_U100",
+        "Ut_z": "z_contact_U100"
       },
+      "label": "MicroLeads100 Contact",
       "materials": [
         {
           "info": "conductor",
@@ -232,567 +233,564 @@
           "info": "recess",
           "label_index": 2
         }
-      ]
+      ],
+      "type": "uContactTrap_Primitive"
     }
   ],
-
+  "offset": {
+    "r_wire_P": 2,
+    "sep_wire_P": 1
+  },
   "params": [
     {
-      "name": "N_holes_P",
+      "description": "",
       "expression": "0",
-      "description": ""
+      "name": "N_holes_P"
     },
     {
-      "name": "Theta_P",
+      "description": "",
       "expression": "percent_circ_cuff_P*360 [deg]",
-      "description": ""
+      "name": "Theta_P"
     },
     {
-      "name": "Center_P",
+      "description": "",
       "expression": "z_nerve/2",
-      "description": ""
+      "name": "Center_P"
     },
     {
-      "name": "R_in_P",
+      "description": "",
       "expression": "max(r_nerve+thk_medium_gap_internal_P+2*r_wire_P+sep_wire_P,r_cuff_in_pre_P)",
-      "description": ""
+      "name": "R_in_P"
     },
     {
-      "name": "R_out_P",
+      "description": "",
       "expression": "R_in_P+thk_cuff_P",
-      "description": ""
+      "name": "R_out_P"
     },
     {
-      "name": "L_P",
+      "description": "",
       "expression": "3.5 [mm]",
-      "description": ""
+      "name": "L_P"
     },
     {
-      "name": "Rot_def_P",
+      "description": "",
       "expression": "-((theta_cuff_P-theta_wire_P)/2)",
-      "description": ""
+      "name": "Rot_def_P"
     },
     {
-      "name": "D_hole_P",
+      "description": "",
       "expression": "NaN",
-      "description": ""
+      "name": "D_hole_P"
     },
     {
-      "name": "Buffer_hole_P",
+      "description": "",
       "expression": "NaN",
-      "description": ""
+      "name": "Buffer_hole_P"
     },
     {
-      "name": "L_holecenter_cuffseam_P",
+      "description": "",
       "expression": "NaN",
-      "description": ""
+      "name": "L_holecenter_cuffseam_P"
     },
     {
-      "name": "Pitch_holecenter_holecenter_P",
+      "description": "",
       "expression": "NaN",
-      "description": ""
+      "name": "Pitch_holecenter_holecenter_P"
     },
     {
-      "name": "percent_circ_cuff_P",
+      "description": "",
       "expression": "percent_circ_cuff_pre_P*(r_cuff_in_pre_P/R_in_P)",
-      "description": ""
+      "name": "percent_circ_cuff_P"
     },
     {
-      "name": "percent_circ_cuff_pre_P",
+      "description": "",
       "expression": "1",
-      "description": ""
+      "name": "percent_circ_cuff_pre_P"
     },
     {
-      "name": "r_cuff_in_pre_P",
+      "description": "",
       "expression": "317.5 [um]",
-      "description": ""
+      "name": "r_cuff_in_pre_P"
     },
     {
-      "name": "thk_medium_gap_internal_P",
+      "description": "",
       "expression": "10 [um]",
-      "description": ""
+      "name": "thk_medium_gap_internal_P"
     },
     {
-      "name": "r_wire_P",
+      "description": "",
       "expression": "37.5 [um]",
-      "description": ""
+      "name": "r_wire_P"
     },
     {
-      "name": "sep_wire_P",
+      "description": "",
       "expression": "10 [um]",
-      "description": ""
+      "name": "sep_wire_P"
     },
     {
-      "name": "thk_cuff_P",
+      "description": "",
       "expression": "0.279 [mm]",
-      "description": ""
+      "name": "thk_cuff_P"
     },
     {
-      "name": "theta_cuff_P",
+      "description": "",
       "expression": "percent_circ_cuff_P*360 [deg]",
-      "description": ""
+      "name": "theta_cuff_P"
     },
     {
-      "name": "theta_wire_P",
+      "description": "",
       "expression": "percent_circ_wire_P*360 [deg]",
-      "description": ""
+      "name": "theta_wire_P"
     },
     {
-      "name": "percent_circ_wire_pre_P",
+      "description": "",
       "expression": "0.8",
-      "description": ""
+      "name": "percent_circ_wire_pre_P"
     },
     {
-      "name": "percent_circ_wire_P",
+      "description": "",
       "expression": "percent_circ_wire_pre_P*((r_cuff_in_pre_P-sep_wire_P-2*r_wire_P)/(R_in_P-sep_wire_P-2*r_wire_P))",
-      "description": ""
+      "name": "percent_circ_wire_P"
     },
     {
-      "name": "Pitch_P",
+      "description": "",
       "expression": "1.5 [mm]",
-      "description": ""
+      "name": "Pitch_P"
     },
     {
-      "name": "Thk_fill_P",
+      "description": "",
       "expression": "100 [um]",
-      "description": ""
+      "name": "Thk_fill_P"
     },
     {
-      "name": "N_holes_Pitt",
+      "description": "",
       "expression": "0",
-      "description": ""
+      "name": "N_holes_Pitt"
     },
     {
-      "name": "Theta_Pitt",
+      "description": "",
       "expression": "percent_circ_cuff_Pitt*360 [deg]",
-      "description": ""
+      "name": "Theta_Pitt"
     },
     {
-      "name": "Center_Pitt",
+      "description": "",
       "expression": "z_nerve/2",
-      "description": ""
+      "name": "Center_Pitt"
     },
     {
-      "name": "R_in_Pitt",
+      "description": "Could also be 0.6 or 0.7 mm, since the contacts are defined by angle not length this is only param that needs to be changed to use larger cuff",
       "expression": "0.5 [mm]",
-      "description": "Could also be 0.6 or 0.7 mm, since the contacts are defined by angle not length this is only param that needs to be changed to use larger cuff"
+      "name": "R_in_Pitt"
     },
     {
-      "name": "R_out_Pitt",
+      "description": "",
       "expression": "R_in_Pitt+thk_cuff_Pitt",
-      "description": ""
+      "name": "R_out_Pitt"
     },
     {
-      "name": "L_Pitt",
+      "description": "",
       "expression": "4.1917 [mm]",
-      "description": ""
+      "name": "L_Pitt"
     },
     {
-      "name": "percent_circ_cuff_pre_Pitt",
+      "description": "",
       "expression": "1",
-      "description": ""
+      "name": "percent_circ_cuff_pre_Pitt"
     },
     {
-      "name": "percent_circ_cuff_Pitt",
+      "description": "",
       "expression": "1",
-      "description": ""
+      "name": "percent_circ_cuff_Pitt"
     },
     {
-      "name": "Rot_def_Pitt",
+      "description": "",
       "expression": "0",
-      "description": ""
+      "name": "Rot_def_Pitt"
     },
     {
-      "name": "D_hole_Pitt",
+      "description": "",
       "expression": "NaN",
-      "description": ""
+      "name": "D_hole_Pitt"
     },
     {
-      "name": "Buffer_hole_Pitt",
+      "description": "",
       "expression": "NaN",
-      "description": ""
+      "name": "Buffer_hole_Pitt"
     },
     {
-      "name": "L_holecenter_cuffseam_Pitt",
+      "description": "",
       "expression": "NaN",
-      "description": ""
+      "name": "L_holecenter_cuffseam_Pitt"
     },
     {
-      "name": "Pitch_holecenter_holecenter_Pitt",
+      "description": "",
       "expression": "NaN",
-      "description": ""
+      "name": "Pitch_holecenter_holecenter_Pitt"
     },
     {
-      "name": "w_contact_Pitt",
+      "description": "",
       "expression": "0.475 [mm]",
-      "description": ""
+      "name": "w_contact_Pitt"
     },
     {
-      "name": "z_contact_Pitt",
+      "description": "",
       "expression": "0.475 [mm]",
-      "description": ""
+      "name": "z_contact_Pitt"
     },
     {
-      "name": "fillet_contact_Pitt",
+      "description": "",
       "expression": "0.1 [mm]",
-      "description": ""
+      "name": "fillet_contact_Pitt"
     },
     {
-      "name": "L_cuff_Pitt",
+      "description": "",
       "expression": "4.1917 [mm]",
-      "description": ""
+      "name": "L_cuff_Pitt"
     },
     {
-      "name": "thk_contact_Pitt",
+      "description": "",
       "expression": "0.018 [mm]",
-      "description": ""
+      "name": "thk_contact_Pitt"
     },
     {
-      "name": "recess_Pitt",
+      "description": "",
       "expression": "100 [um]",
-      "description": ""
+      "name": "recess_Pitt"
     },
     {
-      "name": "thk_cuff_Pitt",
+      "description": "",
       "expression": "0.275 [mm]",
-      "description": ""
+      "name": "thk_cuff_Pitt"
     },
     {
-      "name": "zw_rot_Pitt",
+      "description": "",
       "expression": "0 [deg]",
-      "description": ""
+      "name": "zw_rot_Pitt"
     },
     {
-      "name": "theta_pos_contact1_Pitt",
+      "description": "",
       "expression": "(45+22.5) [deg]",
-      "description": ""
+      "name": "theta_pos_contact1_Pitt"
     },
     {
-      "name": "theta_pos_contact2_Pitt",
+      "description": "",
       "expression": "(0+22.5) [deg]",
-      "description": ""
+      "name": "theta_pos_contact2_Pitt"
     },
     {
-      "name": "theta_pos_contact3_Pitt",
+      "description": "",
       "expression": "(135+22.5) [deg]",
-      "description": ""
+      "name": "theta_pos_contact3_Pitt"
     },
     {
-      "name": "theta_pos_contact4_Pitt",
+      "description": "",
       "expression": "(90+22.5) [deg]",
-      "description": ""
+      "name": "theta_pos_contact4_Pitt"
     },
     {
-      "name": "pitch_Pitt",
+      "description": "",
       "expression": "(1.025+0.475) [mm]",
-      "description": ""
+      "name": "pitch_Pitt"
     },
     {
-      "name": "Thk_fill_Pitt",
+      "description": "",
       "expression": "100 [um]",
-      "description": ""
+      "name": "Thk_fill_Pitt"
     },
     {
-      "name": "thk_medium_gap_internal_Pitt",
+      "description": "",
       "expression": "10 [um]",
-      "description": ""
+      "name": "thk_medium_gap_internal_Pitt"
     },
     {
-      "name": "Rect_def_Pitt",
+      "description": "",
       "expression": "1",
-      "description": ""
+      "name": "Rect_def_Pitt"
     },
     {
-      "name": "N_holes_CT",
+      "description": "",
       "expression": "0",
-      "description": ""
+      "name": "N_holes_CT"
     },
     {
-      "name": "Theta_CT",
+      "description": "",
       "expression": "percent_circ_cuff_CT*360 [deg]",
-      "description": ""
+      "name": "Theta_CT"
     },
     {
-      "name": "Center_CT",
+      "description": "",
       "expression": "z_nerve/2",
-      "description": ""
+      "name": "Center_CT"
     },
     {
-      "name": "R_in_CT",
+      "description": "",
       "expression": "max(r_nerve+thk_medium_gap_internal_CT,r_cuff_in_pre_CT)",
-      "description": ""
+      "name": "R_in_CT"
     },
     {
-      "name": "R_out_CT",
+      "description": "",
       "expression": "R_in_CT+thk_cuff_CT",
-      "description": ""
+      "name": "R_out_CT"
     },
     {
-      "name": "L_CT",
+      "description": "",
       "expression": "2 [mm]",
-      "description": ""
+      "name": "L_CT"
     },
     {
-      "name": "Rot_def_CT",
+      "description": "",
       "expression": "-(theta_cuff_CT-theta_contact_CT)/2",
-      "description": ""
+      "name": "Rot_def_CT"
     },
     {
-      "name": "D_hole_CT",
+      "description": "",
       "expression": "NaN",
-      "description": ""
+      "name": "D_hole_CT"
     },
     {
-      "name": "Buffer_hole_CT",
+      "description": "",
       "expression": "NaN",
-      "description": ""
+      "name": "Buffer_hole_CT"
     },
     {
-      "name": "L_holecenter_cuffseam_CT",
+      "description": "",
       "expression": "NaN",
-      "description": ""
+      "name": "L_holecenter_cuffseam_CT"
     },
     {
-      "name": "Pitch_holecenter_holecenter_CT",
+      "description": "",
       "expression": "NaN",
-      "description": ""
+      "name": "Pitch_holecenter_holecenter_CT"
     },
     {
-      "name": "percent_circ_cuff_CT",
+      "description": "",
       "expression": "percent_circ_cuff_pre_CT*(r_cuff_in_pre_CT/R_in_CT)",
-      "description": ""
+      "name": "percent_circ_cuff_CT"
     },
     {
-      "name": "z_nerve_CT",
+      "description": "",
       "expression": "20 [mm]",
-      "description": ""
+      "name": "z_nerve_CT"
     },
     {
-      "name": "thk_medium_gap_internal_CT",
+      "description": "",
       "expression": "10 [um]",
-      "description": ""
+      "name": "thk_medium_gap_internal_CT"
     },
     {
-      "name": "r_cuff_in_pre_CT",
+      "description": "",
       "expression": "150 [um]",
-      "description": ""
+      "name": "r_cuff_in_pre_CT"
     },
     {
-      "name": "Recess_CT",
+      "description": "",
       "expression": "0 [um]",
-      "description": ""
+      "name": "Recess_CT"
     },
     {
-      "name": "Thk_elec_CT",
+      "description": "",
       "expression": "0.025 [mm]",
-      "description": ""
+      "name": "Thk_elec_CT"
     },
     {
-      "name": "B_CT",
+      "description": "",
       "expression": "0.6 [mm]",
-      "description": ""
+      "name": "B_CT"
     },
     {
-      "name": "percent_circ_cuff_pre_CT",
+      "description": "",
       "expression": "1",
-      "description": ""
+      "name": "percent_circ_cuff_pre_CT"
     },
     {
-      "name": "theta_contact_CT",
+      "description": "",
       "expression": "360*(B_CT/(2*pi*(R_in_CT+Recess_CT))) [deg]",
-      "description": ""
+      "name": "theta_contact_CT"
     },
     {
-      "name": "theta_cuff_CT",
+      "description": "",
       "expression": "percent_circ_cuff_CT*360 [deg]",
-      "description": ""
+      "name": "theta_cuff_CT"
     },
     {
-      "name": "thk_cuff_CT",
+      "description": "",
       "expression": "0.65 [mm]",
-      "description": ""
+      "name": "thk_cuff_CT"
     },
     {
-      "name": "L_elec_CT",
+      "description": "",
       "expression": "0.3 [mm]",
-      "description": ""
+      "name": "L_elec_CT"
     },
     {
-      "name": "Theta_contact_CT",
+      "description": "",
       "expression": "360*(B_CT/(2*pi*(R_in_CT+Recess_CT))) [deg]",
-      "description": ""
+      "name": "Theta_contact_CT"
     },
     {
-      "name": "Rot_def_contact_CT",
+      "description": "",
       "expression": "0",
-      "description": ""
+      "name": "Rot_def_contact_CT"
     },
     {
-      "name": "Pitch_CT",
+      "description": "",
       "expression": "1.5 [mm]",
-      "description": ""
+      "name": "Pitch_CT"
     },
     {
-      "name": "Thk_fill_CT",
+      "description": "",
       "expression": "100 [um]",
-      "description": ""
+      "name": "Thk_fill_CT"
     },
     {
-      "name": "recess_U300",
+      "description": "",
       "expression": "0 [um]",
-      "description": ""
+      "name": "recess_U300"
     },
     {
-      "name": "gap",
+      "description": "",
       "expression": "20 [um]",
-      "description": ""
+      "name": "gap"
     },
     {
-      "name": "z_center_U300",
+      "description": "",
       "expression": "z_nerve/2",
-      "description": ""
+      "name": "z_center_U300"
     },
     {
-      "name": "R_in_U300",
+      "description": "",
       "expression": "134.5 [um]",
-      "description": ""
+      "name": "R_in_U300"
     },
     {
-      "name": "R_out_U300",
+      "description": "",
       "expression": "0.4185 [mm]",
-      "description": ""
+      "name": "R_out_U300"
     },
     {
-      "name": "Tangent_U300",
+      "description": "",
       "expression": "251 [um]",
-      "description": ""
+      "name": "Tangent_U300"
     },
     {
-      "name": "thk_contact_U300",
+      "description": "",
       "expression": "0.02 [mm]",
-      "description": ""
+      "name": "thk_contact_U300"
     },
     {
-      "name": "z_contact_U300",
+      "description": "",
       "expression": "0.7 [mm]",
-      "description": ""
+      "name": "z_contact_U300"
     },
     {
-      "name": "Pitch_U300",
+      "description": "",
       "expression": "1.1 [mm]",
-      "description": ""
+      "name": "Pitch_U300"
     },
     {
-      "name": "L_U300",
+      "description": "",
       "expression": "2.5 [mm]",
-      "description": ""
+      "name": "L_U300"
     },
     {
-      "name": "Thk_fill_U300",
+      "description": "",
       "expression": "100 [um]",
-      "description": ""
+      "name": "Thk_fill_U300"
     },
     {
-      "name": "thk_medium_gap_internal_U300",
+      "description": "",
       "expression": "10 [um]",
-      "description": ""
+      "name": "thk_medium_gap_internal_U300"
     },
     {
-      "name": "gap_U300",
+      "description": "",
       "expression": "30 [um]",
-      "description": ""
+      "name": "gap_U300"
     },
     {
-      "name": "x_shift",
+      "description": "",
       "expression": "0 [um]",
-      "description": ""
+      "name": "x_shift"
     },
     {
-      "name": "y_shift",
+      "description": "",
       "expression": "0 [um]",
-      "description": ""
+      "name": "y_shift"
     },
     {
-      "name": "thk_medium_gap_internal_SB",
+      "description": "",
       "expression": "10 [um]",
-      "description": ""
+      "name": "thk_medium_gap_internal_SB"
     },
     {
-      "name": "r_cuff_in_pre_SB",
+      "description": "",
       "expression": "317.5 [um]",
-      "description": ""
+      "name": "r_cuff_in_pre_SB"
     },
     {
-      "name": "z_center_U100",
+      "description": "",
       "expression": "0 [mm]",
-      "description": ""
+      "name": "z_center_U100"
     },
     {
-      "name": "R_in_U100",
+      "description": "",
       "expression": "(125/2) [um]",
-      "description": ""
+      "name": "R_in_U100"
     },
     {
-      "name": "Tangent_U100",
+      "description": "",
       "expression": "85 [um]",
-      "description": ""
+      "name": "Tangent_U100"
     },
     {
-      "name": "R_out_U100",
+      "description": "",
       "expression": "(1060/2) [um]",
-      "description": ""
+      "name": "R_out_U100"
     },
     {
-      "name": "L_U100",
+      "description": "",
       "expression": "1110 [um]",
-      "description": ""
+      "name": "L_U100"
     },
     {
-      "name": "x_shift_U100",
+      "description": "",
       "expression": "210 [um]",
-      "description": ""
+      "name": "x_shift_U100"
     },
     {
-      "name": "y_shift_U100",
+      "description": "",
       "expression": "0 [um]",
-      "description": ""
+      "name": "y_shift_U100"
     },
     {
-      "name": "gap_U100",
+      "description": "",
       "expression": "30 [um]",
-      "description": ""
+      "name": "gap_U100"
     },
     {
-      "name": "trap_base_U100",
+      "description": "",
       "expression": "200 [um]",
-      "description": ""
+      "name": "trap_base_U100"
     },
     {
-      "name": "Pitch_U100",
+      "description": "",
       "expression": "470 [um]",
-      "description": ""
+      "name": "Pitch_U100"
     },
     {
-      "name": "thk_contact_U100",
+      "description": "",
       "expression": "50 [um]",
-      "description": ""
+      "name": "thk_contact_U100"
     },
     {
-      "name": "z_contact_U100",
+      "description": "",
       "expression": "320 [um]",
-      "description": ""
+      "name": "z_contact_U100"
     },
     {
-      "name": "recess_U100",
+      "description": "",
       "expression": "50 [um]",
-      "description": ""
+      "name": "recess_U100"
     }
-  ],
-
-  "expandable": true,
-  "angle_to_contacts_deg": 144,
-  "offset": {
-    "sep_wire_P": 1,
-    "r_wire_P": 2
-  }
+  ]
 }

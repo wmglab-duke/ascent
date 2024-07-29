@@ -1,16 +1,22 @@
 {
-  "pseudonym": "template_run",
-  "sample": 0,
-  "models": [0],
-  "sims": [0],
-  "recycle_meshes": true,
-  "models_exit_status": [true],
   "endo_only_solution": true,
+  "export_behavior": "selective",
   "keep": {
+    "bases": true,
     "debug_geom": true,
-    "mesh": true,
-    "bases": true
+    "mesh": true
   },
+  "models": [
+    0
+  ],
+  "models_exit_status": [
+    true
+  ],
   "popup_plots": false,
-  "export_behavior": "selective"
+  "pseudonym": "template_run",
+  "recycle_meshes": true,
+  "sample": 0,
+  "sims": [
+    0
+  ]
 }

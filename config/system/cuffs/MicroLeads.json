@@ -1,55 +1,56 @@
 {
-  "description": "276 um inner diameter cuff, bipolar, based on technical drawing from MicroLeads, use for preclinical animal",
+  "angle_to_contacts_deg": 180,
   "code": "U",
+  "description": "276 um inner diameter cuff, bipolar, based on technical drawing from MicroLeads, use for preclinical animal",
+  "expandable": false,
   "instances": [
     {
-      "type": "CuffFill_Primitive",
-      "label": "MicroLeads Cuff Fill",
       "def": {
+        "Center": "z_center_U",
+        "L": "L_U+2*Thk_fill_U",
         "Radius": "R_out_U+Thk_fill_U",
         "Thk": "Thk_fill_U",
-        "L": "L_U+2*Thk_fill_U",
-        "Center": "z_center_U",
         "x_shift": "0",
         "y_shift": "0"
       },
+      "label": "MicroLeads Cuff Fill",
       "materials": [
         {
           "info": "fill",
           "label_index": 0
         }
-      ]
+      ],
+      "type": "CuffFill_Primitive"
     },
     {
-      "type": "uCuff_Primitive",
-      "label": "MicroLeads Cuff",
       "def": {
         "Center": "z_center_U",
         "R_in": "R_in_U",
-        "U_tangent": "Tangent_U",
         "R_out": "R_out_U",
         "U_L": "L_U",
         "U_shift_x": "x_shift",
-        "U_shift_y": "y_shift"
+        "U_shift_y": "y_shift",
+        "U_tangent": "Tangent_U"
       },
+      "label": "MicroLeads Cuff",
       "materials": [
         {
           "info": "insulator",
           "label_index": 1
         }
-      ]
+      ],
+      "type": "uCuff_Primitive"
     },
     {
-      "type": "uContact_Primitive",
-      "label": "MicroLeads Contact 1",
       "def": {
         "Center": "z_center_U-(Pitch_U/2)",
         "R_in": "R_in_U",
+        "U_recess": "recess_U",
         "U_tangent": "Tangent_U",
         "U_thk": "thk_contact_U",
-        "U_z": "z_contact_U",
-        "U_recess": "recess_U"
+        "U_z": "z_contact_U"
       },
+      "label": "MicroLeads Contact 1",
       "materials": [
         {
           "info": "conductor",
@@ -59,19 +60,19 @@
           "info": "recess",
           "label_index": 4
         }
-      ]
+      ],
+      "type": "uContact_Primitive"
     },
     {
-      "type": "uContact_Primitive",
-      "label": "MicroLeads Contact 2",
       "def": {
         "Center": "z_center_U+(Pitch_U/2)",
         "R_in": "R_in_U",
+        "U_recess": "recess_U",
         "U_tangent": "Tangent_U",
         "U_thk": "thk_contact_U",
-        "U_z": "z_contact_U",
-        "U_recess": "recess_U"
+        "U_z": "z_contact_U"
       },
+      "label": "MicroLeads Contact 2",
       "materials": [
         {
           "info": "conductor",
@@ -81,82 +82,81 @@
           "info": "recess",
           "label_index": 4
         }
-      ]
+      ],
+      "type": "uContact_Primitive"
     }
   ],
+  "offset": {},
   "params": [
     {
-      "name": "z_center_U",
+      "description": "Z-position of cuff center",
       "expression": "z_nerve/2",
-      "description": "Z-position of cuff center"
+      "name": "z_center_U"
     },
     {
-      "name": "R_in_U",
+      "description": "Cuff inner radius",
       "expression": "138 [um]",
-      "description": "Cuff inner radius"
+      "name": "R_in_U"
     },
     {
-      "name": "R_out_U",
+      "description": "Cuff outer radius",
       "expression": "0.5 [mm]",
-      "description": "Cuff outer radius"
+      "name": "R_out_U"
     },
     {
-      "name": "Tangent_U",
+      "description": "MicroLeads contact dimension ... shaped like U in cross section, the Tangent is the length of the straight portions on either side of the curve at the bottom of the U",
       "expression": "322 [um]",
-      "description": "MicroLeads contact dimension ... shaped like U in cross section, the Tangent is the length of the straight portions on either side of the curve at the bottom of the U"
+      "name": "Tangent_U"
     },
     {
-      "name": "thk_contact_U",
+      "description": "Thickness of contact",
       "expression": "0.02 [mm]",
-      "description": "Thickness of contact"
+      "name": "thk_contact_U"
     },
     {
-      "name": "z_contact_U",
+      "description": "Z-length of contact",
       "expression": "0.7 [mm]",
-      "description": "Z-length of contact"
+      "name": "z_contact_U"
     },
     {
-      "name": "Pitch_U",
+      "description": "z-distance between contacts",
       "expression": "1.1 [mm]",
-      "description": "z-distance between contacts"
+      "name": "Pitch_U"
     },
     {
-      "name": "L_U",
+      "description": "Length of cuff",
       "expression": "2.5 [mm]",
-      "description": "Length of cuff"
+      "name": "L_U"
     },
     {
-      "name": "Thk_fill_U",
+      "description": "Distance fill extends beyond cuff boundary",
       "expression": "100 [um]",
-      "description": "Distance fill extends beyond cuff boundary"
+      "name": "Thk_fill_U"
     },
     {
-      "name": "thk_medium_gap_internal_U",
+      "description": "Gap between cuff and nerve",
       "expression": "10 [um]",
-      "description": "Gap between cuff and nerve"
+      "name": "thk_medium_gap_internal_U"
     },
     {
-      "name": "x_shift",
+      "description": "Translation of the fill domain in the x direction",
       "expression": "0 [um]",
-      "description": "Translation of the fill domain in the x direction"
+      "name": "x_shift"
     },
     {
-      "name": "y_shift",
+      "description": "Translation of the fill domain in the y direction",
       "expression": "0 [um]",
-      "description": "Translation of the fill domain in the y direction"
+      "name": "y_shift"
     },
     {
-      "name": "gap",
+      "description": "If MicroLeads cuff does not close all the way, this is used to widen the opening.",
       "expression": "0 [um]",
-      "description": "If MicroLeads cuff does not close all the way, this is used to widen the opening."
+      "name": "gap"
     },
     {
-      "name": "recess_U",
+      "description": "Depth of fill material into the cuff before the contact. This is used to create an associated recess/fill domain with a contact.",
       "expression": "0 [um]",
-      "description": "Depth of fill material into the cuff before the contact. This is used to create an associated recess/fill domain with a contact."
+      "name": "recess_U"
     }
-  ],
-  "expandable": false,
-  "angle_to_contacts_deg": 180,
-  "offset": {}
+  ]
 }

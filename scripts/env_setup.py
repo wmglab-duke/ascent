@@ -30,13 +30,12 @@ def run(args, env_path=default_env):
         optional = key in OptionalEnv.vals.value
         while True:
             value = input(f'Enter path for {key} {optional_msg if optional else required_msg}').replace('\\\\', '\\')
-            if os.path.exists(value) or key == 'ASCENT_NSIM_EXPORT_PATH':
+            if os.path.exists(value) or key == 'ASCENT_NSIM_EXPORT_PATH':  # noqa: R508
                 result[key] = value
                 break
-            elif value == '' and optional:
+            if value == '' and optional:
                 break
-            else:
-                print('Nonexistent path provided. Please try again.')
+            print('Nonexistent path provided. Please try again.')
 
     with open(env_path, 'w+') as file:
         file.seek(0)  # go to beginning of file to overwrite

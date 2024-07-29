@@ -1,13 +1,9 @@
 {
+  "@context": "http://schema.org/",
+  "@id": "<https://doi.org/ ... >",
+  "@type": "Dataset",
   "blackfynnDatasetId": "<this value is an integer, not a string>",
-  "version": "<this value is an integer, not a string>",
-  "name": "<Title>",
-  "description": "<Description of dataset>",
-  "creator": {
-    "first_name": "<First>",
-    "last_name": "<Last>",
-    "orcid": "<####-####-####-####>"
-  },
+  "blackfynnSchemaVersion": "<e.g., 4.0>",
   "contributors": [
     {
       "first_name": "<First>",
@@ -18,22 +14,29 @@
       "last_name": "<M>. <Last>"
     }
   ],
-  "sourceOrganization": "<e.g., SPARC Consortium>",
-  "keywords": ["<key_word_1>", "<key_word_2> ... etc"],
+  "creator": {
+    "first_name": "<First>",
+    "last_name": "<Last>",
+    "orcid": "<####-####-####-####>"
+  },
   "datePublished": "<YYYY-MM-DD>",
-  "license": "<e.g., Creative Commons Attribution>",
-  "@id": "<https://doi.org/ ... >",
-  "publisher": "<e.g., Blackfynn, Inc>",
-  "@context": "http://schema.org/",
-  "@type": "Dataset",
-  "schemaVersion": "<e.g., http://schema.org/version/3.7/>",
+  "description": "<Description of dataset>",
   "files": [
     {
+      "fileType": "<e.g., MATLAB, COMSOL, Excel, Text>",
       "path": "files/path/to/file.ending",
       "size": "<this value is an integer, not a string> [bytes]",
-      "fileType": "<e.g., MATLAB, COMSOL, Excel, Text>",
       "sourcePackageId": "idk what this is"
     }
   ],
-  "blackfynnSchemaVersion": "<e.g., 4.0>"
+  "keywords": [
+    "<key_word_1>",
+    "<key_word_2> ... etc"
+  ],
+  "license": "<e.g., Creative Commons Attribution>",
+  "name": "<Title>",
+  "publisher": "<e.g., Blackfynn, Inc>",
+  "schemaVersion": "<e.g., http://schema.org/version/3.7/>",
+  "sourceOrganization": "<e.g., SPARC Consortium>",
+  "version": "<this value is an integer, not a string>"
 }

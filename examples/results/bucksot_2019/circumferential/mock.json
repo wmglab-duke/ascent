@@ -1,56 +1,56 @@
 {
+  "figure": {
+    "fig_dpi": 1000,
+    "fig_margin": 1.2
+  },
   "global": {
     "NAME": "BUCKSOT1-1"
   },
-  "scalebar_length": 1000,
   "nerve": {
     "a": 3000,
     "b": 3000,
     "rot": 0
   },
-  "figure": {
-    "fig_margin": 1.2,
-    "fig_dpi": 1000
-  },
   "populate": {
-    "mode": "EXPLICIT",
-    "min_fascicle_separation": 5,
     "Fascicles": [
       {
-        "centroid_x": 272,
-        "centroid_y": 1037,
         "a": 601,
         "b": 405,
+        "centroid_x": 272,
+        "centroid_y": 1037,
         "rot": 179.599
       },
       {
-        "centroid_x": -337.0,
-        "centroid_y": 570,
         "a": 1201,
         "b": 606,
+        "centroid_x": -337.0,
+        "centroid_y": 570,
         "rot": 99.837
       },
       {
-        "centroid_x": 775,
-        "centroid_y": 158,
         "a": 1186,
         "b": 791,
+        "centroid_x": 775,
+        "centroid_y": 158,
         "rot": 150.14
       },
       {
-        "centroid_x": -1047,
-        "centroid_y": 124,
         "a": 798,
         "b": 609,
+        "centroid_x": -1047,
+        "centroid_y": 124,
         "rot": 90.104
       },
       {
-        "centroid_x": -84,
-        "centroid_y": -736,
         "a": 1505,
         "b": 1100,
+        "centroid_x": -84,
+        "centroid_y": -736,
         "rot": 0.114
       }
-    ]
-  }
+    ],
+    "min_fascicle_separation": 5,
+    "mode": "EXPLICIT"
+  },
+  "scalebar_length": 1000
 }

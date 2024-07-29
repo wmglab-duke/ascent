@@ -1,35 +1,35 @@
 {
-  "sample": "cap_tutorial",
-  "pseudonym": "tutorial sample for modeling CAP recording on a rat cervical vagus nerve sample",
-  "sex": "M",
-  "level": "Cervical",
-  "scale": {
-    "scale_bar_length": 249,
-    "shrinkage": 0
-  },
+  "Morphology": null,
   "boundary_separation": {
     "fascicles": 10,
     "nerve": 10
   },
-  "modes": {
-    "mask_input": "INNERS",
-    "scale_input": "MASK",
-    "nerve": "NOT_PRESENT",
-    "deform": "NONE",
-    "ci_perineurium_thickness": "RAT_VN_INHOUSE_200601",
-    "reshape_nerve": "NONE",
-    "shrinkage_definition": "LENGTH_BACKWARDS"
-  },
-  "smoothing": {
-    "nerve_distance": 0,
-    "fascicle_distance": 0
-  },
+  "deform_ratio": 1,
   "image_preprocessing": {
     "fill_holes": true,
     "object_removal_area": 10
   },
+  "level": "Cervical",
+  "modes": {
+    "ci_perineurium_thickness": "RAT_VN_INHOUSE_200601",
+    "deform": "NONE",
+    "mask_input": "INNERS",
+    "nerve": "NOT_PRESENT",
+    "reshape_nerve": "NONE",
+    "scale_input": "MASK",
+    "shrinkage_definition": "LENGTH_BACKWARDS"
+  },
   "morph_count": 36,
-  "deform_ratio": 1,
+  "pseudonym": "tutorial sample for modeling CAP recording on a rat cervical vagus nerve sample",
   "render_deform": false,
-  "Morphology": null
+  "sample": "cap_tutorial",
+  "scale": {
+    "scale_bar_length": 249,
+    "shrinkage": 0
+  },
+  "sex": "M",
+  "smoothing": {
+    "fascicle_distance": 0,
+    "nerve_distance": 0
+  }
 }

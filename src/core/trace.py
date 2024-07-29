@@ -11,7 +11,6 @@ repository: https://github.com/wmglab-duke/ascent
 
 import random
 from copy import deepcopy
-from typing import List, Tuple, Union
 
 import cv2
 import matplotlib.pyplot as plt
@@ -133,7 +132,7 @@ class Trace:
             self.scale(1)
         self.points = np.flip(self.points, axis=0)  # set points to opencv orientation
 
-    def scale(self, factor: float = 1, center: Union[List[float], str] = 'centroid'):
+    def scale(self, factor: float = 1, center: list[float] | str = 'centroid'):
         """Scales the trace by a given factor.
 
         :param factor: scaling factor to scale up by - multiply all points by a factor; [X 0 0; 0 Y 0; 0 0 Z]
@@ -152,7 +151,7 @@ class Trace:
         self.append([list(coord[:2]) + [0] for coord in scaled_polygon.boundary.coords])
         self.__update()
 
-    def rotate(self, angle: float, center: Union[List[float], str] = 'centroid'):
+    def rotate(self, angle: float, center: list[float] | str = 'centroid'):
         """Rotate the trace by a given angle.
 
         :param angle: rotates trace by radians CCW
@@ -202,7 +201,7 @@ class Trace:
         if mode == DownSampleMode.KEEP:
             pass  # nothing here; just showing the case for readability
         else:  # mode == DownSampleMode.REMOVE:
-            ii = [i for i in list(range(0, self.count())) if i not in ii]
+            ii = [i for i in list(range(self.count())) if i not in ii]
 
         self.points = self.points[ii, :]
 
@@ -241,7 +240,7 @@ class Trace:
         """
         return self.polygon().bounds
 
-    def random_points(self, count: int, buffer: float = 0, my_xy_seed: int = 123) -> List[Tuple[float]]:
+    def random_points(self, count: int, buffer: float = 0, my_xy_seed: int = 123) -> list[tuple[float]]:
         """Get random points within the trace.
 
         :param my_xy_seed: seed for random number generator
@@ -258,7 +257,7 @@ class Trace:
 
         min_x, min_y, max_x, max_y = trace_to_compare.polygon().bounds
 
-        points: List[Tuple[float]] = []
+        points: list[tuple[float]] = []
         random.seed(my_xy_seed)
 
         while len(points) < count:
@@ -287,7 +286,7 @@ class Trace:
         """
         return self.polygon().boundary.intersects(other.polygon().boundary)
 
-    def centroid(self) -> Tuple[float, float]:
+    def centroid(self) -> tuple[float, float]:
         """Get the centroid of the trace.
 
         :return: ellipse centroid as tuple: center --> (x, y)
@@ -322,7 +321,7 @@ class Trace:
         """
         return self.polygon().area
 
-    def min_distance(self, other: 'Trace') -> Union[float, tuple]:
+    def min_distance(self, other: 'Trace') -> float | tuple:
         """Find the minimum distance between this trace and another trace.
 
         :param other: Trace to find distance to
@@ -340,7 +339,7 @@ class Trace:
         """
         return self.polygon().boundary.hausdorff_distance(other.polygon().boundary)
 
-    def centroid_distance(self, other: 'Trace') -> Union[float, tuple]:
+    def centroid_distance(self, other: 'Trace') -> float | tuple:
         """Find the distance between the centroids of this trace and another trace.
 
         :param other: Trace to find distance to
@@ -454,7 +453,7 @@ class Trace:
     def plot(
         self,
         plot_format: str = 'k-',
-        color: Tuple[float, float, float, float] = None,
+        color: tuple[float, float, float, float] = None,
         ax: plt.Axes = None,
         linewidth=1,
         line_kws: dict = None,
@@ -542,7 +541,7 @@ class Trace:
         """
         return deepcopy(self)
 
-    def pymunk_poly(self) -> Tuple[pymunk.Body, pymunk.Poly]:
+    def pymunk_poly(self) -> tuple[pymunk.Body, pymunk.Poly]:
         """Generate pymunk Body and Poly objects for the Trace.
 
         :return: a body and polygon shape, rigid polygon
@@ -562,7 +561,7 @@ class Trace:
         shape.elasticity = 0.0  # they absorb all energy, i.e. they do not bounce
         return body, shape
 
-    def pymunk_segments(self, space: pymunk.Space) -> List[pymunk.Segment]:
+    def pymunk_segments(self, space: pymunk.Space) -> list[pymunk.Segment]:
         """Generate list of pymunk segment objects comprising a trace.
 
         :param space: pymunk space to add segments to
@@ -572,7 +571,7 @@ class Trace:
 
         points = np.vstack((copy.points, copy.points[0]))
 
-        segments: List[pymunk.Segment] = []
+        segments: list[pymunk.Segment] = []
 
         for first, second in zip(points[:-1], points[1:]):
             if np.array_equiv(first[:2], second[:2]):
@@ -597,8 +596,7 @@ class Trace:
         if len(points) < 2:
             if len(points) == 1:
                 return points[0][0], points[0][1], 0.0
-            else:
-                return None
+            return None  # Maybe error if no points?
         # OpenCV requires float32 input
         (cx, cy), r = cv2.minEnclosingCircle(np.array(points).astype(np.float32))
         return cx, cy, r
