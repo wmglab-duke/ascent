@@ -9,7 +9,6 @@ repository: https://github.com/wmglab-duke/ascent
 """
 import itertools
 import os
-from typing import List, Optional, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -31,7 +30,7 @@ class Slide:
 
     def __init__(
         self,
-        fascicles: List[Fascicle],
+        fascicles: list[Fascicle],
         nerve: Nerve,
         nerve_mode: NerveMode,
         will_reposition: bool = False,
@@ -48,7 +47,7 @@ class Slide:
         self.nerve_mode = nerve_mode
 
         self.nerve: Nerve = nerve
-        self.fascicles: List[Fascicle] = fascicles
+        self.fascicles: list[Fascicle] = fascicles
 
         if not will_reposition:
             self.validate()
@@ -56,8 +55,8 @@ class Slide:
             if self.nerve_mode == NerveMode.NOT_PRESENT:
                 raise ValueError("Cannot deform monofascicle")
 
-        self.orientation_point: Optional[Tuple[float, float]] = None
-        self.orientation_angle: Optional[float] = None
+        self.orientation_point: tuple[float, float] | None = None
+        self.orientation_angle: float | None = None
 
     def monofasc(self) -> bool:
         """Check if slide is monofascicular.
@@ -66,7 +65,7 @@ class Slide:
         """
         return self.nerve_mode == NerveMode.NOT_PRESENT and len(self.fascicles) == 1
 
-    def fascicle_centroid(self) -> Tuple[float, float]:
+    def fascicle_centroid(self) -> tuple[float, float]:
         """Calculate the centroid of all fascicles.
 
         :return: Tuple of x and y coordinates of centroid
@@ -147,13 +146,13 @@ class Slide:
 
         if error_message == '':
             return True
-        else:
-            debug_plot()
-            if die:
-                raise MorphologyError(error_message)
-            else:
-                print(MorphologyError(error_message))
-                return False
+
+        debug_plot()
+        if die:
+            raise MorphologyError(error_message)
+
+        print(MorphologyError(error_message))
+        return False
 
     def fascicles_too_close(self, tolerance: float = None) -> bool:
         """Check to see if any fascicles are too close to each other.
@@ -167,11 +166,11 @@ class Slide:
 
         if tolerance is None:
             return False
-        else:
-            pairs = itertools.combinations(self.fascicles, 2)
-            return any(first.min_distance(second) < tolerance for first, second in pairs) or any(
-                fascicle.min_distance(self.nerve) < tolerance for fascicle in self.fascicles
-            )
+
+        pairs = itertools.combinations(self.fascicles, 2)
+        return any(first.min_distance(second) < tolerance for first, second in pairs) or any(
+            fascicle.min_distance(self.nerve) < tolerance for fascicle in self.fascicles
+        )
 
     def fascicles_too_small(self) -> bool:
         """Check to see if any fascicles are too small.
@@ -249,7 +248,7 @@ class Slide:
         if self.monofasc():
             raise MethodError("Method reshaped_nerve does not apply for monofascicle nerves")
 
-        if mode == ReshapeNerveMode.CIRCLE:
+        if mode == ReshapeNerveMode.CIRCLE:  # noqa R505
             return self.nerve.to_circle(buffer)
         elif mode == ReshapeNerveMode.ELLIPSE:
             return self.nerve.to_ellipse()
@@ -264,7 +263,7 @@ class Slide:
         final: bool = True,
         inner_format: str = 'b-',
         fix_aspect_ratio: bool = True,
-        fascicle_colors: List[Tuple[float, float, float, float]] = None,
+        fascicle_colors: list[tuple[float, float, float, float]] = None,
         ax: plt.Axes = None,
         outers_flag: bool = True,
         inner_index_labels: bool = False,
@@ -444,10 +443,8 @@ class Slide:
         :return: list of trace objects
         """
         if self.monofasc():
-            trace_list = [f.outer for f in self.fascicles]
-        else:
-            trace_list = [self.nerve] + [f.outer for f in self.fascicles]
-        return trace_list
+            return [f.outer for f in self.fascicles]
+        return [self.nerve] + [f.outer for f in self.fascicles]
 
     def write(self, mode: WriteMode, path: str):
         """Write all traces to files for import into COMSOL.
@@ -460,46 +457,46 @@ class Slide:
 
         if not os.path.exists(path):
             raise OSError("Invalid path to write Slide to.")
+
+        # go to directory to write to
+        os.chdir(path)
+
+        # keep track of starting place
+        sub_start = os.getcwd()
+
+        # write nerve (if not monofasc) and fascicles
+        if self.monofasc():
+            trace_list = [(self.fascicles, 'fascicles')]
         else:
-            # go to directory to write to
-            os.chdir(path)
+            trace_list = [([self.nerve], 'nerve'), (self.fascicles, 'fascicles')]
 
-            # keep track of starting place
-            sub_start = os.getcwd()
+        for items, folder in trace_list:
+            # build path if not already existing
+            os.makedirs(folder, exist_ok=True)
+            os.chdir(folder)
 
-            # write nerve (if not monofasc) and fascicles
-            if self.monofasc():
-                trace_list = [(self.fascicles, 'fascicles')]
-            else:
-                trace_list = [([self.nerve], 'nerve'), (self.fascicles, 'fascicles')]
+            # write all items (give filename as i (index) without the extension
+            for i, item in enumerate(items):
+                if isinstance(item, Trace):  # not Nerve bc it is buffer class!
+                    if not os.path.exists(str(i)):
+                        os.mkdir(str(i))
+                    item.write(mode, os.path.join(os.getcwd(), str(i), str(i)))
+                else:
+                    # start to keep track of position file structure
+                    index_start_folder = os.getcwd()
 
-            for items, folder in trace_list:
-                # build path if not already existing
-                os.makedirs(folder, exist_ok=True)
-                os.chdir(folder)
+                    # go to indexed folder for each fascicle
+                    index_folder = str(i)
+                    os.makedirs(index_folder, exist_ok=True)
 
-                # write all items (give filename as i (index) without the extension
-                for i, item in enumerate(items):
-                    if isinstance(item, Trace):  # not Nerve bc it is buffer class!
-                        if not os.path.exists(str(i)):
-                            os.mkdir(str(i))
-                        item.write(mode, os.path.join(os.getcwd(), str(i), str(i)))
-                    else:
-                        # start to keep track of position file structure
-                        index_start_folder = os.getcwd()
+                    os.chdir(index_folder)
+                    item.write(mode, os.getcwd())
 
-                        # go to indexed folder for each fascicle
-                        index_folder = str(i)
-                        os.makedirs(index_folder, exist_ok=True)
+                    # go back up a folder
+                    os.chdir(index_start_folder)
 
-                        os.chdir(index_folder)
-                        item.write(mode, os.getcwd())
-
-                        # go back up a folder
-                        os.chdir(index_start_folder)
-
-                # change directory back to starting place
-                os.chdir(sub_start)
+            # change directory back to starting place
+            os.chdir(sub_start)
 
         os.chdir(start)
 

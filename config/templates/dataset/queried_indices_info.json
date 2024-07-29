@@ -1,12 +1,26 @@
 {
-  "sample_keys": [["sample"], ["sex"]],
-  "model_keys": [
-    ["cuff", "preset"],
-    ["medium", "proximal", "length"]
-  ],
-  "sim_keys": [],
-  "individual_indices": false,
+  "column_width": 20,
   "config_paths": false,
   "console_output": false,
-  "column_width": 20
+  "individual_indices": false,
+  "model_keys": [
+    [
+      "cuff",
+      "preset"
+    ],
+    [
+      "medium",
+      "proximal",
+      "length"
+    ]
+  ],
+  "sample_keys": [
+    [
+      "sample"
+    ],
+    [
+      "sex"
+    ]
+  ],
+  "sim_keys": []
 }

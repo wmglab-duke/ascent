@@ -1,88 +1,145 @@
 {
-  "n_dimensions": 3,
   "active_srcs": {
-    "Purdue.json": [[1, -1]],
-    "Enteromedics.json": [[1]],
-    "LivaNova.json": [[1, -1]],
-    "CorTec300.json": [[1, -1]],
-    "CorTec400.json": [[1, -1]],
-    "MicroLeads300.json": [[1, -1]],
-    "MicroLeads400.json": [[1, -1]],
-    "MicroLeads500.json": [[1, -1]],
-    "default": [[1, -1]]
+    "CorTec300.json": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "CorTec400.json": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "Enteromedics.json": [
+      [
+        1
+      ]
+    ],
+    "LivaNova.json": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "MicroLeads300.json": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "MicroLeads400.json": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "MicroLeads500.json": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "Purdue.json": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "default": [
+      [
+        1,
+        -1
+      ]
+    ]
   },
   "fibers": {
-    "plot": false,
     "mode": "MRG_INTERPOLATION",
+    "plot": false,
+    "xy_parameters": {
+      "count": 10,
+      "mode": "UNIFORM_COUNT"
+    },
     "xy_trace_buffer": 5.0,
     "z_parameters": {
-      "diameter": [2, 3, 5, 7, 8],
-      "min": 0,
+      "diameter": [
+        2,
+        3,
+        5,
+        7,
+        8
+      ],
       "max": 50000,
+      "min": 0,
       "offset": 0,
       "seed": 123
-    },
-    "xy_parameters": {
-      "mode": "UNIFORM_COUNT",
-      "count": 10
-    }
-  },
-  "waveform": {
-    "plot": false,
-    "global": {
-      "unit": "ms",
-      "dt": 0.001,
-      "start": 0,
-      "on": 1,
-      "off": 49,
-      "stop": 50
-    },
-    "BIPHASIC_PULSE_TRAIN": {
-      "pulse_width": [0.25, 0.5],
-      "inter_phase": 0,
-      "pulse_repetition_freq": 1,
-      "digits": 1
     }
   },
   "intracellular_stim": {
-    "times": {
-      "pw": 0,
-      "IntraStim_PulseTrain_delay": 0
-    },
-    "pulse_repetition_freq": 0,
     "amp": 0,
-    "ind": 2
-  },
-  "saving": {
-    "space": {
-      "vm": false,
-      "gating": false,
-      "times": [0]
-    },
-    "time": {
-      "vm": false,
-      "gating": false,
-      "istim": false,
-      "locs": [0]
+    "ind": 2,
+    "pulse_repetition_freq": 0,
+    "times": {
+      "IntraStim_PulseTrain_delay": 0,
+      "pw": 0
     }
   },
+  "n_dimensions": 3,
   "protocol": {
-    "initSS": -200,
-    "dt_initSS": 10,
-    "mode": "ACTIVATION_THRESHOLD",
-    "threshold": {
-      "value": -30,
-      "n_min_aps": 1
-    },
     "bounds_search": {
+      "bottom": -0.1,
       "mode": "PERCENT_INCREMENT",
       "step": 10,
-      "top": -0.6,
-      "bottom": -0.1
+      "top": -0.6
     },
+    "dt_initSS": 10,
+    "initSS": -200,
+    "mode": "ACTIVATION_THRESHOLD",
     "termination_criteria": {
       "mode": "PERCENT_DIFFERENCE",
       "percent": 1
+    },
+    "threshold": {
+      "n_min_aps": 1,
+      "value": -30
     }
+  },
+  "saving": {
+    "space": {
+      "gating": false,
+      "times": [
+        0
+      ],
+      "vm": false
+    },
+    "time": {
+      "gating": false,
+      "istim": false,
+      "locs": [
+        0
+      ],
+      "vm": false
+    }
+  },
+  "waveform": {
+    "BIPHASIC_PULSE_TRAIN": {
+      "digits": 1,
+      "inter_phase": 0,
+      "pulse_repetition_freq": 1,
+      "pulse_width": [
+        0.25,
+        0.5
+      ]
+    },
+    "global": {
+      "dt": 0.001,
+      "off": 49,
+      "on": 1,
+      "start": 0,
+      "stop": 50,
+      "unit": "ms"
+    },
+    "plot": false
   }
 }

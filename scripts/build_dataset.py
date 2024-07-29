@@ -14,7 +14,6 @@ import subprocess
 import sys
 import time
 import warnings
-from typing import List
 
 import numpy as np
 import pandas as pd
@@ -51,7 +50,7 @@ def paths_from_keeps(my_path: str, my_keeps: dict, my_paths=None):
         new_path = os.path.join(my_path, key)
         if my_keeps[key] is True:
             my_paths.append(new_path)
-        elif my_keeps[key] is False:
+        elif my_keeps[key] is False:  # noqa: R507
             continue
         elif isinstance(my_keeps[key], dict):
             paths_from_keeps(new_path, my_keeps[key], my_paths)
@@ -83,21 +82,17 @@ def to_json(output_path: str, my_dict: dict):
 
     :param output_path: the path to write to
     :param my_dict: the dict to write
-    :return: None
     """
     with open(output_path, "w") as f:
         json.dump(my_dict, f, indent=2)
 
-    return None
 
-
-def handoff(comsol_files: List[str], env: dict, my_dataset_index: int):
+def handoff(comsol_files: list[str], env: dict, my_dataset_index: int):
     """Handoff the comsol files to the comsol server.
 
     :param comsol_files: list of comsol files to handoff for clearing
     :param env: the environment variables
     :param my_dataset_index: the dataset index
-    :return: None
     :raises ValueError: if the compile step or handoff fails
     """
     comsol_path = env['ASCENT_COMSOL_PATH']
@@ -154,7 +149,6 @@ def handoff(comsol_files: List[str], env: dict, my_dataset_index: int):
     if exit_code != 0:
         raise ValueError('Error occurred during handoff() to Java')
     os.chdir('..')
-    return None
 
 
 def make_comsol_cleared_readme(
@@ -166,7 +160,6 @@ def make_comsol_cleared_readme(
     :param comsol_clearing_config_directory: the comsol clearing config directory
     :param samples_sub_sam_path: the path to the samples sub-sam file which maps samples to sparc sub and sam
     :param files_readme_path: the path to the file's readme
-    :return: None
     """
     comsol_clearing_exceptions_path = os.path.join(comsol_clearing_config_directory, f'{my_dataset_index}.json')
     comsol_clearing_exceptions = load(comsol_clearing_exceptions_path)
@@ -222,7 +215,6 @@ def make_comsol_cleared_readme(
                     f.write(f'* {file}\n'.encode())
                 else:
                     f.write(f'* {file}\n\n'.encode())
-    return None
 
 
 def tidy_n_sim_index_json(thing_to_copy: str, model_config_path: str, tmp_files_dataset_directory: str):
@@ -390,7 +382,7 @@ def generate_dataset(  # noqa: D103
     samples_sub_sam = assign_picky(ascent_indices, sparc_sams, sparc_subs)
 
     # ASSIGN NON-PICKY SUB+SAM, MAKE NEW INDICES LAZILY AS NEEDED TO FILL
-    master_indices = assign_non_picky(ascent_indices, samples_sub_sam, sparc_subs)
+    assign_non_picky(ascent_indices, samples_sub_sam, sparc_subs)
 
     # SAVE SAMPLES_SUB_SAM TO FILE FOR USE IN ANALYSIS CODE
     # TO CONVERT ASCENT FILE STRX TO DATASET FILE STRX WITH SPARC SUB+SAM
@@ -398,7 +390,7 @@ def generate_dataset(  # noqa: D103
     to_json(samples_sub_sam_path, samples_sub_sam)
 
     # COMPILE ALL INDICES OF THINGS WE WILL COPY: SAMPLE, MODEL, SIM, N-SIM,
-    compile_indices(ascent_indices, master_indices, samples_sub_sam)
+    master_indices = compile_indices(ascent_indices, samples_sub_sam)
 
     # MAKE LIST OF THINGS TO COPY
     (
@@ -712,9 +704,7 @@ def list_things_to_copy(  # noqa: D103
                             # check that "scale" -> "scale_ratio" is in Sample config
                             sample_config_path = os.path.join('samples', str(sample), 'sample.json')
                             sample_config = load(sample_config_path)
-                            if 'scale_ratio' in sample_config['scale']:
-                                continue
-                            else:
+                            if 'scale_ratio' not in sample_config['scale']:
                                 raise ValueError(
                                     f'"scale" -> "scale_ratio" not in '
                                     f'\nSample config: {sample_config_path} '
@@ -722,9 +712,8 @@ def list_things_to_copy(  # noqa: D103
                                 )
                         else:
                             print(f'Not sure what this thing_to_copy is, could be missing: {thing_to_copy}')
-                            continue
-                    else:
-                        file_lists_to_copy.append(thing_to_copy)
+                        continue
+                    file_lists_to_copy.append(thing_to_copy)
     return (
         destination_ascent_config_directory,
         directories_to_copy,
@@ -735,16 +724,17 @@ def list_things_to_copy(  # noqa: D103
     )
 
 
-def compile_indices(ascent_indices, master_indices, samples_sub_sam):  # noqa: D103
+def compile_indices(ascent_indices, samples_sub_sam):  # noqa: D103
+    master_indices = []
     for inds in ascent_indices:
         sample, model, sim, n_sim = tuple([int(x) for x in inds.split('_')])
         master_indices.append(
             (sample, model, sim, n_sim, samples_sub_sam[sample]['sub'], samples_sub_sam[sample]['sam'])
         )
+    return master_indices
 
 
 def assign_non_picky(ascent_indices, samples_sub_sam, sparc_subs):  # noqa: D103
-    master_indices = []
     sub_auto = 0
     # make set comprehension of previous line
     subs_set = []
@@ -763,14 +753,12 @@ def assign_non_picky(ascent_indices, samples_sub_sam, sparc_subs):  # noqa: D103
                     samples_sub_sam[sample]['sam'] = 0
                     sub_auto += 1
                     break
-                else:
-                    sub_auto += 1
+                sub_auto += 1
         else:
             if 'sam' not in samples_sub_sam[sample]:
                 samples_sub_sam[sample]['sam'] = 0
             else:
                 continue
-    return master_indices
 
 
 def assign_picky(ascent_indices, sparc_sams, sparc_subs):  # noqa: D103
@@ -791,16 +779,17 @@ def assign_picky(ascent_indices, sparc_sams, sparc_subs):  # noqa: D103
             prev_sam = samples_sub_sam[sample].get('sam', np.nan)
             if np.isnan(sub) and np.isnan(sam):
                 continue
-            elif sub != prev_sub:
+            if sub != prev_sub:
                 raise ValueError(
                     'Manual input of SPARC-subs is not consistent.'
                     f'\n\tASCENT Sample {sample} was assigned to both SPARC subs {sub} and {prev_sub}'
                 )
-            elif sam != prev_sam:
+            if sam != prev_sam:
                 raise ValueError(
                     'Manual input of SPARC-sams is not consistent.'
                     f'\n\tASCENT Sample {sample} was assigned to both SPARC sams {sam} and {prev_sam}'
                 )
+
     return samples_sub_sam
 
 
@@ -863,11 +852,10 @@ def check_existing_dataset(args, dataset_index, dataset_index_directory):  # noq
                 f'Create configs for a new dataset_index and re-run,\n\t'
                 f'or pass the -f option to overwrite the existing dataset_index files.'
             )
-        else:
-            try:
-                shutil.rmtree(dataset_index_directory)
-            except OSError as e:
-                raise OSError('Could not delete existing dataset_index directory') from e
+        try:
+            shutil.rmtree(dataset_index_directory)
+        except OSError as e:
+            raise OSError('Could not delete existing dataset_index directory') from e
 
 
 def query_excel_output(queried_indices_info_path, queried_indices_path, query_criteria_path):  # noqa D103

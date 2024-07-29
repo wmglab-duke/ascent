@@ -1,27 +1,27 @@
 {
+  "figure": {
+    "fig_dpi": 1000,
+    "fig_margin": 1.2
+  },
   "global": {
     "NAME": "Alien1-1"
   },
-  "scalebar_length": 1000,
   "nerve": {
     "a": 3000,
     "b": 2000,
     "rot": 45
   },
-  "figure": {
-    "fig_margin": 1.2,
-    "fig_dpi": 1000
-  },
   "populate": {
-    "mode": "UNIFORM",
     "lower_fasc_diam": 450,
-    "upper_fasc_diam": 500,
-    "num_fascicle_attempt": 10,
-    "num_fascicle_placed": 0,
     "lower_fasc_ecc": 0.5,
-    "upper_fasc_ecc": 0.99,
     "max_attempt_iter": 100,
     "min_fascicle_separation": 10,
-    "seed": 123
-  }
+    "mode": "UNIFORM",
+    "num_fascicle_attempt": 10,
+    "num_fascicle_placed": 0,
+    "seed": 123,
+    "upper_fasc_diam": 500,
+    "upper_fasc_ecc": 0.99
+  },
+  "scalebar_length": 1000
 }

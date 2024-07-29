@@ -1,7 +1,7 @@
 {
   "ASCENT_COMSOL_PATH": "/Applications/COMSOL55/Multiphysics",
+  "ASCENT_DATASET_EXPORT_PATH": "/Users/ericmusselman/Documents/ascent_data_shared",
   "ASCENT_JDK_PATH": "/Library/Java/JavaVirtualMachines/jdk1.8.0_221.jdk/Contents/Home/bin/",
-  "ASCENT_PROJECT_PATH": "/Users/ericmusselman/Documents/ascent",
   "ASCENT_NSIM_EXPORT_PATH": "/Users/ericmusselman/Documents/ascent/submit",
-  "ASCENT_DATASET_EXPORT_PATH": "/Users/ericmusselman/Documents/ascent_data_shared"
+  "ASCENT_PROJECT_PATH": "/Users/ericmusselman/Documents/ascent"
 }

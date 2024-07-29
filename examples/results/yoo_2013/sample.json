@@ -1,49 +1,51 @@
 {
-  "sample": "YooDog1-1",
-  "sex": "Z",
-  "level": "Cervical",
-  "samples_path": ["samples"],
-  "scale": {
-    "scale_bar_length": 1000,
-    "shrinkage": 0.2
+  "Morphology": {
+    "Fascicles": [
+      {
+        "inners": [
+          {
+            "a": 1447.792236328125,
+            "angle": 91.50343322753906,
+            "area": 2242747.431043807,
+            "b": 1990.4664306640625,
+            "x": 185.03057861328125,
+            "y": -133.23904418945312
+          }
+        ],
+        "outer": {
+          "a": 1645.090576171875,
+          "angle": 91.84337615966797,
+          "area": 2829378.042184965,
+          "b": 2179.16748046875,
+          "x": 190.04791259765625,
+          "y": -132.0525360107422
+        }
+      }
+    ],
+    "Nerve": {
+      "area": 8411264.5
+    }
   },
   "boundary_separation": {
     "fascicles": 5.0,
     "nerve": 5.0
   },
+  "level": "Cervical",
   "modes": {
-    "write": "sectionwise2d",
+    "ci_perineurium_thickness": "PIG_VN_INHOUSE_200523",
+    "deform": "PHYSICS",
     "mask_input": "INNERS",
     "nerve": "PRESENT",
-    "deform": "PHYSICS",
-    "ci_perineurium_thickness": "PIG_VN_INHOUSE_200523",
-    "reshape_nerve": "CIRCLE"
+    "reshape_nerve": "CIRCLE",
+    "write": "sectionwise2d"
   },
-  "Morphology": {
-    "Nerve": {
-      "area": 8411264.5
-    },
-    "Fascicles": [
-      {
-        "outer": {
-          "area": 2829378.042184965,
-          "x": 190.04791259765625,
-          "y": -132.0525360107422,
-          "a": 1645.090576171875,
-          "b": 2179.16748046875,
-          "angle": 91.84337615966797
-        },
-        "inners": [
-          {
-            "area": 2242747.431043807,
-            "x": 185.03057861328125,
-            "y": -133.23904418945312,
-            "a": 1447.792236328125,
-            "b": 1990.4664306640625,
-            "angle": 91.50343322753906
-          }
-        ]
-      }
-    ]
-  }
+  "sample": "YooDog1-1",
+  "samples_path": [
+    "samples"
+  ],
+  "scale": {
+    "scale_bar_length": 1000,
+    "shrinkage": 0.2
+  },
+  "sex": "Z"
 }

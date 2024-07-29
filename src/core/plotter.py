@@ -7,7 +7,6 @@ import glob
 import json
 import os
 import warnings
-from typing import List
 
 import matplotlib.colorbar as cbar
 import matplotlib.colors as mplcolors
@@ -316,11 +315,11 @@ class _HeatmapPlotter:
 
 def ap_loctime(  # noqa: C901
     query_object: Query,
-    n_sim_filter: List[int] = None,
+    n_sim_filter: list[int] = None,
     plot: bool = False,
     plot_distribution: bool = False,
     n_sim_label_override: str = None,
-    model_labels: List[str] = None,
+    model_labels: list[str] = None,
     save: bool = False,
     subplots=False,
     nodes_only=False,

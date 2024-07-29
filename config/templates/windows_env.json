@@ -1,7 +1,7 @@
 {
   "ASCENT_COMSOL_PATH": "C:\\Program Files\\COMSOL\\COMSOL54\\Multiphysics",
+  "ASCENT_DATASET_EXPORT_PATH": "D:\\Documents\\ascent_data_shared",
   "ASCENT_JDK_PATH": "C:\\Program Files\\Java\\jdk1.8.0_221\\bin",
-  "ASCENT_PROJECT_PATH": "D:\\Documents\\ascent",
   "ASCENT_NSIM_EXPORT_PATH": "D:\\Documents\\ascent\\submit",
-  "ASCENT_DATASET_EXPORT_PATH": "D:\\Documents\\ascent_data_shared"
+  "ASCENT_PROJECT_PATH": "D:\\Documents\\ascent"
 }

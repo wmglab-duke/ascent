@@ -1,90 +1,135 @@
 {
-  "n_dimensions": "osparc",
-  "plot_folder": true,
   "active_srcs": {
-    "default": [[-1, 1]],
-    "M18HumanBipolar45.json": [[-1, 1]],
-    "M18HumanBipolar360.json": [[-1, 1]],
-    "M18HumanMonopolar45.json": [[1]],
-    "M18HumanMonopolar360.json": [[1]],
-    "M18RatBipolar45.json": [[-1, 1]],
-    "M18RatBipolar360.json": [[-1, 1]],
-    "M18RatMonopolar45.json": [[1]],
-    "M18RatMonopolar360.json": [[1]]
+    "M18HumanBipolar360.json": [
+      [
+        -1,
+        1
+      ]
+    ],
+    "M18HumanBipolar45.json": [
+      [
+        -1,
+        1
+      ]
+    ],
+    "M18HumanMonopolar360.json": [
+      [
+        1
+      ]
+    ],
+    "M18HumanMonopolar45.json": [
+      [
+        1
+      ]
+    ],
+    "M18RatBipolar360.json": [
+      [
+        -1,
+        1
+      ]
+    ],
+    "M18RatBipolar45.json": [
+      [
+        -1,
+        1
+      ]
+    ],
+    "M18RatMonopolar360.json": [
+      [
+        1
+      ]
+    ],
+    "M18RatMonopolar45.json": [
+      [
+        1
+      ]
+    ],
+    "default": [
+      [
+        -1,
+        1
+      ]
+    ]
   },
   "fibers": {
-    "plot": true,
     "mode": "MRG_INTERPOLATION",
+    "plot": true,
+    "xy_parameters": {
+      "mode": "CENTROID"
+    },
     "xy_trace_buffer": 5.0,
     "z_parameters": {
       "diameter": "osparc",
       "full_nerve_length": true,
       "offset": 0,
       "seed": 123
-    },
-    "xy_parameters": {
-      "mode": "CENTROID"
     }
   },
-  "waveform": {
-    "plot": true,
-    "global": {
-      "dt": 0.001,
-      "on": 1,
-      "off": 49,
-      "stop": 50
-    },
-    "osparc": "osparc"
-  },
   "intracellular_stim": {
-    "times": {
-      "pw": 0,
-      "IntraStim_PulseTrain_delay": 0,
-      "IntraStim_PulseTrain_dur": 0
-    },
-    "pulse_repetition_freq": 0,
     "amp": 0,
-    "ind": 2
+    "ind": 2,
+    "pulse_repetition_freq": 0,
+    "times": {
+      "IntraStim_PulseTrain_delay": 0,
+      "IntraStim_PulseTrain_dur": 0,
+      "pw": 0
+    }
   },
-  "saving": {
-    "space": {
-      "vm": false,
-      "gating": false,
-      "times": [0]
-    },
-    "time": {
-      "vm": true,
-      "gating": false,
-      "istim": false,
-      "locs": [0.7]
-    },
-    "runtimes": false
-  },
+  "n_dimensions": "osparc",
+  "plot_folder": true,
   "protocol": {
-    "mode": "ACTIVATION_THRESHOLD",
-    "initSS": -200,
-    "dt_initSS": 10,
-    "threshold": {
-      "value": -30,
-      "n_min_aps": 1,
-      "ap_detect_location": 0.9
-    },
     "bounds_search": {
-      "mode": "PERCENT_INCREMENT",
-      "top": -1,
       "bottom": -0.01,
+      "mode": "PERCENT_INCREMENT",
+      "scout_sim": false,
       "step": 10,
-      "scout_sim": false
+      "top": -1
     },
+    "dt_initSS": 10,
+    "initSS": -200,
+    "mode": "ACTIVATION_THRESHOLD",
     "termination_criteria": {
       "mode": "PERCENT_DIFFERENCE",
       "percent": 1
+    },
+    "threshold": {
+      "ap_detect_location": 0.9,
+      "n_min_aps": 1,
+      "value": -30
+    }
+  },
+  "saving": {
+    "runtimes": false,
+    "space": {
+      "gating": false,
+      "times": [
+        0
+      ],
+      "vm": false
+    },
+    "time": {
+      "gating": false,
+      "istim": false,
+      "locs": [
+        0.7
+      ],
+      "vm": true
     }
   },
   "supersampled_bases": {
-    "generate": false,
-    "use": true,
     "dz": 1,
-    "source_sim": 1
+    "generate": false,
+    "source_sim": 1,
+    "use": true
+  },
+  "waveform": {
+    "global": {
+      "dt": 0.001,
+      "off": 49,
+      "on": 1,
+      "stop": 50
+    },
+    "osparc": "osparc",
+    "plot": true
   }
 }

@@ -456,7 +456,8 @@ class Model(Configurable, Saveable):
             raise IncompatibleParametersError(
                 "Cuff configuration file has no conditions that match the given parameters. "
             )
-        elif condition_match_count > 1:
+
+        if condition_match_count > 1:
             # conditions are not mutually exclusive in preset JSON file
             raise IncompatibleParametersError(
                 "Cuff configuration file has more than one condition that matches the given parameters. "

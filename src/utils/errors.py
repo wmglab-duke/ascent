@@ -9,8 +9,6 @@ The source code can be found on the following GitHub repository: https://github.
 class MorphologyError(Exception):
     """Exception raised when a morphology is invalid."""
 
-    pass
-
 
 class MaskError(Exception):
     """Exception raised for errors with masks.
@@ -18,19 +16,13 @@ class MaskError(Exception):
     Only for use prior to generation of morphological classes (e.g., traces).
     """
 
-    pass
-
 
 class MethodError(Exception):
     """Exception raised when a method is used in a situation where it is not allowed."""
 
-    pass
-
 
 class JavaError(Exception):
     """Exception raised when Java encounters an error."""
-
-    pass
 
 
 class IncompatibleParametersError(LookupError):
@@ -49,10 +41,6 @@ class IncompatibleParametersError(LookupError):
     In this situation. a IncompatibleParametersError should be raised.
     """
 
-    pass
-
 
 class DevelopmentError(Exception):
     """Exception raised for development errors."""
-
-    pass

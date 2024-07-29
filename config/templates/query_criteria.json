@@ -1,21 +1,24 @@
 {
-  "partial_matches": true,
   "include_downstream": true,
+  "indices": {
+    "model": null,
+    "sample": null,
+    "sim": null
+  },
+  "model": {
+    "dummy": 0,
+    "medium": {
+      "bounds": {
+        "radius": [
+          1000,
+          2000
+        ]
+      }
+    }
+  },
+  "partial_matches": true,
   "sample": {
     "sample": "Rat16-3"
   },
-  "model": {
-    "medium": {
-      "bounds": {
-        "radius": [1000, 2000]
-      }
-    },
-    "dummy": 0
-  },
-  "sim": null,
-  "indices": {
-    "sample": null,
-    "model": null,
-    "sim": null
-  }
+  "sim": null
 }

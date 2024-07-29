@@ -35,4 +35,3 @@ def test_saveable():
 
 def test_configurable():
     """Tests the Configurable class."""
-    pass

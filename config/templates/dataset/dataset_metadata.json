@@ -1,12 +1,12 @@
 {
-  "note": "keys you will need to change are wrapped in <>",
   "ASCENT_CITATION": "Musselman, E. D., Cariello, J. E., Grill, W. M., & Pelot, N. A. (2021). ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A pipeline for sample-specific computational modeling of electrical stimulation of peripheral nerves. PLOS Computational Biology, 17(9), e1009285. https://doi.org/10.1371/journal.pcbi.1009285",
   "ASCENT_CODE_DOI": "<Available here: https://github.com/wmglab-duke/ascent/releases> ... select link for release used",
   "ASCENT_DOCS": "<Available here: https://wmglab-duke-ascent.readthedocs.io/en/latest/> ... select link for release used",
   "COMSOL_VERSION": "<e.g., COMSOL 5.6> ... see env.json",
+  "CONDA_VERSION": "<e.g., 4.10.3> ... conda --version",
   "JDK_VERSION": "<e.g., jdk1.8.0_221> ... see env.json",
   "NEURON VERSION": "<e.g., NEURON 7.6> ... see what is in your $PATH",
   "OS": "<e.g., Linux: Cent OS Stream 8> ... ver (Windows), sw_vers (Mac), hostnamectl (Linux)",
   "PYTHON VERION": "<e.g., Python 3.7.13> ... python -V",
-  "CONDA_VERSION": "<e.g., 4.10.3> ... conda --version"
+  "note": "keys you will need to change are wrapped in <>"
 }
