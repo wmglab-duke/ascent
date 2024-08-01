@@ -1,110 +1,108 @@
 {
+  "angle_to_contacts_deg": 135,
   "code": "A",
+  "expandable": true,
+  "fixed_point": "center",
   "instances": [
     {
-      "type": "CuffFill_Primitive",
-      "label": "Arle 2016 Cuff Fill",
       "def": {
+        "Center": "z_nerve/2",
+        "L": "z_nerve",
         "Radius": "r_nerve+thk_scar_A",
         "Thk": "thk_scar_A",
-        "L": "z_nerve",
-        "Center": "z_nerve/2",
         "x_shift": "0",
         "y_shift": "0"
       },
+      "label": "Arle 2016 Cuff Fill",
       "materials": [
         {
           "info": "fill",
           "label_index": 0
         }
-      ]
+      ],
+      "type": "CuffFill_Primitive"
     },
     {
-      "type": "ArleContact_Primitive",
+      "def": {
+        "Center": "z_nerve/2+pitch/2",
+        "Gauge_AC": "gauge",
+        "L_AC": "Length_AC",
+        "R_in": "R_in_A",
+        "Wrap_AC": "wrap_AC"
+      },
       "label": "Arle 2016 Contact 1",
-      "def": {
-        "Gauge_AC": "gauge",
-        "Wrap_AC": "wrap_AC",
-        "R_in": "R_in_A",
-        "L_AC": "Length_AC",
-        "Center": "z_nerve/2+pitch/2"
-      },
       "materials": [
         {
           "info": "conductor",
           "label_index": 2
         }
-      ]
+      ],
+      "type": "ArleContact_Primitive"
     },
     {
-      "type": "ArleContact_Primitive",
-      "label": "Arle 2016 Contact 2",
       "def": {
+        "Center": "z_nerve/2-pitch/2",
         "Gauge_AC": "gauge",
-        "Wrap_AC": "wrap_AC",
-        "R_in": "R_in_A",
         "L_AC": "Length_AC",
-        "Center": "z_nerve/2-pitch/2"
+        "R_in": "R_in_A",
+        "Wrap_AC": "wrap_AC"
       },
+      "label": "Arle 2016 Contact 2",
       "materials": [
         {
           "info": "conductor",
           "label_index": 2
         }
-      ]
+      ],
+      "type": "ArleContact_Primitive"
     }
   ],
-
+  "offset": {},
   "params": [
     {
-      "name": "r_cuff_in",
+      "description": "",
       "expression": "1.5 [mm]",
-      "description": ""
+      "name": "r_cuff_in"
     },
     {
-      "name": "Length_AC",
+      "description": "",
       "expression": "gauge",
-      "description": ""
+      "name": "Length_AC"
     },
     {
-      "name": "wrap_AC",
+      "description": "",
       "expression": "270 [deg]",
-      "description": ""
+      "name": "wrap_AC"
     },
     {
-      "name": "gauge",
+      "description": "",
       "expression": "0.7747 [mm]",
-      "description": ""
+      "name": "gauge"
     },
     {
-      "name": "thk_medium_gap_internal_A",
+      "description": "",
       "expression": "0.1 [mm]",
-      "description": ""
+      "name": "thk_medium_gap_internal_A"
     },
     {
-      "name": "r_cuff_in_pre_A",
+      "description": "",
       "expression": "1.5 [mm]",
-      "description": ""
+      "name": "r_cuff_in_pre_A"
     },
     {
-      "name": "pitch",
+      "description": "",
       "expression": "8 [mm]",
-      "description": ""
+      "name": "pitch"
     },
     {
-      "name": "thk_scar_A",
+      "description": "",
       "expression": "110 [micrometer]",
-      "description": ""
+      "name": "thk_scar_A"
     },
     {
-      "name": "R_in_A",
+      "description": "",
       "expression": "max(r_nerve+thk_medium_gap_internal_A,r_cuff_in_pre_A)",
-      "description": ""
+      "name": "R_in_A"
     }
-  ],
-
-  "expandable": true,
-  "fixed_point": "center",
-  "angle_to_contacts_deg": 135,
-  "offset": {}
+  ]
 }

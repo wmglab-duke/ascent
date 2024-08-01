@@ -1,210 +1,208 @@
 {
-  "description": "LivaNova helical coil cuff electrode with 3 mm resting inner diameter, 100 um thickness between cuff and nerve, bipolar, each cuff has its own fill domain, used clinically for epilepsy",
+  "angle_to_contacts_deg": 90,
   "code": "LN",
-  "instances": [
-    {
-      "type": "CuffFill_Primitive",
-      "label": "LivaNova Cuff Fill 1",
-      "def": {
-        "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
-        "Thk": "Thk_fill_LN",
-        "L": "L_cuff_LN_PD+w_cuff_LN+2*Thk_fill_LN",
-        "Center": "(z_nerve/2)-(sep_elec_LN/2)",
-        "x_shift": "0",
-        "y_shift": "0"
-      },
-      "materials": [
-        {
-          "info": "fill",
-          "label_index": 0
-        }
-      ]
-    },
-    {
-      "type": "CuffFill_Primitive",
-      "label": "LivaNova Cuff Fill 2",
-      "def": {
-        "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
-        "Thk": "Thk_fill_LN",
-        "L": "L_cuff_LN_PD+w_cuff_LN+2*Thk_fill_LN",
-        "Center": "(z_nerve/2)+(sep_elec_LN/2)",
-        "x_shift": "0",
-        "y_shift": "0"
-      },
-      "materials": [
-        {
-          "info": "fill",
-          "label_index": 0
-        }
-      ]
-    },
-    {
-      "type": "LivaNova_Primitive",
-      "label": "LivaNova Cuff 1",
-      "def": {
-        "Center": "(z_nerve/2)-(sep_elec_LN/2)",
-        "Thk_cuff": "thk_cuff_LN",
-        "W_cuff": "w_cuff_LN",
-        "R_in": "r_cuff_in_LN",
-        "L_cuff": "L_cuff_LN_PD",
-        "Rev_insul": "rev_PD_insul_LN",
-        "Rev_cond": "rev_PD_cond_LN",
-        "Recess": "recess_LN",
-        "Thk_elec": "thk_elec_LN",
-        "W_elec": "w_elec_LN"
-      },
-      "materials": [
-        {
-          "info": "insulator",
-          "label_index": 12
-        },
-        {
-          "info": "conductor",
-          "label_index": 9
-        },
-        {
-          "info": "recess",
-          "label_index": 3
-        }
-      ]
-    },
-    {
-      "type": "LivaNova_Primitive",
-      "label": "LivaNova Cuff 2",
-      "def": {
-        "Center": "(z_nerve/2)+(sep_elec_LN/2)",
-        "Thk_cuff": "thk_cuff_LN",
-        "W_cuff": "w_cuff_LN",
-        "R_in": "r_cuff_in_LN",
-        "L_cuff": "L_cuff_LN_PD",
-        "Rev_insul": "rev_PD_insul_LN",
-        "Rev_cond": "rev_PD_cond_LN",
-        "Recess": "recess_LN",
-        "Thk_elec": "thk_elec_LN",
-        "W_elec": "w_elec_LN"
-      },
-      "materials": [
-        {
-          "info": "insulator",
-          "label_index": 12
-        },
-        {
-          "info": "conductor",
-          "label_index": 9
-        },
-        {
-          "info": "recess",
-          "label_index": 3
-        }
-      ]
-    }
-  ],
-
-  "params": [
-    {
-      "name": "rev_BD_insul_LN",
-      "expression": "2.5",
-      "description": "revolution of the insulation before deformation (i.e., at rest as manufactured)"
-    },
-    {
-      "name": "r_cuff_in_pre_LN",
-      "expression": "1.5 [mm]",
-      "description": "cuff radius before deformation (i.e., at rest as manufactured)"
-    },
-    {
-      "name": "r_cuff_in_LN",
-      "expression": "max(r_nerve+thk_medium_gap_internal_LN,r_cuff_in_pre_LN)",
-      "description": "cuff radius after deformation to accommodate nerve and fill domains"
-    },
-    {
-      "name": "insul_arc_length_LN",
-      "expression": "rev_BD_insul_LN*sqrt((helix_pitch_LN)^2+(2*pi*r_cuff_in_pre_LN)^2)",
-      "description": "arc length of the insulation"
-    },
-    {
-      "name": "helix_pitch_LN",
-      "expression": "1.7145 [mm]",
-      "description": "distance between consecutive turns of the insulation (center-to-center or edge-to-edge)"
-    },
-    {
-      "name": "thk_cuff_LN",
-      "expression": "0.673 [mm]",
-      "description": "radial thickness of the cuff"
-    },
-    {
-      "name": "rev_PD_insul_LN",
-      "expression": "insul_arc_length_LN/(sqrt((helix_pitch_LN)^2+(2*pi*(r_cuff_in_LN))^2))",
-      "description": "revolution of the insulation after deformation (i.e., after deformation to accommodate nerve and fill domains)"
-    },
-    {
-      "name": "L_cuff_LN_BD",
-      "expression": "helix_pitch_LN*rev_BD_insul_LN",
-      "description": "length of the insulation before deformation (i.e., at rest as manufactured)"
-    },
-    {
-      "name": "L_cuff_LN_PD",
-      "expression": "helix_pitch_LN*rev_PD_insul_LN",
-      "description": "length of the insulation after deformation (i.e., after deformation to accommodate nerve and fill domains)"
-    },
-    {
-      "name": "w_cuff_LN",
-      "expression": "1.41 [mm]",
-      "description": "width of the cuff cross-section (rectangle if you were to cuff it, this is along the length of the nerve)"
-    },
-    {
-      "name": "thk_elec_LN",
-      "expression": "0.05 [mm]",
-      "description": "electrode thickness (radial direction), note that conductor = contact"
-    },
-    {
-      "name": "rev_PD_cond_LN",
-      "expression": "cond_arc_length_LN/(sqrt((helix_pitch_LN)^2+(2*pi*(r_cuff_in_LN+recess_LN))^2))",
-      "description": "revolutions of the conductor after deformation (i.e., after deformation to accommodate nerve and fill domains), note that conductor = contact"
-    },
-    {
-      "name": "rev_BD_cond_LN",
-      "expression": "346.5/360",
-      "description": "revolution of the conductor before deformation (i.e., at rest as manufactured), note that conductor = contact"
-    },
-    {
-      "name": "cond_arc_length_LN",
-      "expression": "(rev_BD_cond_LN)*sqrt((helix_pitch_LN)^2+(2*pi*(r_cuff_in_pre_LN+recess_LN))^2)",
-      "description": "conductor arc length before deformation (i.e., at rest as manufactured), note that conductor = contact"
-    },
-    {
-      "name": "recess_LN",
-      "expression": "0 [mm]",
-      "description": "amount that contact is recessed into the cuff"
-    },
-    {
-      "name": "w_elec_LN",
-      "expression": "0.775 [mm]",
-      "description": "electrode width (along direction of nerve), note that conductor = contact"
-    },
-    {
-      "name": "corr_LN",
-      "expression": "(90-1*(360*((rev_PD_insul_LN/2)-(rev_PD_cond_LN/2) + ((rev_PD_insul_LN/2)+(rev_PD_cond_LN/2)-(rev_PD_insul_LN/2)+(rev_PD_cond_LN/2))/2))) [deg]",
-      "description": "rotation correction for the cuff from deformation"
-    },
-    {
-      "name": "thk_medium_gap_internal_LN",
-      "expression": "0.1 [mm]",
-      "description": "thickness of the medium gap of fill between the cuff and the nerve"
-    },
-    {
-      "name": "Thk_fill_LN",
-      "expression": "100 [um]",
-      "description": "thickness of the fill between the cuff and the nerve"
-    },
-    {
-      "name": "sep_elec_LN",
-      "expression": "8 [mm]",
-      "description": "center-to-center separation between electrodes"
-    }
-  ],
-
+  "description": "LivaNova helical coil cuff electrode with 3 mm resting inner diameter, 100 um thickness between cuff and nerve, bipolar, each cuff has its own fill domain, used clinically for epilepsy",
   "expandable": true,
   "fixed_point": "center",
-  "angle_to_contacts_deg": 90,
-  "offset": {}
+  "instances": [
+    {
+      "def": {
+        "Center": "(z_nerve/2)-(sep_elec_LN/2)",
+        "L": "L_cuff_LN_PD+w_cuff_LN+2*Thk_fill_LN",
+        "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
+        "Thk": "Thk_fill_LN",
+        "x_shift": "0",
+        "y_shift": "0"
+      },
+      "label": "LivaNova Cuff Fill 1",
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
+        }
+      ],
+      "type": "CuffFill_Primitive"
+    },
+    {
+      "def": {
+        "Center": "(z_nerve/2)+(sep_elec_LN/2)",
+        "L": "L_cuff_LN_PD+w_cuff_LN+2*Thk_fill_LN",
+        "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
+        "Thk": "Thk_fill_LN",
+        "x_shift": "0",
+        "y_shift": "0"
+      },
+      "label": "LivaNova Cuff Fill 2",
+      "materials": [
+        {
+          "info": "fill",
+          "label_index": 0
+        }
+      ],
+      "type": "CuffFill_Primitive"
+    },
+    {
+      "def": {
+        "Center": "(z_nerve/2)-(sep_elec_LN/2)",
+        "L_cuff": "L_cuff_LN_PD",
+        "R_in": "r_cuff_in_LN",
+        "Recess": "recess_LN",
+        "Rev_cond": "rev_PD_cond_LN",
+        "Rev_insul": "rev_PD_insul_LN",
+        "Thk_cuff": "thk_cuff_LN",
+        "Thk_elec": "thk_elec_LN",
+        "W_cuff": "w_cuff_LN",
+        "W_elec": "w_elec_LN"
+      },
+      "label": "LivaNova Cuff 1",
+      "materials": [
+        {
+          "info": "insulator",
+          "label_index": 12
+        },
+        {
+          "info": "conductor",
+          "label_index": 9
+        },
+        {
+          "info": "recess",
+          "label_index": 3
+        }
+      ],
+      "type": "LivaNova_Primitive"
+    },
+    {
+      "def": {
+        "Center": "(z_nerve/2)+(sep_elec_LN/2)",
+        "L_cuff": "L_cuff_LN_PD",
+        "R_in": "r_cuff_in_LN",
+        "Recess": "recess_LN",
+        "Rev_cond": "rev_PD_cond_LN",
+        "Rev_insul": "rev_PD_insul_LN",
+        "Thk_cuff": "thk_cuff_LN",
+        "Thk_elec": "thk_elec_LN",
+        "W_cuff": "w_cuff_LN",
+        "W_elec": "w_elec_LN"
+      },
+      "label": "LivaNova Cuff 2",
+      "materials": [
+        {
+          "info": "insulator",
+          "label_index": 12
+        },
+        {
+          "info": "conductor",
+          "label_index": 9
+        },
+        {
+          "info": "recess",
+          "label_index": 3
+        }
+      ],
+      "type": "LivaNova_Primitive"
+    }
+  ],
+  "offset": {},
+  "params": [
+    {
+      "description": "revolution of the insulation before deformation (i.e., at rest as manufactured)",
+      "expression": "2.5",
+      "name": "rev_BD_insul_LN"
+    },
+    {
+      "description": "cuff radius before deformation (i.e., at rest as manufactured)",
+      "expression": "1.5 [mm]",
+      "name": "r_cuff_in_pre_LN"
+    },
+    {
+      "description": "cuff radius after deformation to accommodate nerve and fill domains",
+      "expression": "max(r_nerve+thk_medium_gap_internal_LN,r_cuff_in_pre_LN)",
+      "name": "r_cuff_in_LN"
+    },
+    {
+      "description": "arc length of the insulation",
+      "expression": "rev_BD_insul_LN*sqrt((helix_pitch_LN)^2+(2*pi*r_cuff_in_pre_LN)^2)",
+      "name": "insul_arc_length_LN"
+    },
+    {
+      "description": "distance between consecutive turns of the insulation (center-to-center or edge-to-edge)",
+      "expression": "1.7145 [mm]",
+      "name": "helix_pitch_LN"
+    },
+    {
+      "description": "radial thickness of the cuff",
+      "expression": "0.673 [mm]",
+      "name": "thk_cuff_LN"
+    },
+    {
+      "description": "revolution of the insulation after deformation (i.e., after deformation to accommodate nerve and fill domains)",
+      "expression": "insul_arc_length_LN/(sqrt((helix_pitch_LN)^2+(2*pi*(r_cuff_in_LN))^2))",
+      "name": "rev_PD_insul_LN"
+    },
+    {
+      "description": "length of the insulation before deformation (i.e., at rest as manufactured)",
+      "expression": "helix_pitch_LN*rev_BD_insul_LN",
+      "name": "L_cuff_LN_BD"
+    },
+    {
+      "description": "length of the insulation after deformation (i.e., after deformation to accommodate nerve and fill domains)",
+      "expression": "helix_pitch_LN*rev_PD_insul_LN",
+      "name": "L_cuff_LN_PD"
+    },
+    {
+      "description": "width of the cuff cross-section (rectangle if you were to cuff it, this is along the length of the nerve)",
+      "expression": "1.41 [mm]",
+      "name": "w_cuff_LN"
+    },
+    {
+      "description": "electrode thickness (radial direction), note that conductor = contact",
+      "expression": "0.05 [mm]",
+      "name": "thk_elec_LN"
+    },
+    {
+      "description": "revolutions of the conductor after deformation (i.e., after deformation to accommodate nerve and fill domains), note that conductor = contact",
+      "expression": "cond_arc_length_LN/(sqrt((helix_pitch_LN)^2+(2*pi*(r_cuff_in_LN+recess_LN))^2))",
+      "name": "rev_PD_cond_LN"
+    },
+    {
+      "description": "revolution of the conductor before deformation (i.e., at rest as manufactured), note that conductor = contact",
+      "expression": "346.5/360",
+      "name": "rev_BD_cond_LN"
+    },
+    {
+      "description": "conductor arc length before deformation (i.e., at rest as manufactured), note that conductor = contact",
+      "expression": "(rev_BD_cond_LN)*sqrt((helix_pitch_LN)^2+(2*pi*(r_cuff_in_pre_LN+recess_LN))^2)",
+      "name": "cond_arc_length_LN"
+    },
+    {
+      "description": "amount that contact is recessed into the cuff",
+      "expression": "0 [mm]",
+      "name": "recess_LN"
+    },
+    {
+      "description": "electrode width (along direction of nerve), note that conductor = contact",
+      "expression": "0.775 [mm]",
+      "name": "w_elec_LN"
+    },
+    {
+      "description": "rotation correction for the cuff from deformation",
+      "expression": "(90-1*(360*((rev_PD_insul_LN/2)-(rev_PD_cond_LN/2) + ((rev_PD_insul_LN/2)+(rev_PD_cond_LN/2)-(rev_PD_insul_LN/2)+(rev_PD_cond_LN/2))/2))) [deg]",
+      "name": "corr_LN"
+    },
+    {
+      "description": "thickness of the medium gap of fill between the cuff and the nerve",
+      "expression": "0.1 [mm]",
+      "name": "thk_medium_gap_internal_LN"
+    },
+    {
+      "description": "thickness of the fill between the cuff and the nerve",
+      "expression": "100 [um]",
+      "name": "Thk_fill_LN"
+    },
+    {
+      "description": "center-to-center separation between electrodes",
+      "expression": "8 [mm]",
+      "name": "sep_elec_LN"
+    }
+  ]
 }

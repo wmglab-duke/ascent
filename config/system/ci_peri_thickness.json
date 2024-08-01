@@ -1,8 +1,20 @@
 {
   "ci_perineurium_thickness_parameters": {
+    "ARLE_2016": {
+      "a": 0,
+      "b": 30
+    },
+    "BUCKSOT_2019": {
+      "a": 0,
+      "b": 31
+    },
     "GRINBERG_2008": {
       "a": 0.03,
       "b": 0
+    },
+    "HUMAN_VN_INHOUSE_200601": {
+      "a": 0.03702,
+      "b": 10.5
     },
     "PIG_VN_INHOUSE_200523": {
       "a": 0.02547,
@@ -11,18 +23,6 @@
     "RAT_VN_INHOUSE_200601": {
       "a": 0.01292,
       "b": 1.367
-    },
-    "HUMAN_VN_INHOUSE_200601": {
-      "a": 0.03702,
-      "b": 10.5
-    },
-    "ARLE_2016": {
-      "a": 0,
-      "b": 30
-    },
-    "BUCKSOT_2019": {
-      "a": 0,
-      "b": 31
     }
   }
 }

@@ -1,41 +1,22 @@
 {
-  "sample.json": true,
-  "sample.obj": true,
-  "s.tif": true,
-  "plots": false,
-  "slides": {
-    "0": {
-      "0": {
-        "masks": true,
-        "sectionwise2d": true
-      }
-    }
-  },
   "models": {
     "<model_index>": {
+      "bases": false,
+      "debug_geom.mph": false,
+      "mesh": {
+        "im.json": false,
+        "mesh.mph": false,
+        "ppim": false
+      },
       "model.json": true,
       "model.obj": true,
-      "debug_geom.mph": false,
-      "bases": false,
-      "mesh": {
-        "ppim": false,
-        "im.json": false,
-        "mesh.mph": false
-      },
       "sims": {
         "<sim_index>": {
-          "sim.obj": true,
           "fibersets": false,
           "fibersets_bases": false,
-          "potentials": false,
-          "waveforms": false,
-          "plots": {
-            "waveforms": false
-          },
           "n_sims": {
             "<n_sim_index>": {
               "<n_sim_index>.json": true,
-              "launch.hoc": true,
               "data": {
                 "inputs": {
                   "<ve_files>": true,
@@ -43,18 +24,37 @@
                 },
                 "outputs": {
                   "<Aptimes>": true,
-                  "<thresh>": true,
-                  "<vm_times>": false,
-                  "<ves>": false,
                   "<Istims>": false,
                   "<gating_m_times>": false,
                   "<gating_mp_times>": false,
-                  "<gating_s_times>": false
+                  "<gating_s_times>": false,
+                  "<thresh>": true,
+                  "<ves>": false,
+                  "<vm_times>": false
                 }
-              }
+              },
+              "launch.hoc": true
             }
-          }
+          },
+          "plots": {
+            "waveforms": false
+          },
+          "potentials": false,
+          "sim.obj": true,
+          "waveforms": false
         }
+      }
+    }
+  },
+  "plots": false,
+  "s.tif": true,
+  "sample.json": true,
+  "sample.obj": true,
+  "slides": {
+    "0": {
+      "0": {
+        "masks": true,
+        "sectionwise2d": true
       }
     }
   }

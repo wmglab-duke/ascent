@@ -1,37 +1,37 @@
 {
-  "sample": "Rat16-3",
-  "pseudonym": "template sample",
-  "sex": "M",
+  "Morphology": null,
+  "boundary_separation": {
+    "fascicles": 10.0,
+    "nerve": 10.0
+  },
+  "deform_ratio": 1,
+  "image_preprocessing": {
+    "fill_holes": true,
+    "object_removal_area": 10
+  },
   "level": "Cervical",
+  "modes": {
+    "ci_perineurium_thickness": "MEASURED",
+    "contour_approximation": "NONE",
+    "deform": "NONE",
+    "mask_input": "INNER_AND_OUTER_COMPILED",
+    "nerve": "NOT_PRESENT",
+    "reshape_nerve": "NONE",
+    "scale_input": "MASK",
+    "shrinkage_definition": "LENGTH_BACKWARDS"
+  },
+  "morph_count": 36,
+  "pseudonym": "template sample",
+  "render_deform": false,
+  "sample": "Rat16-3",
   "scale": {
     "scale_bar_length": 500,
     "scale_ratio": 12.5,
     "shrinkage": 0
   },
-  "boundary_separation": {
-    "fascicles": 10.0,
-    "nerve": 10.0
-  },
-  "modes": {
-    "mask_input": "INNER_AND_OUTER_COMPILED",
-    "scale_input": "MASK",
-    "nerve": "NOT_PRESENT",
-    "deform": "NONE",
-    "ci_perineurium_thickness": "MEASURED",
-    "reshape_nerve": "NONE",
-    "shrinkage_definition": "LENGTH_BACKWARDS",
-    "contour_approximation": "NONE"
-  },
+  "sex": "M",
   "smoothing": {
-    "nerve_distance": 0,
-    "fascicle_distance": 0
-  },
-  "image_preprocessing": {
-    "fill_holes": true,
-    "object_removal_area": 10
-  },
-  "morph_count": 36,
-  "deform_ratio": 1,
-  "render_deform": false,
-  "Morphology": null
+    "fascicle_distance": 0,
+    "nerve_distance": 0
+  }
 }

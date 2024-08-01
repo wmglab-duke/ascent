@@ -8,7 +8,6 @@ The source code can be found on the following GitHub repository: https://github.
 """
 
 import json
-from typing import List, Type, Union
 
 from .enums import Config, Enum, SetupMode, os
 
@@ -24,7 +23,7 @@ class Configurable:
         self,
         mode: SetupMode = None,
         key: Config = None,
-        config: Union[str, dict, list] = None,
+        config: str | dict | list = None,
     ):
         """Initilize the configurable class.
 
@@ -40,7 +39,7 @@ class Configurable:
         if len([item for item in [mode, key, config] if item is None]) == 0:
             self.add(mode, key, config)
 
-    def add(self, mode: SetupMode, key: Config, config: Union[str, dict]):
+    def add(self, mode: SetupMode, key: Config, config: str | dict):
         """Add a config to self.configs.
 
         :param mode: OLD (data already loaded in the form of a dict) or NEW (data is in a file, loading from path)
@@ -87,12 +86,11 @@ class Configurable:
                 raise TypeError(f'Invalid search parameter type:\tTYPE: {type(arg)}\tVALUE: {arg}\n')
 
             if result is None:
-                if optional:
-                    return result
-                else:
+                if not optional:
                     raise KeyError(
                         f'Value {"".join([arg + "->" for arg in args[:-1]]) + args[-1]} not defined in {key}'
                     )
+                return result
 
         if isinstance(result, list) and len(result) < 1 and not optional:
             raise IndexError(f'Value {"".join([arg + "->" for arg in args[:-1]]) + args[-1]} is empty in {key}')
@@ -131,7 +129,7 @@ class Configurable:
             return json.load(handle)
 
     @staticmethod
-    def write(data: Union[list, dict], dest_path):
+    def write(data: list | dict, dest_path):
         """Write JSON object to file.
 
         :param data: The data to write.
@@ -140,7 +138,7 @@ class Configurable:
         with open(dest_path, "w") as handle:
             handle.write(json.dumps(data, indent=2))
 
-    def search_mode(self, mode: Type[Enum], key: Config, optional: bool = False):
+    def search_mode(self, mode: type[Enum], key: Config, optional: bool = False):
         """Search for a single mode.
 
         :param mode: an Enum mode that is being searched. it MUST have variable config, which is the name
@@ -154,8 +152,8 @@ class Configurable:
     def search_multi_mode(
         self,
         key: Config,
-        mode: Type[Enum] = None,
-        modes: List[Type[Enum]] = None,
+        mode: type[Enum] = None,
+        modes: list[type[Enum]] = None,
         count: int = None,
         optional: bool = False,
     ) -> list:

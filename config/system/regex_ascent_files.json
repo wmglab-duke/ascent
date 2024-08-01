@@ -1,16 +1,16 @@
 {
-  "<ve_files>": "inner\\d+_fiber\\d+.dat",
   "<Aptimes>": "Aptimes_inner\\d+_fiber\\d+_amp\\d+\\.dat",
-  "<thresh>": "thresh_inner\\d+_fiber\\d+\\.dat",
-  "<vm_times>": "Vm_time_inner\\d+_fiber\\d+_amp\\d+\\.dat",
-  "<ves>": "Ve_inner\\d+_fiber\\d+_amp\\d+\\.dat",
   "<Istims>": "Istim_inner\\d+_fiber\\d+_amp\\d+\\.dat",
-  "<gating_m_times>": "gating_m_time_inner\\d+_fiber\\d+_amp\\d+\\.dat",
-  "<gating_h_times>": "gating_h_time_inner\\d+_fiber\\d+_amp\\d+\\.dat",
-  "<gating_mp_times>": "gating_mp_time_inner\\d+_fiber\\d+_amp\\d+\\.dat",
-  "<gating_s_times>": "gating_s_time_inner\\d+_fiber\\d+_amp\\d+\\.dat",
-  "<gating_m_space>": "gating_m_space_inner\\d+_fiber\\d+_amp\\d+\\.dat",
   "<gating_h_space>": "gating_h_space_inner\\d+_fiber\\d+_amp\\d+\\.dat",
+  "<gating_h_times>": "gating_h_time_inner\\d+_fiber\\d+_amp\\d+\\.dat",
+  "<gating_m_space>": "gating_m_space_inner\\d+_fiber\\d+_amp\\d+\\.dat",
+  "<gating_m_times>": "gating_m_time_inner\\d+_fiber\\d+_amp\\d+\\.dat",
   "<gating_mp_space>": "gating_mp_space_inner\\d+_fiber\\d+_amp\\d+\\.dat",
-  "<gating_s_space>": "gating_s_space_inner\\d+_fiber\\d+_amp\\d+\\.dat"
+  "<gating_mp_times>": "gating_mp_time_inner\\d+_fiber\\d+_amp\\d+\\.dat",
+  "<gating_s_space>": "gating_s_space_inner\\d+_fiber\\d+_amp\\d+\\.dat",
+  "<gating_s_times>": "gating_s_time_inner\\d+_fiber\\d+_amp\\d+\\.dat",
+  "<thresh>": "thresh_inner\\d+_fiber\\d+\\.dat",
+  "<ve_files>": "inner\\d+_fiber\\d+.dat",
+  "<ves>": "Ve_inner\\d+_fiber\\d+_amp\\d+\\.dat",
+  "<vm_times>": "Vm_time_inner\\d+_fiber\\d+_amp\\d+\\.dat"
 }

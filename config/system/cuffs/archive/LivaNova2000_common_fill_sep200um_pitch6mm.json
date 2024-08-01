@@ -1,33 +1,35 @@
 {
+  "angle_to_contacts_deg": 90,
   "code": "LN",
+  "expandable": true,
+  "fixed_point": "center",
   "instances": [
     {
-      "type": "CuffFill_Primitive",
-      "label": "LivaNova Cuff Fill 1",
       "def": {
+        "Center": "(z_nerve/2)",
+        "L": "2*L_cuff_LN+w_cuff_LN+2*Thk_fill_LN+sep_elec_LN",
         "Radius": "r_cuff_in_LN+thk_cuff_LN+Thk_fill_LN",
         "Thk": "Thk_fill_LN",
-        "L": "2*L_cuff_LN+w_cuff_LN+2*Thk_fill_LN+sep_elec_LN",
-        "Center": "(z_nerve/2)",
         "x_shift": "0",
         "y_shift": "0"
       },
+      "label": "LivaNova Cuff Fill 1",
       "materials": [
         {
           "info": "fill",
           "label_index": 0
         }
-      ]
+      ],
+      "type": "CuffFill_Primitive"
     },
     {
-      "type": "HelicalCuffnContact_Primitive",
-      "label": "LivaNova CuffnContact 1",
       "def": {
         "Center": "(z_nerve/2)-(sep_elec_LN/2)",
         "Corr": "corr_LN",
-        "rev_BD_insul": "rev_BD_insul_LN",
-        "rev_BD_cond": "rev_BD_cond_LN"
+        "rev_BD_cond": "rev_BD_cond_LN",
+        "rev_BD_insul": "rev_BD_insul_LN"
       },
+      "label": "LivaNova CuffnContact 1",
       "materials": [
         {
           "info": "insulator",
@@ -37,17 +39,17 @@
           "info": "conductor",
           "label_index": 6
         }
-      ]
+      ],
+      "type": "HelicalCuffnContact_Primitive"
     },
     {
-      "type": "HelicalCuffnContact_Primitive",
-      "label": "LivaNova CuffnContact 2",
       "def": {
         "Center": "(z_nerve/2)+(sep_elec_LN/2)",
         "Corr": "corr_LN",
-        "rev_BD_insul": "rev_BD_insul_LN",
-        "rev_BD_cond": "rev_BD_cond_LN"
+        "rev_BD_cond": "rev_BD_cond_LN",
+        "rev_BD_insul": "rev_BD_insul_LN"
       },
+      "label": "LivaNova CuffnContact 2",
       "materials": [
         {
           "info": "insulator",
@@ -57,140 +59,136 @@
           "info": "conductor",
           "label_index": 6
         }
-      ]
+      ],
+      "type": "HelicalCuffnContact_Primitive"
     }
   ],
-
+  "offset": {},
   "params": [
     {
-      "name": "rev_BD_insul_LN",
+      "description": "",
       "expression": "0.75",
-      "description": ""
+      "name": "rev_BD_insul_LN"
     },
     {
-      "name": "rev_BD_cond_LN",
+      "description": "",
       "expression": "1",
-      "description": ""
+      "name": "rev_BD_cond_LN"
     },
     {
-      "name": "w_cuff_LN",
+      "description": "",
       "expression": "1.4 [mm]",
-      "description": ""
+      "name": "w_cuff_LN"
     },
     {
-      "name": "thk_cuff_LN",
+      "description": "",
       "expression": "0.9 [mm]",
-      "description": ""
+      "name": "thk_cuff_LN"
     },
     {
-      "name": "w_elec_LN",
+      "description": "",
       "expression": "0.75 [mm]",
-      "description": ""
+      "name": "w_elec_LN"
     },
     {
-      "name": "thk_elec_LN",
+      "description": "",
       "expression": "0.05 [mm]",
-      "description": ""
+      "name": "thk_elec_LN"
     },
     {
-      "name": "S_LN",
+      "description": "",
       "expression": "0.2 [mm]",
-      "description": ""
+      "name": "S_LN"
     },
     {
-      "name": "rev_BD_LN",
+      "description": "",
       "expression": "2.5",
-      "description": ""
+      "name": "rev_BD_LN"
     },
     {
-      "name": "p_LN",
+      "description": "",
       "expression": "w_cuff_LN+S_LN",
-      "description": ""
+      "name": "p_LN"
     },
     {
-      "name": "sep_elec_LN",
+      "description": "",
       "expression": "6 [mm]",
-      "description": ""
+      "name": "sep_elec_LN"
     },
     {
-      "name": "L_cuff_LN",
+      "description": "",
       "expression": "rev_cuff_LN*p_LN",
-      "description": ""
+      "name": "L_cuff_LN"
     },
     {
-      "name": "R_HigherMesh_LN",
+      "description": "",
       "expression": "4 [mm]",
-      "description": ""
+      "name": "R_HigherMesh_LN"
     },
     {
-      "name": "scar_thk_LN",
+      "description": "",
       "expression": "100 [micrometer]",
-      "description": ""
+      "name": "scar_thk_LN"
     },
     {
-      "name": "ID_30220_LN",
+      "description": "",
       "expression": "2 [mm]",
-      "description": ""
+      "name": "ID_30220_LN"
     },
     {
-      "name": "ID_30230_LN",
+      "description": "",
       "expression": "3 [mm]",
-      "description": ""
+      "name": "ID_30230_LN"
     },
     {
-      "name": "thk_medium_gap_internal_LN",
+      "description": "",
       "expression": "200 [um]",
-      "description": ""
+      "name": "thk_medium_gap_internal_LN"
     },
     {
-      "name": "rev_cuff_LN",
+      "description": "",
       "expression": "2.5*((r_nerve+thk_medium_gap_internal_LN)<(ID_30220_LN/2))+((rev_BD_LN)*(sqrt((p_LN^2+pi^2*(ID_cuff_LN+thk_cuff_LN)^2)/(p_LN^2+pi^2*(r_nerve*2+2*thk_medium_gap_internal_LN+thk_cuff_LN)^2))))*((r_nerve+thk_medium_gap_internal_LN)>=(ID_30220_LN/2))",
-      "description": ""
+      "name": "rev_cuff_LN"
     },
     {
-      "name": "r_cuff_in_pre_LN",
+      "description": "",
       "expression": "1 [mm]",
-      "description": ""
+      "name": "r_cuff_in_pre_LN"
     },
     {
-      "name": "r_cuff_in_LN",
+      "description": "",
       "expression": "max(r_nerve+thk_medium_gap_internal_LN,r_cuff_in_pre_LN)",
-      "description": ""
+      "name": "r_cuff_in_LN"
     },
     {
-      "name": "ID_cuff_LN",
+      "description": "",
       "expression": "ID_30220_LN*((r_nerve+thk_medium_gap_internal_LN)<(ID_30230_LN/2))+ID_30230_LN*((r_nerve+thk_medium_gap_internal_LN)>=(ID_30230_LN/2))",
-      "description": ""
+      "name": "ID_cuff_LN"
     },
     {
-      "name": "zw_rot1_LN",
+      "description": "",
       "expression": "0",
-      "description": ""
+      "name": "zw_rot1_LN"
     },
     {
-      "name": "zw_rot2_LN",
+      "description": "",
       "expression": "0",
-      "description": ""
+      "name": "zw_rot2_LN"
     },
     {
-      "name": "Center_LN",
+      "description": "",
       "expression": "80 [mm]",
-      "description": ""
+      "name": "Center_LN"
     },
     {
-      "name": "Thk_fill_LN",
+      "description": "",
       "expression": "100 [um]",
-      "description": ""
+      "name": "Thk_fill_LN"
     },
     {
-      "name": "corr_LN",
+      "description": "",
       "expression": "360*(0.75 - rev_cuff_LN*(0.75/2.5) + (0.5/2.5)*(rev_BD_LN - rev_cuff_LN)) [deg]",
-      "description": ""
+      "name": "corr_LN"
     }
-  ],
-
-  "expandable": true,
-  "fixed_point": "center",
-  "angle_to_contacts_deg": 90,
-  "offset": {}
+  ]
 }

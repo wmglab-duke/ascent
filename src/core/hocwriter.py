@@ -12,7 +12,6 @@ https://github.com/wmglab-duke/ascent
 import itertools
 import os
 import warnings
-from typing import List
 
 import numpy as np
 
@@ -51,7 +50,7 @@ class HocWriter(Configurable, Saveable):
             os.path.join('config', 'system', 'fiber_z.json'),
         )
 
-    def define_sim_indices(self, args: List[List[np.array]]):
+    def define_sim_indices(self, args: list[list[np.array]]):
         """Define simulation indices.
 
         :param args: List of lists of arrays of simulation indices.

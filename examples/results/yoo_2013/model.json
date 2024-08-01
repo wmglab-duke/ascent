@@ -1,32 +1,20 @@
 {
-  "modes": {
-    "use_ci": true,
-    "cuff_shift": "MIN_CIRCLE_BOUNDARY",
-    "fiber_z": "EXTRUSION",
-    "rho_perineurium": "RHO_WEERASURIYA"
-  },
-  "solution": { "sol_time": 65.679478 },
-  "temperature": 37,
-  "medium": {
-    "distal": {
-      "exist": false,
-      "distant_ground": false,
-      "shift": {
-        "x": 0,
-        "y": 0,
-        "z": 0
-      },
-      "length": 25000,
-      "radius": 5000
+  "conductivities": {
+    "conductor": "platinum",
+    "endoneurium": "endoneurium",
+    "epineurium": "epineurium",
+    "fill": "saline",
+    "insulator": "silicone",
+    "medium": "muscle",
+    "perineurium": {
+      "label": "RHO_WEERASURIYA @ 1 Hz",
+      "unit": "[S/m]",
+      "value": "0.0008703220191470844"
     },
-    "proximal": {
-      "distant_ground": true,
-      "length": 25000,
-      "radius": 4000
-    }
+    "recess": "saline"
   },
-  "trace_interp_tol": 0.02,
   "cuff": {
+    "preset": "LivaNova2000.json",
     "rotate": {
       "add_ang": 0,
       "pos_ang": 264.21117754867385
@@ -35,62 +23,76 @@
       "x": 0,
       "y": 0,
       "z": 0
-    },
-    "preset": "LivaNova2000.json"
-  },
-  "min_radius_enclosing_circle": 1636.2727907218768,
-  "conductivities": {
-    "recess": "saline",
-    "perineurium": {
-      "unit": "[S/m]",
-      "label": "RHO_WEERASURIYA @ 1 Hz",
-      "value": "0.0008703220191470844"
-    },
-    "medium": "muscle",
-    "fill": "saline",
-    "insulator": "silicone",
-    "conductor": "platinum",
-    "endoneurium": "endoneurium",
-    "epineurium": "epineurium"
-  },
-  "mesh": {
-    "distal": {
-      "mesh_time": 74905.866606,
-      "hcurve": 0.2,
-      "hmin": 1,
-      "hnarrow": 1,
-      "type": {
-        "im": "ftet",
-        "name": "FreeTet"
-      },
-      "hmax": 1600,
-      "hgrad": 2.2
-    },
-    "stats": {
-      "volume": 1.25e12,
-      "min_quality": 0.009566,
-      "min_volume": 2.05,
-      "quality_measure": "vollength",
-      "number_elements": 15926873,
-      "mean_quality": 0.7047
-    },
-    "proximal": {
-      "mesh_time": 664771.041714,
-      "hcurve": 0.2,
-      "hmin": 10,
-      "hnarrow": 1,
-      "type": {
-        "im": "ftet",
-        "name": "FreeTet"
-      },
-      "hmax": 1600,
-      "hgrad": 2.2
     }
   },
   "frequency": 1,
+  "medium": {
+    "distal": {
+      "distant_ground": false,
+      "exist": false,
+      "length": 25000,
+      "radius": 5000,
+      "shift": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
+    },
+    "proximal": {
+      "distant_ground": true,
+      "length": 25000,
+      "radius": 4000
+    }
+  },
+  "mesh": {
+    "distal": {
+      "hcurve": 0.2,
+      "hgrad": 2.2,
+      "hmax": 1600,
+      "hmin": 1,
+      "hnarrow": 1,
+      "mesh_time": 74905.866606,
+      "type": {
+        "im": "ftet",
+        "name": "FreeTet"
+      }
+    },
+    "proximal": {
+      "hcurve": 0.2,
+      "hgrad": 2.2,
+      "hmax": 1600,
+      "hmin": 10,
+      "hnarrow": 1,
+      "mesh_time": 664771.041714,
+      "type": {
+        "im": "ftet",
+        "name": "FreeTet"
+      }
+    },
+    "stats": {
+      "mean_quality": 0.7047,
+      "min_quality": 0.009566,
+      "min_volume": 2.05,
+      "number_elements": 15926873,
+      "quality_measure": "vollength",
+      "volume": 1250000000000.0
+    }
+  },
+  "min_radius_enclosing_circle": 1636.2727907218768,
+  "modes": {
+    "cuff_shift": "MIN_CIRCLE_BOUNDARY",
+    "fiber_z": "EXTRUSION",
+    "rho_perineurium": "RHO_WEERASURIYA",
+    "use_ci": true
+  },
+  "solution": {
+    "sol_time": 65.679478
+  },
   "solver": {
-    "sorder": "quadratic",
+    "name": "COMSOL Multiphysics 5.4 (Build: 388)",
     "shape_order": 2,
-    "name": "COMSOL Multiphysics 5.4 (Build: 388)"
-  }
+    "sorder": "quadratic"
+  },
+  "temperature": 37,
+  "trace_interp_tol": 0.02
 }

@@ -14,7 +14,6 @@ import os
 import sys
 import warnings
 from io import BytesIO
-from typing import List
 
 import cv2
 import matplotlib.pyplot as plt
@@ -38,7 +37,7 @@ class MockSample(Configurable):
         # Initializes superclasses
         Configurable.__init__(self)
 
-        self.fascicles: List[shapely.geometry.Point] = []
+        self.fascicles: list[shapely.geometry.Point] = []
         self.nerve = shapely.geometry.Point
 
     @staticmethod

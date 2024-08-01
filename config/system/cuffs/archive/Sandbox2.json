@@ -1,5 +1,8 @@
 {
+  "angle_to_contacts_deg": 144,
   "code": "SB",
+  "expandable": true,
+  "fixed_point": "clockwise_end",
   "instances": [
     {
       "type": "CuffFill_Primitive"
@@ -41,13 +44,9 @@
       "type": "ArleContact_Primitive"
     }
   ],
-  "params": [],
-
-  "expandable": true,
-  "angle_to_contacts_deg": 144,
   "offset": {
-    "sep_wire_P": 1,
-    "r_wire_P": 2
+    "r_wire_P": 2,
+    "sep_wire_P": 1
   },
-  "fixed_point": "clockwise_end"
+  "params": []
 }

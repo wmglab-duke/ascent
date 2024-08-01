@@ -1,62 +1,62 @@
 {
-  "TRUNCNORM": {
-    "mode": "TRUNCNORM",
-    "mu_fasc_diam": 350,
-    "std_fasc_diam": 30,
-    "n_std_diam_limit": 2,
-    "num_fascicle_attempt": 10,
-    "num_fascicle_placed": 0,
-    "mu_fasc_ecc": 0.5,
-    "std_fasc_ecc": 0.2,
-    "n_std_ecc_limit": 2,
-    "max_attempt_iter": 100,
-    "min_fascicle_separation": 10,
-    "seed": 123
-  },
-  "UNIFORM": {
-    "mode": "UNIFORM",
-    "lower_fasc_diam": 450,
-    "upper_fasc_diam": 500,
-    "num_fascicle_attempt": 10,
-    "num_fascicle_placed": 0,
-    "lower_fasc_ecc": 0.5,
-    "upper_fasc_ecc": 0.99,
-    "max_attempt_iter": 100,
-    "min_fascicle_separation": 10,
-    "seed": 123
-  },
   "EXPLICIT": {
-    "mode": "EXPLICIT",
-    "min_fascicle_separation": 5,
     "Fascicles": [
       {
-        "centroid_x": 0,
-        "centroid_y": 550,
         "a": 100,
         "b": 100,
+        "centroid_x": 0,
+        "centroid_y": 550,
         "rot": 0
       },
       {
-        "centroid_x": 550,
-        "centroid_y": 0,
         "a": 100,
         "b": 80,
+        "centroid_x": 550,
+        "centroid_y": 0,
         "rot": 0
       },
       {
-        "centroid_x": 0,
-        "centroid_y": -550,
         "a": 100,
         "b": 70,
+        "centroid_x": 0,
+        "centroid_y": -550,
         "rot": 90
       },
       {
-        "centroid_x": -550,
-        "centroid_y": 0,
         "a": 100,
         "b": 200,
+        "centroid_x": -550,
+        "centroid_y": 0,
         "rot": 180
       }
-    ]
+    ],
+    "min_fascicle_separation": 5,
+    "mode": "EXPLICIT"
+  },
+  "TRUNCNORM": {
+    "max_attempt_iter": 100,
+    "min_fascicle_separation": 10,
+    "mode": "TRUNCNORM",
+    "mu_fasc_diam": 350,
+    "mu_fasc_ecc": 0.5,
+    "n_std_diam_limit": 2,
+    "n_std_ecc_limit": 2,
+    "num_fascicle_attempt": 10,
+    "num_fascicle_placed": 0,
+    "seed": 123,
+    "std_fasc_diam": 30,
+    "std_fasc_ecc": 0.2
+  },
+  "UNIFORM": {
+    "lower_fasc_diam": 450,
+    "lower_fasc_ecc": 0.5,
+    "max_attempt_iter": 100,
+    "min_fascicle_separation": 10,
+    "mode": "UNIFORM",
+    "num_fascicle_attempt": 10,
+    "num_fascicle_placed": 0,
+    "seed": 123,
+    "upper_fasc_diam": 500,
+    "upper_fasc_ecc": 0.99
   }
 }

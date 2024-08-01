@@ -171,7 +171,7 @@ class Waveform(Configurable, Saveable):
             thk_weerasuriya = 0.00002175  # [m]
             rho = rs37 / thk_weerasuriya  # [ohm-m]
 
-        return rho  # [ohm-m]
+        return rho  # noqa: R504
 
     @staticmethod
     def pad(
@@ -281,8 +281,7 @@ class Waveform(Configurable, Saveable):
             amp2 = 1
             amp1 = (pw2 * amp2) / pw1
 
-        wave = amp1 * padded_positive + amp2 * padded_negative
-        return wave
+        return amp1 * padded_positive + amp2 * padded_negative
 
     def generate_monophasic(self):
         """Generate a monophasic pulse train.
@@ -298,9 +297,7 @@ class Waveform(Configurable, Saveable):
             raise ValueError("Pulse is longer than period (2x for biphasic).")
         wave = sg.square(2 * np.pi * self.frequency * self.t_signal, duty=(pw - self.dt) * self.frequency)
         clipped = np.clip(wave, 0, 1)
-        padded = self.pad(clipped, self.dt, self.on - self.start, self.stop - self.off)
-        wave = padded
-        return wave
+        return self.pad(clipped, self.dt, self.on - self.start, self.stop - self.off)
 
     def generate_sinusoid(self):
         """Generate a sinusoid.
@@ -313,9 +310,7 @@ class Waveform(Configurable, Saveable):
                 "Timestep self.dt is longer than SINUSOID period indicated in Sim by pulse_repetition_freq."
             )
         wave = np.sin(2 * np.pi * self.frequency * self.t_signal)
-        padded = self.pad(wave, self.dt, self.on - self.start, self.stop - self.off)
-        wave = padded
-        return wave
+        return self.pad(wave, self.dt, self.on - self.start, self.stop - self.off)
 
     def generate_biphasic_fullduty(self):
         """Generate a biphasic pulse train with full duty cycle.
@@ -328,9 +323,7 @@ class Waveform(Configurable, Saveable):
                 "Timestep self.dt is longer than BIPHASIC_FULL_DUTY period indicated in Sim by pulse_repetition_freq."
             )
         wave = sg.square(2 * np.pi * self.frequency * self.t_signal)
-        padded = self.pad(wave, self.dt, self.on - self.start, self.stop - self.off)
-        wave = padded
-        return wave
+        return self.pad(wave, self.dt, self.on - self.start, self.stop - self.off)
 
     def generate_biphasic_basic(self):
         """Generate a biphasic pulse train with basic parameters.
@@ -368,8 +361,7 @@ class Waveform(Configurable, Saveable):
         padded_negative = self.pad(
             negative_wave, self.dt, self.on - self.start + pw + inter_phase - self.dt, self.stop - self.off + self.dt
         )
-        wave = padded_positive + padded_negative
-        return wave
+        return padded_positive + padded_negative
 
     def generate_explicit(self):
         """Generate an explicit waveform.
@@ -420,7 +412,7 @@ class Waveform(Configurable, Saveable):
             signal = explicit_wave
         # repeats?
         repeats = self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'period_repeats')
-        if type(repeats) is not int:
+        if isinstance(repeats, int):
             raise TypeError("Number of repeats for explicit wave must be an integer value")
         if repeats > 1:
             signal = np.tile(signal, repeats)
@@ -428,14 +420,12 @@ class Waveform(Configurable, Saveable):
         if self.dt * len(signal) > (self.off - self.on):
             raise ValueError("Number of repeats for explicit wave does not fit in global.off - global.on in Sim config")
         # pad with zeros for: time before on, time after off
-        padded = self.pad(
+        return self.pad(
             signal,
             self.dt,
             self.on - self.start,
             self.stop - (self.on + self.dt * len(signal)),
         )
-        wave = padded
-        return wave
 
     def plot(self, ax: plt.Axes = None, final: bool = False, path: str = None, plt_kwargs: dict = None):
         """Plot the waveform.

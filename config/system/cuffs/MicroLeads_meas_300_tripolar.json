@@ -1,56 +1,57 @@
 {
-  "description": "MicroLeads cuff we measured, 265 um diameter, TRIpolar, used for preclinical studies",
+  "angle_to_contacts_deg": 180,
   "code": "Um300t",
+  "description": "MicroLeads cuff we measured, 265 um diameter, TRIpolar, used for preclinical studies",
+  "expandable": false,
   "instances": [
     {
-      "type": "CuffFill_Primitive",
-      "label": "MicroLeads_Um300t Cuff Fill",
       "def": {
+        "Center": "z_center_Um300t",
+        "L": "L_Um300t+2*Thk_fill_Um300t",
         "Radius": "R_out_Um300t+Thk_fill_Um300t",
         "Thk": "Thk_fill_Um300t",
-        "L": "L_Um300t+2*Thk_fill_Um300t",
-        "Center": "z_center_Um300t",
         "x_shift": "x_shift",
         "y_shift": "y_shift"
       },
+      "label": "MicroLeads_Um300t Cuff Fill",
       "materials": [
         {
           "info": "fill",
           "label_index": 0
         }
-      ]
+      ],
+      "type": "CuffFill_Primitive"
     },
     {
-      "type": "uCuff_Primitive",
-      "label": "MicroLeads_Um300t Cuff",
       "def": {
         "Center": "z_center_Um300t",
         "R_in": "R_in_Um300t",
-        "U_tangent": "Tangent_Um300t",
         "R_out": "R_out_Um300t",
         "U_L": "L_Um300t",
+        "U_gap": "gap",
         "U_shift_x": "x_shift",
         "U_shift_y": "y_shift",
-        "U_gap": "gap"
+        "U_tangent": "Tangent_Um300t"
       },
+      "label": "MicroLeads_Um300t Cuff",
       "materials": [
         {
           "info": "insulator",
           "label_index": 1
         }
-      ]
+      ],
+      "type": "uCuff_Primitive"
     },
     {
-      "type": "uContact_Primitive",
-      "label": "MicroLeads_Um300t Contact 1",
       "def": {
         "Center": "z_center_Um300t-(Pitch_Um300t)",
         "R_in": "R_in_Um300t",
+        "U_recess": "recess_Um300t",
         "U_tangent": "Tangent_Um300t",
         "U_thk": "thk_contact_Um300t",
-        "U_z": "z_contact_Um300t",
-        "U_recess": "recess_Um300t"
+        "U_z": "z_contact_Um300t"
       },
+      "label": "MicroLeads_Um300t Contact 1",
       "materials": [
         {
           "info": "conductor",
@@ -60,19 +61,19 @@
           "info": "recess",
           "label_index": 4
         }
-      ]
+      ],
+      "type": "uContact_Primitive"
     },
     {
-      "type": "uContact_Primitive",
-      "label": "MicroLeads_Um300t Contact 2",
       "def": {
         "Center": "z_center_Um300t",
         "R_in": "R_in_Um300t",
+        "U_recess": "recess_Um300t",
         "U_tangent": "Tangent_Um300t",
         "U_thk": "thk_contact_Um300t",
-        "U_z": "z_contact_Um300t",
-        "U_recess": "recess_Um300t"
+        "U_z": "z_contact_Um300t"
       },
+      "label": "MicroLeads_Um300t Contact 2",
       "materials": [
         {
           "info": "conductor",
@@ -82,19 +83,19 @@
           "info": "recess",
           "label_index": 4
         }
-      ]
+      ],
+      "type": "uContact_Primitive"
     },
     {
-      "type": "uContact_Primitive",
-      "label": "MicroLeads_Um300t Contact 3",
       "def": {
         "Center": "z_center_Um300t+(Pitch_Um300t)",
         "R_in": "R_in_Um300t",
+        "U_recess": "recess_Um300t",
         "U_tangent": "Tangent_Um300t",
         "U_thk": "thk_contact_Um300t",
-        "U_z": "z_contact_Um300t",
-        "U_recess": "recess_Um300t"
+        "U_z": "z_contact_Um300t"
       },
+      "label": "MicroLeads_Um300t Contact 3",
       "materials": [
         {
           "info": "conductor",
@@ -104,82 +105,81 @@
           "info": "recess",
           "label_index": 4
         }
-      ]
+      ],
+      "type": "uContact_Primitive"
     }
   ],
+  "offset": {},
   "params": [
     {
-      "name": "z_center_Um300t",
+      "description": "Z-position of cuff center",
       "expression": "z_nerve/2",
-      "description": "Z-position of cuff center"
+      "name": "z_center_Um300t"
     },
     {
-      "name": "R_in_Um300t",
+      "description": "Cuff inner diameter",
       "expression": "132.5 [um]",
-      "description": "Cuff inner diameter"
+      "name": "R_in_Um300t"
     },
     {
-      "name": "R_out_Um300t",
+      "description": "Cuff outer diameter",
       "expression": "(1190/2) [um]",
-      "description": "Cuff outer diameter"
+      "name": "R_out_Um300t"
     },
     {
-      "name": "Tangent_Um300t",
+      "description": "MicroLeads contact dimension ... shaped like U in cross section, the Tangent is the length of the straight portions on either side of the curve at the bottom of the U",
       "expression": "255 [um]",
-      "description": "MicroLeads contact dimension ... shaped like U in cross section, the Tangent is the length of the straight portions on either side of the curve at the bottom of the U"
+      "name": "Tangent_Um300t"
     },
     {
-      "name": "thk_contact_Um300t",
+      "description": "Thickness of contact",
       "expression": "0.02 [mm]",
-      "description": "Thickness of contact"
+      "name": "thk_contact_Um300t"
     },
     {
-      "name": "z_contact_Um300t",
+      "description": "Z-length of contact",
       "expression": "680 [um]",
-      "description": "Z-length of contact"
+      "name": "z_contact_Um300t"
     },
     {
-      "name": "Pitch_Um300t",
+      "description": "z-distance between contacts",
       "expression": "1070 [um]",
-      "description": "z-distance between contacts"
+      "name": "Pitch_Um300t"
     },
     {
-      "name": "L_Um300t",
+      "description": "Length of cuff",
       "expression": "3650 [um]",
-      "description": "Length of cuff"
+      "name": "L_Um300t"
     },
     {
-      "name": "Thk_fill_Um300t",
+      "description": "Distance fill extends beyond cuff boundary",
       "expression": "100 [um]",
-      "description": "Distance fill extends beyond cuff boundary"
+      "name": "Thk_fill_Um300t"
     },
     {
-      "name": "thk_medium_gap_internal_Um300t",
+      "description": "Gap between cuff and nerve",
       "expression": "10 [um]",
-      "description": "Gap between cuff and nerve"
+      "name": "thk_medium_gap_internal_Um300t"
     },
     {
-      "name": "x_shift",
+      "description": "Translation of the fill domain in the x direction",
       "expression": "130 [um]",
-      "description": "Translation of the fill domain in the x direction"
+      "name": "x_shift"
     },
     {
-      "name": "y_shift",
+      "description": "Translation of the fill domain in the y direction",
       "expression": "0 [um]",
-      "description": "Translation of the fill domain in the y direction"
+      "name": "y_shift"
     },
     {
-      "name": "gap",
+      "description": "If MicroLeads cuff does not close all the way, this is used to widen the opening.",
       "expression": "40 [um]",
-      "description": "If MicroLeads cuff does not close all the way, this is used to widen the opening."
+      "name": "gap"
     },
     {
-      "name": "recess_Um300t",
+      "description": "Depth of fill material into the cuff before the contact. This is used to create an associated recess/fill domain with a contact.",
       "expression": "50 [um]",
-      "description": "Depth of fill material into the cuff before the contact. This is used to create an associated recess/fill domain with a contact."
+      "name": "recess_Um300t"
     }
-  ],
-  "expandable": false,
-  "angle_to_contacts_deg": 180,
-  "offset": {}
+  ]
 }

@@ -226,11 +226,10 @@ def auto_compile(override: bool = False):
             print(exit_data.stderr)
             sys.exit("Error in compiling of NEURON files. Exiting...")
         os.chdir('..')
-        compiled = True
-    else:
-        print('skipped compile')
-        compiled = False
-    return compiled
+        return True
+
+    print('skipped compile')
+    return False
 
 
 def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind):
@@ -245,8 +244,7 @@ def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind):
         if item[0] == my_inner_ind and item[1] == my_fiber_ind:
             my_diameter = item[2]
             break
-        else:
-            continue
+
     if isinstance(my_diameter, list) and len(my_diameter) == 1:
         my_diameter = my_diameter[0]
 

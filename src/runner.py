@@ -15,7 +15,6 @@ import subprocess
 import sys
 import time
 import warnings
-from typing import List
 
 import numpy as np
 
@@ -115,9 +114,6 @@ class Runner(Configurable):
 
         :return: Dictionary of all configs
         """
-        # load all json configs into memory
-        all_configs = self.load_configs()
-
         run_pseudonym = self.configs[Config.RUN.value].get('pseudonym')
         if run_pseudonym is not None:
             print('Run pseudonym:', run_pseudonym)
@@ -132,7 +128,8 @@ class Runner(Configurable):
                     f"Specifying {deprecated_key} in run.json is deprecated, and has no effect.", stacklevel=2
                 )
 
-        return all_configs
+        # load all json configs into memory
+        return self.load_configs()
 
     def generate_sample(self, all_configs, smart=True):
         """Generate the sample object for this run.
@@ -371,8 +368,8 @@ class Runner(Configurable):
 
         all_configs = self.setup_run()
 
-        self.bases_potentials_exist: List[bool] = []  # if all of these are true, skip Java
-        self.ss_bases_exist: List[bool] = []  # if all of these are true, skip Java
+        self.bases_potentials_exist: list[bool] = []  # if all of these are true, skip Java
+        self.ss_bases_exist: list[bool] = []  # if all of these are true, skip Java
 
         sample, sample_num = self.generate_sample(all_configs, smart=smart)
 

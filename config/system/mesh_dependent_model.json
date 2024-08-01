@@ -1,31 +1,5 @@
 {
-  "modes": {
-    "rho_perineurium": false,
-    "cuff_shift": true,
-    "fiber_z": true,
-    "use_ci": true
-  },
-  "medium": {
-    "proximal": {
-      "distant_ground": false,
-      "length": true,
-      "radius": true
-    },
-    "distal": {
-      "exist": true,
-      "distant_ground": false,
-      "shift": {
-        "x": true,
-        "y": true,
-        "z": true
-      },
-      "length": true,
-      "radius": true
-    }
-  },
-  "trace_interp_tol": true,
-  "inner_interp_tol": true,
-  "outer_interp_tol": true,
+  "conductivities": false,
   "cuff": {
     "preset": true,
     "rotate": {
@@ -38,39 +12,65 @@
       "z": true
     }
   },
-  "min_radius_enclosing_circle": true,
-  "mesh": {
-    "name": true,
-    "shape_order": true,
-    "proximal": {
-      "mesh_time": false,
-      "hcurve": true,
-      "hmin": true,
-      "hnarrow": true,
-      "type": {
-        "im": true,
-        "name": true
-      },
-      "hmax": true,
-      "hgrad": true
-    },
+  "frequency": false,
+  "inner_interp_tol": true,
+  "medium": {
     "distal": {
-      "mesh_time": false,
+      "distant_ground": false,
+      "exist": true,
+      "length": true,
+      "radius": true,
+      "shift": {
+        "x": true,
+        "y": true,
+        "z": true
+      }
+    },
+    "proximal": {
+      "distant_ground": false,
+      "length": true,
+      "radius": true
+    }
+  },
+  "mesh": {
+    "distal": {
       "hcurve": true,
+      "hgrad": true,
+      "hmax": true,
       "hmin": true,
       "hnarrow": true,
+      "mesh_time": false,
       "type": {
         "im": true,
         "name": true
-      },
-      "hmax": true,
-      "hgrad": true
+      }
     },
+    "name": true,
+    "proximal": {
+      "hcurve": true,
+      "hgrad": true,
+      "hmax": true,
+      "hmin": true,
+      "hnarrow": true,
+      "mesh_time": false,
+      "type": {
+        "im": true,
+        "name": true
+      }
+    },
+    "shape_order": true,
     "stats": false
   },
-  "frequency": false,
-  "temperature": false,
-  "conductivities": false,
+  "min_radius_enclosing_circle": true,
+  "modes": {
+    "cuff_shift": true,
+    "fiber_z": true,
+    "rho_perineurium": false,
+    "use_ci": true
+  },
+  "outer_interp_tol": true,
+  "solution": false,
   "solver": false,
-  "solution": false
+  "temperature": false,
+  "trace_interp_tol": true
 }
