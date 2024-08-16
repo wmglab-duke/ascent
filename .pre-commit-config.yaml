@@ -31,13 +31,13 @@ repos:
   - id: flynt
   # pyupgrade (migrate code to newer syntax)
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.16.0
+  rev: v3.17.0
   hooks:
   - id: pyupgrade
     args: [--py310-plus]
   # format python code
 - repo: https://github.com/psf/black
-  rev: 24.4.2
+  rev: 24.8.0
   hooks:
   - id: black
     language_version: python3
@@ -51,7 +51,7 @@ repos:
     args: [--in-place, --config, ./pyproject.toml]
   #format toml and yaml
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-  rev: v2.13.0
+  rev: v2.14.0
   hooks:
   - id: pretty-format-toml
     args: [--autofix]
@@ -61,7 +61,7 @@ repos:
   #   args: [--autofix]
   # lint python code
 - repo: https://github.com/pycqa/flake8
-  rev: 7.1.0
+  rev: 7.1.1
   hooks:
   - id: flake8
     additional_dependencies:
@@ -91,7 +91,7 @@ repos:
     args: [--disable, 'md013,md034,md033,md036']
   # check config files
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.29.0
+  rev: 0.29.1
   hooks:
   - id: check-gitlab-ci
   - id: check-readthedocs
