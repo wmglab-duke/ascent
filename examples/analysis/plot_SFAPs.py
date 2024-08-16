@@ -31,7 +31,7 @@ q = Query(
 ).run()
 
 data = q.common_data_extraction(data_types=['sfap'])  # TODO need to update
-# We could iterate through each row, and plot each sfap. Or we could explode the data and plot all at once using seaborn.
+# explode the data and plot all at once using seaborn.
 splode = data.explode(['SFAP_times', 'SFAP'], ignore_index=True)
 
 fig, ax = plt.subplots()
@@ -41,6 +41,5 @@ plt.xlim(left=0, right=30)
 plt.title('Single Fiber Action Potentials')
 plt.xlabel('Time (ms)')
 plt.ylabel(r'signal (${\mu}V$)')
-# plt.ylim(-20, 20)
 plt.axhline(0, c='k', ls='--')
 plt.show()
