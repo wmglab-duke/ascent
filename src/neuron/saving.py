@@ -1,3 +1,5 @@
+"""Helper functions for saving data from NEURON simulations."""
+
 import os
 import warnings
 
@@ -48,7 +50,7 @@ def initialize_saving(
 
     time_inds = [int(t / dt) for t in (space_times or [])]
     time_inds.sort()
-    node_inds = [int((nodecount - 1) * loc) for loc in (locs or [])] if locs != 'all' else list(range(0, nodecount))
+    node_inds = [int((nodecount - 1) * loc) for loc in (locs or [])] if locs != 'all' else list(range(nodecount))
     node_inds.sort()
     output_path = os.path.join(sim_path, 'data', 'outputs')
     os.makedirs(output_path, exist_ok=True)
@@ -227,7 +229,7 @@ def save_data(
     )
     if save_type == 'space':
         data = data[params['time_inds']]  # save data only at user-specified times
-        data.insert(0, 'Node#', list(range(0, len(fiber.nodes))))
+        data.insert(0, 'Node#', list(range(len(fiber.nodes))))
     elif save_type == 'time':
         data = data.T[params['node_inds']]  # save data only at user-specified locations
         data.insert(0, 'Time', stimulation.time)
@@ -265,7 +267,7 @@ def handle_header(params: dict, save_type: str, var_type: str, dt: float = None,
     """
     if save_type == 'space':  # F(x) - function of space
         return space_header(params, var_type=var_type, dt=dt, units=units)
-    elif save_type == 'time':  # F(t) - function of time
+    if save_type == 'time':  # F(t) - function of time
         return time_header(params, var_type=var_type, units=units)
     return []
 
