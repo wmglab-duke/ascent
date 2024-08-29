@@ -19,6 +19,7 @@ workflow:
     when: never
   - if: $CI_COMMIT_REF_PROTECTED   #run on protected branches
 
+
 # Change pip's cache directory to be inside the project directory since we can
 # only cache local items.
 variables:
@@ -129,4 +130,3 @@ pages:
     - public
   only:
   - master
-  when: always

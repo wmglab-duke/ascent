@@ -40,19 +40,19 @@ def run(args):
         if not args.run_indices:
             raise ValueError('No run indices provided.')
     else:
+        if args.run_indices:
+            raise ValueError('Cannot provide both run group and run indices.')
         grouppath = os.path.join('config', 'user', 'rungroups.json')
+
         if not os.path.exists(grouppath):
             raise FileNotFoundError(f'Run group file not found: {grouppath}')
-        else:
-            with open(grouppath) as f:
-                rungroups = json.load(f)
-            if args.run_group not in rungroups:
-                raise ValueError(f'Run group not found: {args.run_group}')
-            else:
-                if args.run_indices:
-                    raise ValueError('Cannot provide both run group and run indices.')
-                else:
-                    args.run_indices = rungroups[args.run_group]
+        with open(grouppath) as f:
+            rungroups = json.load(f)
+
+        if args.run_group not in rungroups:
+            raise ValueError(f'Run group not found: {args.run_group}')
+
+        args.run_indices = rungroups[args.run_group]
 
     for argument in args.run_indices:
         # START timer

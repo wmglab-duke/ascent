@@ -123,9 +123,11 @@ def main(
 
     if protocol_configs['mode'] != 'FINITE_AMPLITUDES':  # threshold search
         find_threshold_kws = protocol_configs.get('find_threshold_kws', {})
-        if not 'fail_on_end_excitation' in find_threshold_kws:
+        if 'fail_on_end_excitation' not in find_threshold_kws:
             warnings.warn(
-                'fail_on_end_excitation not specified in find_threshold_kws, defaulting to False (warning upon end excitation)'
+                'fail_on_end_excitation not specified in find_threshold_kws, '
+                'defaulting to False (warning upon end excitation)',
+                stacklevel=2,
             )
             find_threshold_kws['fail_on_end_excitation'] = False
         amp = threshold_protocol(
@@ -148,9 +150,11 @@ def main(
         time_total = 0
         amps = protocol_configs['amplitudes']
         run_sim_kws = protocol_configs.get('run_sim_kws', {})
-        if not 'fail_on_end_excitation' in run_sim_kws:
+        if 'fail_on_end_excitation' not in run_sim_kws:
             warnings.warn(
-                'fail_on_end_excitation not specified in run_sim_kws, defaulting to False (warning upon end excitation)'
+                'fail_on_end_excitation not specified in run_sim_kws, '
+                'defaulting to False (warning upon end excitation)',
+                stacklevel=2,
             )
             run_sim_kws['fail_on_end_excitation'] = False
             # TODO note that find_threshold_kws is ignored here, and run_sim_kws is ignored above
