@@ -303,12 +303,19 @@ class Query(Configurable, Saveable):
 
         return True
 
-    def sfap_data(self, fiber_indices: list[int] = None, all_fibers: bool = False, ignore_missing: bool = False):
+    def sfap_data(
+        self,
+        fiber_indices: list[int] = None,
+        all_fibers: bool = False,
+        ignore_missing: bool = False,
+        amplitude_indices: tuple[int] = (0,),
+    ):
         """Obtain SFAP data as a pandas DataFrame for user-defined fiber indices or all fibers.
 
         :param fiber_indices: list of fiber indexes to pull SFAP data for. Default: single fiber 0.
         :param all_fibers: If True, all fiber's SFAP data will be pulled. If False, only fiber_indices will be pulled.
         :param ignore_missing: if True, missing threshold data will not cause an error.
+        :param amplitude_indices: list of amplitude indices to pull SFAP data for. Default: single amplitude 0.
         :raises LookupError: If no results (called before Query.run())
         :return: pandas DataFrame of SFAP data.
         """
@@ -344,7 +351,7 @@ class Query(Configurable, Saveable):
                             master_indices.append(i)
 
                     # init SFAP container for this model, sim, nsim
-                    sfap_data: list[float] = []
+                    sfap_data: list[dict] = []
                     for nsim_index, (
                         potentials_product_index,
                         waveform_index,
@@ -372,39 +379,43 @@ class Query(Configurable, Saveable):
                             for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
                                 master_index = sim_object.indices_n_to_fib(fiberset_index, inner, local_fiber_index)
 
-                                sfap_path = os.path.join(
-                                    n_sim_dir,
-                                    'data',
-                                    'outputs',
-                                    f'SFAP_time_inner{inner}_fiber{local_fiber_index}_amp0.dat',
-                                )
-                                if ignore_missing:
-                                    try:
-                                        sfap = np.loadtxt(sfap_path, skiprows=1)
-                                    except OSError:
-                                        sfap = np.array([[np.nan, np.nan]])
-                                        warnings.warn('Missing SFAP, but continuing.', stacklevel=2)
-                                else:
-                                    sfap = np.loadtxt(sfap_path, skiprows=1)
-
-                                for row in sfap:
-                                    sfap_data.append(
-                                        {
-                                            'sample': sample_results['index'],
-                                            'model': model_results['index'],
-                                            'sim': sim_index,
-                                            'nsim': nsim_index,
-                                            'inner': inner,
-                                            'fiber': local_fiber_index,
-                                            'index': master_index,
-                                            'fiberset_index': fiberset_index,
-                                            'waveform_index': waveform_index,
-                                            'active_src_index': active_src_index,
-                                            'active_rec_index': active_rec_index,
-                                            'SFAP_times': row[0],
-                                            'SFAP0': row[1],
-                                        }
+                                sfap = []
+                                # Get all amplitudes
+                                for amp in amplitude_indices:
+                                    sfap_path = os.path.join(
+                                        n_sim_dir,
+                                        'data',
+                                        'outputs',
+                                        f'SFAP_time_inner{inner}_fiber{local_fiber_index}_amp{amp}.dat',
                                     )
+                                    if ignore_missing:
+                                        try:
+                                            sfap_amp = np.loadtxt(sfap_path, skiprows=1)
+                                        except OSError:
+                                            sfap_amp = np.array([[np.nan, np.nan]])
+                                            warnings.warn('Missing SFAP, but continuing.', stacklevel=2)
+                                    else:
+                                        sfap_amp = np.loadtxt(sfap_path, skiprows=1)
+                                    sfap.append(sfap_amp)
+
+                                for i, row in enumerate(sfap[0]):
+                                    base = {
+                                        'sample': sample_results['index'],
+                                        'model': model_results['index'],
+                                        'sim': sim_index,
+                                        'nsim': nsim_index,
+                                        'inner': inner,
+                                        'fiber': local_fiber_index,
+                                        'index': master_index,
+                                        'fiberset_index': fiberset_index,
+                                        'waveform_index': waveform_index,
+                                        'active_src_index': active_src_index,
+                                        'active_rec_index': active_rec_index,
+                                        'SFAP_times': row[0] - 1.2,
+                                    }
+                                    for j, sfap_amp in enumerate(sfap):
+                                        base[f'SFAP{j}'] = sfap_amp[i][1]
+                                    sfap_data.append(base)
 
         sfap_data = pd.DataFrame(sfap_data)
         return sfap_data.loc[sfap_data['index'].isin(fiber_indices)] if not all_fibers else sfap_data
