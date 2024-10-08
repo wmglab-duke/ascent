@@ -36,6 +36,7 @@
       ],
       "max": 12500,
       "min": 0,
+      "mode": "EXTRUSION",
       "offset": 0,
       "seed": 123
     }
