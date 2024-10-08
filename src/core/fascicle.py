@@ -127,6 +127,11 @@ class Fascicle:
         """
         return list(self.inners) + [self.outer]
 
+    def reset_transform(self):
+        """Reset the affine transformation trackers for all traces in the fascicle."""
+        for trace in self.all_traces():
+            trace.reset_transform()
+
     def centroid(self) -> tuple[float, float]:
         """Get the centroid of the outer trace.
 

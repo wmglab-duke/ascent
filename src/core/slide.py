@@ -13,6 +13,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from quantiphy import Quantity
+from shapely.geometry import Point
 
 from src.utils import MethodError, MorphologyError, NerveMode, ReshapeNerveMode, WriteMode
 
@@ -370,15 +371,19 @@ class Slide:
         if final:
             plt.show()
 
-    def scale(self, factor: float):
+    def scale(self, factor: float, center: list[float] = None):
         """Scale the nerve and fascicles by a factor.
 
         :param factor: scale factor, only knows how to scale around its own centroid
+        :param center: origin [x, y] around which to scale the image
         """
-        if self.monofasc():
-            center = list(self.fascicles[0].centroid())
-        else:
-            center = list(self.nerve.centroid())
+        if center is None:
+            if self.monofasc():
+                center = list(self.fascicles[0].centroid())
+            else:
+                center = list(self.nerve.centroid())
+
+        if not self.monofasc():
             self.nerve.scale(factor, center)
 
         for fascicle in self.fascicles:
@@ -442,9 +447,15 @@ class Slide:
 
         :return: list of trace objects
         """
-        if self.monofasc():
-            return [f.outer for f in self.fascicles]
-        return [self.nerve] + [f.outer for f in self.fascicles]
+        all_traces = []
+        for f in self.fascicles:
+            all_traces.append(f.outer)
+            all_traces.extend(f.inners)
+
+        if self.nerve_mode != NerveMode.NOT_PRESENT:
+            all_traces.append(self.nerve)
+
+        return all_traces
 
     def write(self, mode: WriteMode, path: str):
         """Write all traces to files for import into COMSOL.
@@ -511,3 +522,33 @@ class Slide:
                 if not trace.polygon().is_valid:
                     return False
         return True
+
+    def map_points(self, points: np.ndarray) -> tuple[list, list]:
+        """Map points to fascicles.
+
+        Given a ndarray or list of 2D or 3D points, return a list mapping of to point index to an inner it's within.
+
+        :param points: list[xy[z]] coordinates of the fibers
+        :return: mapping from fiber index to outer index and from outer index to inner index.
+        """
+        out_to_fib = []
+        out_to_in = []
+        xy_points = np.asarray(points)[:, :2]
+
+        for i, fascicle in enumerate(self.fascicles):
+            inner_ind = 0  # noqa SIM113
+            out_to_in.append([])
+            out_to_fib.append([])
+            if len(fascicle.inners) > 0:
+                inners = fascicle.inners
+            else:
+                inners = [fascicle.outer]
+            for j, inner in enumerate(inners):
+                out_to_in[i].append(inner_ind)
+                out_to_fib[i].append([])
+                inner_ind += 1
+                for q, fiber in enumerate(xy_points):
+                    if Point(fiber).within(inner.polygon()):
+                        out_to_fib[i][j].append(q)
+
+        return out_to_fib, out_to_in

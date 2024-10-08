@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pyclipper
 import pymunk
-from shapely.affinity import rotate, scale
+from shapely.affinity import affine_transform, rotate, scale
 from shapely.geometry import Point, Polygon
 from shapely.ops import nearest_points
 
@@ -43,12 +43,34 @@ class Trace:
         self.__int_points = None
         self.__min_circle = None
 
+        # Mutable tracker for affine transformations
+        self._transform_mat = np.eye(4).tolist()
+
         # add 0 as z value if only x and y given
         if np.shape(points)[1] == 2:
             points = np.append(points, np.zeros([len(points), 1]), 1)
 
         self.points = None  # must declare instance variable in __init__ at some point!
         self.append(points)
+
+    @property
+    def transform_matrix(self) -> list[list[float]]:
+        """Getter for transformation matrix property.
+
+        :return: Transformation matrix for trace.
+        """
+        return self._transform_mat
+
+    def set_transform_matrix(self, value):
+        """Setter for transformation matrix property.
+
+        :param value: Value for new transformation matrix.
+        """
+        self._transform_mat = value
+
+    def reset_transform(self):
+        """Reset the Trace transformation matrix property to identity."""
+        self._transform_mat = np.eye(4)
 
     # %% public, MUTATING methods
     def append(self, points):
@@ -132,6 +154,94 @@ class Trace:
             self.scale(1)
         self.points = np.flip(self.points, axis=0)  # set points to opencv orientation
 
+    @staticmethod
+    def get_shapely_affine(matrix: list[list[float]], return_ndim: int) -> list[float]:
+        """Convert 4x4 transformation matrix to shapely.affinity.affine_transform format.
+
+        https://shapely.readthedocs.io/en/stable/manual.html#shapely.affinity.affine_transform
+
+        :param matrix: Square (4x4) affine transformation matrix.
+        :param return_ndim: 2 for 2D (x,y) return matrix, 3 for 3d (x,y,z).
+        :raises NotImplementedError: return_ndim not supported.
+        :return: list of float parameters for affine_transform.
+        """
+        if return_ndim not in [2, 3]:
+            raise NotImplementedError(f"return_ndim not recognized as 2 or 3, received {return_ndim}")
+
+        np_mat = np.asarray(matrix)
+        if return_ndim == 2:
+            return [
+                np_mat[0, 0],
+                np_mat[0, 1],
+                np_mat[1, 0],
+                np_mat[1, 1],
+                np_mat[0, 3],
+                np_mat[1, 3],
+            ]
+        return [
+            np_mat[0, 0],
+            np_mat[0, 1],
+            np_mat[0, 2],
+            np_mat[1, 0],
+            np_mat[1, 1],
+            np_mat[1, 2],
+            np_mat[2, 0],
+            np_mat[2, 1],
+            np_mat[2, 2],
+            np_mat[0, 3],
+            np_mat[1, 3],
+            np_mat[2, 3],
+        ]
+
+    @staticmethod
+    def make_transform_matrix(angle: float, scale_factor: list[float], center: list[float]) -> np.ndarray:
+        """Construct transformation matrix to rotate, shift, and scale trace points.
+
+        Rotation and scaling will be performed after centering the points at the provided center.
+
+        :param angle: Counterclockwise xy-plane rotation in radians
+        :param scale_factor: List of (x, y, z) scaling factors
+        :param center: List of (x, y, z) center about which to apply rotation and scaling
+        :returns: 4x4 transformation matrix
+        """
+        # Assemble affine transformation matrix for each step
+        # Transformation matrices can be combined with left-side matrix multiplication
+        # Transformation steps:
+        # 1. Translate to center of points to origin (T_orig),
+        # 2. scale about origin (S),
+        # 3. rotate about origin (R),
+        # 4. translate to original center (T_center)
+        # Final transformation matrix is T_center*R*S*T_orig
+        center_mat = np.eye(4)
+        uncenter_mat = np.eye(4)
+        center_mat[: len(center), -1] = -1 * np.asarray(center)  # translates trace points center to origin
+        uncenter_mat[: len(center), -1] = np.asarray(center)  # translates trace points to original center
+        scale_mat = np.eye(4)
+        scale_mat[0, 0] = scale_factor[0]  # scale points by x factor
+        scale_mat[1, 1] = scale_factor[1]  # scale points by y factor
+        scale_mat[2, 2] = scale_factor[2]  # scale points by z factor
+        rot_mat = np.array(
+            [[np.cos(angle), -np.sin(angle), 0, 0], [np.sin(angle), np.cos(angle), 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+        )  # rotates points by angle
+
+        # Left-multiply to add subsequent steps
+        return np.dot(uncenter_mat, np.dot(rot_mat, np.dot(scale_mat, center_mat)))
+
+    def transform(self, transform_matrix: np.ndarray):
+        """Transform trace given 4x4 affine transformation matrix.
+
+        :param transform_matrix: 4x4 affine transformation matrix.
+        """
+        # Get the affine transformation matrix in Shapely affine_transform format
+        shapely_tfm = self.get_shapely_affine(transform_matrix, 3)
+        # Transform Shapely representation of Trace object
+        transformed_polygon: Polygon = affine_transform(self.polygon(), shapely_tfm)
+        # Set new trace points
+        self.points = None
+        self.append([list(coord[:2]) + [0] for coord in transformed_polygon.boundary.coords])
+        # Update transformation tracker with this matrix
+        self._transform_mat = np.dot(transform_matrix, self._transform_mat).tolist()
+
     def scale(self, factor: float = 1, center: list[float] | str = 'centroid'):
         """Scales the trace by a given factor.
 
@@ -142,13 +252,24 @@ class Trace:
         if isinstance(center, list):
             center = tuple(center)
         else:
-            if center not in ['centroid', 'center']:
+            # Same as Shapely internals for scale() origin argument
+            if center == 'centroid':
+                center = np.mean(self.points, axis=0)
+            elif center == 'center':
+                center = np.max(self.points, axis=0) + np.min(self.points, axis=0) / 2
+            else:
                 raise ValueError("Invalid scale center string.")
 
-        scaled_polygon: Polygon = scale(self.polygon(), *([factor] * 3), origin=center)
+        # Assemble affine transformation matrix
+        tfm_mat = self.make_transform_matrix(0, [factor, factor, 1], center)
+
+        # Actually do the scaling with Shapely, but equivalent to tfm_mat*self.points
+        scaled_polygon: Polygon = scale(self.polygon(), *([factor] * 3), origin=Point(center))
 
         self.points = None
         self.append([list(coord[:2]) + [0] for coord in scaled_polygon.boundary.coords])
+        # Append these transformations to transformation tracker with left multiplication
+        self._transform_mat = np.dot(tfm_mat, self._transform_mat).tolist()
         self.__update()
 
     def rotate(self, angle: float, center: list[float] | str = 'centroid'):
@@ -161,13 +282,23 @@ class Trace:
         if isinstance(center, list):
             center = tuple(center)
         else:
-            if center not in ['centroid', 'center']:
+            # Same as Shapely internals for scale() origin argument
+            if center == 'centroid':
+                center = np.mean(self.points, axis=0)
+            elif center == 'center':
+                center = np.max(self.points, axis=0) + np.min(self.points, axis=0) / 2
+            else:
                 raise ValueError("Invalid scale center string.")
 
-        rotated_polygon: Polygon = rotate(self.polygon(), angle, origin=center, use_radians=True)
+        # Assemble affine transformation matrix
+        tfm_mat = self.make_transform_matrix(angle, [1, 1, 1], center)
+
+        rotated_polygon: Polygon = rotate(self.polygon(), angle, origin=Point(center), use_radians=True)
 
         self.points = None
         self.append([list(coord[:2]) + [0] for coord in rotated_polygon.boundary.coords])
+        # Append these transformations to transformation tracker with left multiplication
+        self._transform_mat = np.dot(tfm_mat, self._transform_mat).tolist()
         self.__update()
 
     def shift(self, vector):
@@ -180,9 +311,18 @@ class Trace:
         if np.shape(vector) != (3,):
             raise ValueError("Vector provided must be of shape (3) (i.e. 1-dim)")
 
+        # Assemble affine transformation matrix for each step
+        # Transformation steps:
+        # 1. Translate to center of points by the shift vector (T_shift),
+        # Final transformation matrix is T_shift
+        trans_mat = np.eye(4)
+        trans_mat[0:-1, -1] = vector
+
         # apply shift to each point
         vector = [float(item) for item in vector]
         self.points += vector
+        # Append these transformations to transformation tracker with left multiplication
+        self._transform_mat = np.dot(trans_mat, self._transform_mat)
 
         # required for mutating method
         self.__update()
@@ -446,8 +586,10 @@ class Trace:
 
         # add column of z-values (should all be the same)
         points = np.append(points, np.c_[self.points[:, 2]], axis=1)
+        trace = Trace(points)
+        trace.set_transform_matrix(self.transform_matrix)
 
-        return Trace(points)
+        return trace
 
     # %% output
     def plot(

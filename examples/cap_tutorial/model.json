@@ -111,7 +111,6 @@
   "min_radius_enclosing_circle": 129.2749008895385,
   "modes": {
     "cuff_shift": "NONE",
-    "fiber_z": "EXTRUSION",
     "rho_perineurium": "RHO_WEERASURIYA",
     "use_ci": true
   },

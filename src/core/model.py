@@ -378,7 +378,6 @@ class Model(Configurable, Saveable):
         if [bound[0] is None for bound in bounds].count(True) > 1 or [bound[1] is None for bound in bounds].count(
             True
         ) > 1:
-            self.throw(134)
             raise IncompatibleParametersError(
                 "Cuff configuration file has more than one condition with None for min or max. "
             )
