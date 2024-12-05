@@ -21,7 +21,9 @@ First, these software packages must be manually installed:
 - [NEURON 7.6.7 or newer](https://nrn.readthedocs.io/en/latest/install/install_instructions.html) (newer versions have been released, but compatibility has yet to be confirmed; choose appropriate installer depending on operating system; install auxiliary software as prompted by NEURON installer)
   - Depending on your operating system, some additional dependencies may be required. Make sure to follow the installation instructions carefully.
   - NEURON must be in your PATH in order to run simulations. Either choose the add to path option during installation, or on Linux, you can add to your bash profile: `export PATH=<path/to/neuron/>:$PATH`. The NEURON path should end with `bin`.
-
+   ```{caution}
+   ASCENT may have issues running on Apple Silicon and other ARM platforms. Building an older version of NEURON (version 7.x) for ARM from source is a potential fix for these problems. Refer to the NEURON docs for prerequisites and instructions.
+   ```
 Users may also download a text editor or integrated development environment (IDE) of their choosing to view/edit code (e.g., [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/), [IntelliJ IDEA](https://www.jetbrains.com/idea/download/)). For Java code, full autocomplete functionality requires adding both the path to the COMSOL installation ending in `plugins` as well as the path `<ASCENT_PATH>/bin/json-20190722.jar` to the list of available libraries (usually from within the IDE’s project settings). To run code in your IDE, newer version of COMSOL may also require you to check the box `File>Preferences>Security>Methods and Java Libraries>Allow access to network sockets`.
 
 ### Installing ASCENT
