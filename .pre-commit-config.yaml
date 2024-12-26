@@ -19,6 +19,7 @@ repos:
   - id: check-merge-conflict
   - id: pretty-format-json
     args: [--autofix]
+    exclude: .zenodo.json
   # sort python imports
 - repo: https://github.com/pycqa/isort
   rev: 5.13.2

@@ -51,6 +51,7 @@
         9.809012
       ],
       "full_nerve_length": true,
+      "mode": "EXTRUSION",
       "offset": 0,
       "seed": 123
     }

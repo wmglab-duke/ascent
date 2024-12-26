@@ -134,6 +134,47 @@ convenience methods are included in `examples/analysis/`.
 See [Plotter Module](plotter.rst) for more info; example uses of this module
 are provided in `examples/analysis`.
 
+### Dose-response curves reflecting fiber diameters, types, and locations
+
+In `examples/analysis/` we provide a script, `custom_fiber_dose_response_curve.py`,
+that allows post-hoc analysis of fiber-specific diameters, types, and location data.
+The script accepts fiber data in the form of a .csv file and generates appropriate
+dose-response curves based on the data provided. The script was developed to allow
+for modeling interpretation of a large (>1000) amount of fibers, which are
+computationally resource intensive and unrealistic to model individually. Therefore,
+the script pulls data from and expands upon a base ASCENT simultation, which
+preemptively has gathered threshold results at equal fiber diameter intervals
+(e.g., every 1 um) along the full range of diameters within the nerve (i.e., within
+the input .csv file). We are able to do so based on the assumption that all fibers
+for a given diameter within a given fascicle have negligible differences between
+their thresholds [Davis et al. (2023)](https://doi.org/10.1088/1741-2552/acc42b).
+
+The csv file should have headers corresponding to the fiber
+locations and attributes, though only x and y locations
+are required. An example can be found in the
+`/examples/tutorial/explicit_fibersets` folder, which will work with the tutorial
+run of ASCENT.
+
+Locations are xy-coordinates (_in microns_) placed on the nerve cross-section with
+respect to the bottom left corner of the input image. X and Y coordinates should be
+the first two columns of the .csv file (labelled with 'x' and 'y'). The following
+columns can be any label or metric associated with the fiber, however _fiber
+diameter columns must have the header "diameter"_. All fiber locations should be
+placed within a fascicle's inner boundary. Points that are outside of any inner
+perineurium boundary will be excluded from the dose-response curve and a warning
+will be printed to the terminal.
+
+This script should be run after generating thresholds for a subset of your desired fibers
+through the normal ASCENT pipeline. For example, a sub-sampled simulation could contain
+fiber diameters spanning the range of your dataset in 2-um steps and placed only at the centroid
+of each fascicle in the sample cross section (see figure below). After running ASCENT normally with these parameters,
+edit the sample, model, and simulation indices as well as the location of the user-defined .csv file
+in the `custom_fiber_dose_response_curve.py` script. The
+script interpolates fiber thresholds at the new locations and diameters using quadratic.
+1-D interpolation over fiber diameter.
+Plots generated from this script will show the dose-response curve of the fiber population
+defined in the .csv file. ![alt text](/uploads/fiber_diam_thresholds.png)
+
 ### Video generation for NEURON state variables
 
 In `examples/analysis/` we provide a script, `plot_video.py`, that creates

@@ -52,13 +52,14 @@ class MockSample(Configurable):
         while not nerve.contains(p):
             p = Point(np.random.uniform(minx, maxx), np.random.uniform(miny, maxy))
 
-        return p
+        return p.x, p.y
 
     @staticmethod
     def gen_ellipse(ell):
         """Generate an ellipse shapely object.
 
-        :param ell: tuple of (center, (a, b), angle); a is the major diameter of the ellipse, b is the minor diameter
+        :param ell: tuple of ((center_x, center_y), (a, b), angle); a is the major diameter of the ellipse,
+                    b is the minor diameter
         :return: The ellipse shapely object.
         """
         # Unpack ellipse parameters
@@ -148,7 +149,7 @@ class MockSample(Configurable):
         # 2nd elem = the two semi-axis values (along x, along y)
         # 3rd elem = angle in degrees between x-axis of the Cartesian base
         #            and the corresponding semi-axis
-        p = Point(0.0, 0.0)
+        p = (0.0, 0.0)
 
         # a is the major diameter of the ellipse
         a: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'a') / 2
@@ -333,7 +334,6 @@ class MockSample(Configurable):
                     skipped_fascicles_index.append(i)
                     break
 
-                # https://gis.stackexchange.com/questions/243459/drawing-ellipse-with-shapely
                 p = self.get_random_fascicle_loc(self.nerve)
                 # 1st elem = center point (x,y) coordinates
                 # 2nd elem = the two semi-axis values (along x, along y)

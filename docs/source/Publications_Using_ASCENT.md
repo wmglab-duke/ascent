@@ -8,4 +8,4 @@
 
 - Validated computational models predict vagus nerve stimulation thresholds in preclinical animals and humans. [https://doi.org/10.1088/1741-2552/acda64](https://doi.org/10.1088/1741-2552/acda64)
 
-- Computational Models of Compound Nerve Action Potential Recordings: Efficient Filter-Based Methods to Quantify Impact of Materials, Conduction Distance, and Fiber Parameters in Rat Cervical Vagus Nerve. [https://doi.org/10.1371/journal.pcbi.1011833](https://doi.org/10.1371/journal.pcbi.1011833)
+- Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters. https://doi.org/10.1371/journal.pcbi.1011833

@@ -71,7 +71,6 @@
   },
   "modes": {
     "cuff_shift": "AUTO_ROTATION_MIN_CIRCLE_BOUNDARY",
-    "fiber_z": "EXTRUSION",
     "rho_perineurium": "RHO_WEERASURIYA",
     "use_ci": true
   },
