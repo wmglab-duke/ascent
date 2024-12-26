@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from quantiphy import Quantity
 from shapely.geometry import Point
+from shapely.ops import unary_union
 
 from src.utils import MethodError, MorphologyError, NerveMode, ReshapeNerveMode, WriteMode
 
