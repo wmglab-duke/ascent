@@ -216,7 +216,7 @@ class _HeatmapPlotter:
 
         def _mapthresh(thresh):
             return tuple(self.cmap((thresh - self.min_thresh) / (self.max_thresh - self.min_thresh)))
-        
+
         inner_count = sum(1 for fascicle in self.sample.slides[0].fascicles for _ in fascicle.inners)
 
         inner_color_list = []

@@ -18,9 +18,8 @@ import numpy as np
 import pyclipper
 import pymunk
 from shapely.affinity import affine_transform, rotate, scale
-from shapely.geometry import MultiPolygon, Point, Polygon
+from shapely.geometry import Point, Polygon
 from shapely.ops import nearest_points
-from shapely.validation import make_valid
 
 from src.utils import DownSampleMode, MorphologyError, WriteMode
 

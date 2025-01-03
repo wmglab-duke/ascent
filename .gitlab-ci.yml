@@ -76,14 +76,14 @@ docstring_check:
 
 #Here should check that no DevelopmentError is thrown in repo
 dev_check:
- stage: lint
- script:
- - ( ! grep "raise DevelopmentError" --include \*.py -r . )
- - pip install flake8 flake8-fixme
- - flake8 --select=T100,T101,T102 config docs examples scripts src run tests
- rules:
- - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
- - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  stage: lint
+  script:
+  - ( ! grep "raise DevelopmentError" --include \*.py -r . )
+  - pip install flake8 flake8-fixme
+  - flake8 --select=T100,T101,T102 config docs examples scripts src run tests
+  rules:
+  - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 #Run tests
 pytest:

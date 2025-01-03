@@ -28,4 +28,4 @@ q = Query(
 
 ap_loctime(
     q, plot=True, plot_distribution=False, save=False, nodes_only=True, amp=0
-) #could be updated to use common_data_extraction in the future
+)  # could be updated to use common_data_extraction in the future

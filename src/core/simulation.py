@@ -182,7 +182,11 @@ class Simulation(Configurable, Saveable):
                 SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]
             ).add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]).add(
                 SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]
-            ).generate(sim_directory, super_sample=True).write(WriteMode.DATA, ss_fibercoords_directory)
+            ).generate(
+                sim_directory, super_sample=True
+            ).write(
+                WriteMode.DATA, ss_fibercoords_directory
+            )
             self.ss_fiberset_map_pairs.append((fiberset.out_to_fib, fiberset.out_to_in))
             self.ss_fibersets.append(fiberset)
         return self
@@ -677,6 +681,7 @@ class Simulation(Configurable, Saveable):
 
         :param weights: weights to weight the bases with (defined in Sim Config active_srcs, active_recs)
         :param bases: vector of bases to weight for each active source/rec
+        :raises ValueError: if any nans are in the weighted potentials
         :return: weighted bases
         """
         weighted_potentials = np.zeros(len(bases[0]))

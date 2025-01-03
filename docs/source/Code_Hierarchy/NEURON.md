@@ -31,7 +31,7 @@ parameters in NEURON within the `run_controls.py` file. The parameters in
 **_Sim_** control the pulse delay, pulse width, pulse repetition
 frequency, pulse amplitude, and node/section index of the intracellular
 stimulus ([Sim Parameters](../JSON/JSON_parameters/sim)). For simulating activation thresholds, the intracellular
-stimulation amplitude should be set to zero. 
+stimulation amplitude should be set to zero.
 
 ### Recording
 
@@ -47,7 +47,7 @@ generating data to troubleshoot and visualize simulations.
 ### Save outputs to file
 
 At the end of the NEURON simulation, the program saves state variables
-as indicated in `"saving"` in [sim.json](../JSON/JSON_parameters/sim.md), CPU time, and threshold values (If running a threshold search) or fiber action potential counts (if running a finite amplitudes protocol). 
+as indicated in `"saving"` in [sim.json](../JSON/JSON_parameters/sim.md), CPU time, and threshold values (If running a threshold search) or fiber action potential counts (if running a finite amplitudes protocol).
 Output files are saved to the `data/outputs/` directory within its `n_sim` folder.
 
 ## Simulation hierarchy & run_controls.py

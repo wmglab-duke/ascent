@@ -541,7 +541,7 @@ class Query(Configurable, Saveable):
 
     def import_tm_current_matrix(
         self, nsim
-    ):  # TODO move to common data extraction and allow for any amps/fibers/inners/so on
+    ):  # This should move to common data extraction and allow for any amps/fibers/inners/so on
         """Extract current amplitude, number of axons, time vector, and transmembrane current matrix from a binary file.
 
         :param nsim: nsim index to pull data from
@@ -555,7 +555,7 @@ class Query(Configurable, Saveable):
         imembrane_file_name = os.path.join(
             os.getcwd(),
             f"samples/{sample_results['index']}/models/{model_results['index']}/sims/{sim}/n_sims/"
-            f"{nsim}/data/outputs/adjusted_imembrane_inner0_fiber0_amp0.npy",  # TODO fix to just.npy
+            f"{nsim}/data/outputs/adjusted_imembrane_inner0_fiber0_amp0.npy",
         )
         current_matrix = np.load(imembrane_file_name)  # should be columns=section and rows = time step
         waveform_file = os.path.join(
@@ -608,7 +608,6 @@ class Query(Configurable, Saveable):
         :raises ValueError: If an invalid data type is provided
         :return: A list of dictionaries containing the extracted data.
         """
-        # TODO add a wrapper function for single point data (data that is a single value per row)
         # assert that data_types is a list
         if not isinstance(data_types, list):
             raise TypeError('data_types must be a list of strings.')

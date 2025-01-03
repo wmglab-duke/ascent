@@ -66,6 +66,7 @@ def main(
     :param waveform_path: path to waveform file
     :param sim_path: path to n_sim directory
     :param n_sim: n_sim number
+    :raises ValueError: for incorrect protocol_configs
     :raises NotImplementedError: for deprecated features
     """
     start_time = time.time()  # Starting time of simulation
@@ -114,8 +115,7 @@ def main(
     # Print warning if ap_end_times in saving
     if 'ap_end_times' in saving_params:
         warnings.warn(
-            'ap_end_times is deprecated and will be removed in future versions. '
-            'Please use aploctime instead.',
+            'ap_end_times is deprecated and will be removed in future versions. ' 'Please use aploctime instead.',
             stacklevel=2,
         )
 
@@ -138,8 +138,10 @@ def main(
             find_threshold_kws['fail_on_end_excitation'] = False
         # Error if there are run_sim_kws in protocol_configs
         if 'run_sim_kws' in protocol_configs:
-            raise ValueError('run_sim_kws is not allowed in protocol_configs when running threshold search.'
-                             'move any arguments to find_threshold_kws, which passes the relevant arguments to run_sim')
+            raise ValueError(
+                'run_sim_kws is not allowed in protocol_configs when running threshold search.'
+                'move any arguments to find_threshold_kws, which passes the relevant arguments to run_sim'
+            )
         amp = threshold_protocol(
             fiber,
             protocol_configs,
@@ -150,8 +152,11 @@ def main(
             ap_detect_location,
             find_threshold_kws,
         )
-        if 'active_recs' in sim_configs: 
-            warnings.warn("Recording is typically not used for threshold search, but will be recorded as defined in sim.json.")
+        if 'active_recs' in sim_configs:
+            warnings.warn(
+                "Recording is typically not used for threshold search, but will be recorded as defined in sim.json.",
+                stacklevel=2,
+            )
             calculate_save_sfap(sim_configs, fiber, saving_params, potentials_path, inner_ind, fiber_ind, 0, axontotal)
         save_variables(saving_params, fiber, stimulation)  # Save user-specified variables
         save_runtime(saving_params, time.time() - start_time)  # Save runtime of simulation
@@ -167,9 +172,11 @@ def main(
                 'defaulting to False (warning upon end excitation)',
                 stacklevel=2,
             )
-            #Error if there are find_threshold_kws in protocol_configs
+            # Error if there are find_threshold_kws in protocol_configs
             if 'find_threshold_kws' in protocol_configs:
-                raise ValueError('find_threshold_kws is not allowed in protocol_configs when running finite amplitude protocol')
+                raise ValueError(
+                    'find_threshold_kws is not allowed in protocol_configs when running finite amplitude protocol'
+                )
             run_sim_kws['fail_on_end_excitation'] = False
 
         for amp_ind, amp in enumerate(amps):
@@ -218,9 +225,7 @@ def calculate_save_sfap(
     # If recording cuff is present, record sfap
     if 'active_recs' in sim_configs:
         downsample = sim_configs.get('saving', {}).get('cap_recording', {}).get('downsample', 1)
-        save_adjusted_im = (
-            sim_configs.get('saving', {}).get('cap_recording', {}).get('save_adjusted_im', False)
-        )
+        save_adjusted_im = sim_configs.get('saving', {}).get('cap_recording', {}).get('save_adjusted_im', False)
 
         # generate and save sfap
         rec_potentials_path = os.path.join(

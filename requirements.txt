@@ -8,6 +8,7 @@ pandas
 pillow
 pip
 pyclipper
+pyfibers # Until available on PyPI, this must be installed from the repository
 pygame
 pymunk
 quantiphy
@@ -18,5 +19,4 @@ setuptools
 shapely==1.8.*
 tqdm
 wheel
-pyfibers # Until available on PyPI, this must be installed from the repository
 xlsxwriter

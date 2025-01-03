@@ -659,9 +659,8 @@ class Sample(Configurable, Saveable):
         ]
 
         for move, angle, fascicle in zip(movements, rotations, slide.fascicles):
-            fascicle.shift(list(move) + [0]) # apply deformation shifts
-            fascicle.rotate(angle) # apply deformation rotations
-
+            fascicle.shift(list(move) + [0])  # apply deformation shifts
+            fascicle.rotate(angle)  # apply deformation rotations
 
         if deform_ratio != 1 and partially_deformed_nerve is not None:
             partially_deformed_nerve.shift(-np.asarray(list(partially_deformed_nerve.centroid()) + [0]))
@@ -677,7 +676,6 @@ class Sample(Configurable, Saveable):
 
         # shift slide about (0,0)
         slide.move_center(np.array([0, 0]))
-        from copy import deepcopy
 
         return slide
 
