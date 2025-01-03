@@ -18,5 +18,5 @@ setuptools
 shapely==1.8.*
 tqdm
 wheel
-# pyfibers # TODO: uncomment when PyPI package is available
+pyfibers # Until available on PyPI, this must be installed from the repository
 xlsxwriter

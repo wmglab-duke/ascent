@@ -264,6 +264,13 @@ records only.
     1. `“SIMPLE”`: Contours are generated using cv2.CHAIN_APPROX_SIMPLE.
     2. `“NONE”`: Contours are generated using cv2.CHAIN_APPROX_NONE.
 
+- `"mask_space"`: The value (String) is the `“MaskSpaceMode”` that tells the program how to interpret the input morphology files. Required.
+
+  - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known `“MaskSpaceModes”` include:
+
+    1. `“CARTESIAN”`: The program expects the input morphology files to be in Cartesian space. The bottom left corner of the image is the origin (0,0), and the x-axis increases to the right and the y-axis increases upwards.
+    2. `“IMAGE”`: The program expects the input morphology files to be in image space. The top left corner of the image is the origin (0,0), and the x-axis increases to the right and the y-axis increases downwards.
+
 `“smoothing”`: Smoothing is applied via a dilating the nerve/fascicle boundary by a specified distance value and then shrinking it by that same value.
 
 - `“nerve_distance”`: Amount (Double) to smooth nerve boundary. Units of micrometers.

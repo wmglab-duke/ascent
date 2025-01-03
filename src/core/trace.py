@@ -738,7 +738,7 @@ class Trace:
         mass = 1
         radius = 1
         vertices = [tuple(point[:2]) for point in copy.points]
-        body = pymunk.Body(mass, 1)
+        body = pymunk.Body(mass, pymunk.moment_for_poly(mass, vertices))
         body.position = self.centroid()  # position is tracked from trace centroid
         shape = pymunk.Poly(body, vertices, radius=radius)
         shape.density = 0.01  # all fascicles have same density so this value does not matter
@@ -785,43 +785,6 @@ class Trace:
         # OpenCV requires float32 input
         (cx, cy), r = cv2.minEnclosingCircle(np.array(points).astype(np.float32))
         return cx, cy, r
-
-    def validate_polygon(self):
-        """Make polygon valid.
-
-        :return: list of valid polygons
-        """
-        input_polygon = self.polygon()
-
-        if input_polygon.is_valid:
-            # If the input polygon is already valid, return it
-            return [input_polygon]
-
-        # If the input polygon is invalid, use make_valid() to fix it
-        valid_polygons = list(make_valid(input_polygon))
-
-        # List to store valid polygons
-        result_polygons = []
-
-        for geom in valid_polygons:
-            if isinstance(geom, Polygon):
-                # If it's a polygon, add it to the result list
-                result_polygons.append(geom)
-            elif isinstance(geom, MultiPolygon):
-                # If it's a multipolygon, add all contained polygons to the result list
-                result_polygons.extend(list(geom))
-
-        # Return the list of valid polygons
-        return result_polygons
-
-    def make_valid(self):
-        """Make the trace valid."""
-        polyout = make_valid(self.polygon())
-        assert isinstance(polyout, Polygon)
-        self.points = self.from_polygon(polyout).points
-        self.__update()
-        assert self.from_polygon(polyout).polygon().is_valid
-        assert self.polygon().is_valid
 
     # %% private utility methods
     def __update(self):

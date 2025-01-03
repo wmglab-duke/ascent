@@ -1,5 +1,4 @@
 # NEURON Files
-%TODO Read through and check that content is okay
 ## NEURON simulations
 All NEURON simulations are handled using the `PyFibers` Python package ([PyPi](<<link>>), [GitHub](<<link>>)).
 
@@ -7,22 +6,9 @@ All NEURON simulations are handled using the `PyFibers` Python package ([PyPi](<
 
 Based on the "fiber_model" (associated by the "fiber/modes" type parameter
  in `<sim_index>.json` ([Sim Parameters](../JSON/JSON_parameters/sim))),
-`run_controls.py` builds an instance of the fiber model using the `PyFibers` package.
+`run_controls.py` builds an instance of the fiber model using `PyFibers`.
 For all fiber types, the segments created and connected in NEURON have lengths that correspond to
 the coordinates of the input potentials.
-
-### Intracellular stimulus
-
-For simulations of block threshold, an intracellular test pulse is
-delivered at one end of the fiber to test if the cuff electrode (i.e.,
-placed between the intracellular stimulus and the site of detecting
-action potentials) is blocking action potentials ([Simulation Protocols](../Running_ASCENT/Info.md#simulation-protocols)). The intracellular
-stimulation parameters are defined in **_Sim_** and are defined as
-parameters in NEURON within the `run_controls.py` file. The parameters in
-**_Sim_** control the pulse delay, pulse width, pulse repetition
-frequency, pulse amplitude, and node/section index of the intracellular
-stimulus ([Sim Parameters](../JSON/JSON_parameters/sim)). For simulating activation thresholds, the intracellular
-stimulation amplitude should be set to zero.
 
 ### Extracellular stimulus
 
@@ -34,7 +20,18 @@ cable model as a time-varying signal.
 The saved stimulation waveform is unscaled,
 meaning the maximum current magnitude at any timestep is +/-1.
 Analogously, `run_control.py` reads in the potentials for the fiber being simulated
-from `data/inputs/`.
+from `data/inputs/`. ASCENT can run simulation to test for activation threshold, block threshold, or test responses to specific amplitudes (See [Simulation Protocols](../Running_ASCENT/Info.md#simulation-protocols)).
+
+### Intracellular stimulus
+
+For simulations of block threshold, an intracellular test pulse is delivered via a synapse  at one end of the fiber to test if the cuff electrode (i.e.,
+placed between the synapse and the site of detecting
+action potentials) is blocking action potentials ([Simulation Protocols](../Running_ASCENT/Info.md#simulation-protocols)). The intracellular stimulation parameters are defined in **_Sim_** and are defined as
+parameters in NEURON within the `run_controls.py` file. The parameters in
+**_Sim_** control the pulse delay, pulse width, pulse repetition
+frequency, pulse amplitude, and node/section index of the intracellular
+stimulus ([Sim Parameters](../JSON/JSON_parameters/sim)). For simulating activation thresholds, the intracellular
+stimulation amplitude should be set to zero. 
 
 ### Recording
 
@@ -47,17 +44,11 @@ amplitude, transmembrane potential, and gating parameters using
 the `PyFibers` package. The recording tools are particularly useful for
 generating data to troubleshoot and visualize simulations.
 
-### Running a simulation & different protocols
-
-The `PyFibers` package is responsible for simulating the response of the
-model fiber to intracellular and extracellular stimulation. Similarly, the package handles
-various simulation protocols ([Simulation Protocols](../Running_ASCENT/Info.md#simulation-protocols)).
-
 ### Save outputs to file
 
 At the end of the NEURON simulation, the program saves state variables
-as indicated with saveflags, CPU time, and threshold values. Output
-files are saved to the `data/outputs/` directory within its `n_sim` folder.
+as indicated in `"saving"` in [sim.json](../JSON/JSON_parameters/sim.md), CPU time, and threshold values (If running a threshold search) or fiber action potential counts (if running a finite amplitudes protocol). 
+Output files are saved to the `data/outputs/` directory within its `n_sim` folder.
 
 ## Simulation hierarchy & run_controls.py
 

@@ -30,10 +30,12 @@ q = Query(
     }
 ).run()
 
-data = q.common_data_extraction(data_types=['sfap'])  # TODO need to update
+data = q.common_data_extraction(data_types=['sfap'])
+
 # explode the data and plot all at once using seaborn.
 splode = data.explode(['SFAP_times', 'SFAP'], ignore_index=True)
 
+# plot the data
 fig, ax = plt.subplots()
 sns.lineplot(data=splode, x='SFAP_times', y='SFAP', hue='fiberset_index', palette='viridis', ax=ax)
 sns.move_legend(ax, "upper left", bbox_to_anchor=(1, 1))

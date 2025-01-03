@@ -123,9 +123,9 @@ def save_matrix(params: dict, imembrane_matrix: np.ndarray, amp_ind: int = 0):
     """
     adj_im_path = os.path.join(
         params['output_path'],
-        f'adjusted_imembrane_inner{params["inner_ind"]}_fiber{params["fiber_ind"]}_amp{amp_ind}.dat',
+        f'adjusted_imembrane_inner{params["inner_ind"]}_fiber{params["fiber_ind"]}_amp{amp_ind}.npy',
     )
-    # TODO consider using hdf5 for this and all large data, for now use np.save
+    # Consider using hdf5 for this and all large data, for now use np.save
     np.save(adj_im_path, imembrane_matrix)
 
 

@@ -59,7 +59,6 @@ class Slide:
 
         self.orientation_point: tuple[float, float] | None = None
         self.orientation_angle: float | None = None
-        self.scale_from_init = 1
 
     def monofasc(self) -> bool:
         """Check if slide is monofascicular.
@@ -429,8 +428,6 @@ class Slide:
 
         for fascicle in self.fascicles:
             fascicle.scale(factor, center)
-
-        self.scale_from_init *= factor
 
     def smooth_traces(self, n_distance, i_distance, as_ratios=False):
         """Smooth traces for the slide.

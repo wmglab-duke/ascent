@@ -590,7 +590,7 @@ class FiberSet(Configurable, Saveable):
             **scatter_kws,
         )
 
-    def _generate_longitudinal(  # noqa: C901 #TODO this should be replaced with pyfibers code
+    def _generate_longitudinal(  # noqa: C901 #This should be replaced with pyfibers code in the future
         self, fibers_xy: np.ndarray, override_length=None, super_sample: bool = False, override_shift: float = None
     ) -> np.ndarray:
         """Generate the 1D longitudinal coordinates of the fibers.
@@ -604,7 +604,6 @@ class FiberSet(Configurable, Saveable):
         """
 
         def clip(values: list, start, end, myel: bool, is_points: bool = False, zbuffer=1) -> list:
-            # TODO put zbuffer back to how it was in 3D pipeline
             step = 1
             if myel:
                 step = 11
@@ -629,7 +628,7 @@ class FiberSet(Configurable, Saveable):
 
             def _build_z(inter_length, node_length, paranodal_length_1, paranodal_length_2, delta_z):
                 z_steps: list = []
-                while (sum(z_steps) - model_length / 2) < 1:  # TODO put back to how it was in 3D pipeline
+                while (sum(z_steps) - model_length / 2) < 1:
                     z_steps += [
                         (node_length / 2) + (paranodal_length_1 / 2),
                         (paranodal_length_1 / 2) + (paranodal_length_2 / 2),
@@ -783,7 +782,7 @@ class FiberSet(Configurable, Saveable):
                 self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'),
                 self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'),
                 myel,
-                zbuffer=10 if not super_sample else 5,  # TODO: instead of fixed value make supersample dz
+                zbuffer=10 if not super_sample else 5,  # Instead of fixed value make could set as supersample dz
             )
 
             my_fiber = [(my_x, my_y, z) for z in z_offset]

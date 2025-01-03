@@ -267,7 +267,7 @@ class Model(Configurable, Saveable):
             try:
                 reference_x, reference_y = slide.fascicle_centroid()
                 theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
-            except ZeroDivisionError:  # TODO: why?
+            except ZeroDivisionError:
                 theta_c = 0
         else:
             theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360

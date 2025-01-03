@@ -58,8 +58,6 @@ repos:
     args: [--autofix]
   - id: pretty-format-yaml
     args: [--autofix]
-  # - id: pretty-format-java #TODO get working, or another formatter
-  #   args: [--autofix]
   # lint python code
 - repo: https://github.com/pycqa/flake8
   rev: 7.1.1
@@ -81,8 +79,8 @@ repos:
     - darglint
     - flake8-warnings
     - flake8-pie
-    # - flake8-annotations #TODO enable
-    # - flake8-annotations-complexity #TODO enable
+    # - flake8-annotations 
+    # - flake8-annotations-complexity 
     - flake8-return
   # format and lint markdown
 - repo: https://github.com/igorshubovych/markdownlint-cli

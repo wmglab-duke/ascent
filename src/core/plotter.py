@@ -216,11 +216,8 @@ class _HeatmapPlotter:
 
         def _mapthresh(thresh):
             return tuple(self.cmap((thresh - self.min_thresh) / (self.max_thresh - self.min_thresh)))
-
-        inner_count = 0
-        for fascicle in self.sample.slides[0].fascicles:
-            for _inner in fascicle.inners:
-                inner_count += 1
+        
+        inner_count = sum(1 for fascicle in self.sample.slides[0].fascicles for _ in fascicle.inners)
 
         inner_color_list = []
         fiber_color_list = []
@@ -301,7 +298,6 @@ class _HeatmapPlotter:
         """Plot the orientation of the cuff.
 
         :param ax: axis to plot on
-        :raises ValueError: If orientation angle was not defined in the slide.
         """
         # calculate orientation point location (i.e., contact location)
         # get radius of sample
@@ -310,8 +306,6 @@ class _HeatmapPlotter:
         except AttributeError:
             r = self.sample.slides[0].fascicles[0].outer.mean_radius()
         # get orientation angle from slide
-        if self.sample.slides[0].orientation_angle is None:
-            raise ValueError("Cannot plot orientation if orientation angle was not defined in the slide.")
         theta = self.sample.slides[0].orientation_angle
         # load add_ang from model.json cofiguration file
         with open(Query.build_path(Config.MODEL, [self.sample_index, self.model_index])) as f:

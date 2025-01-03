@@ -182,12 +182,9 @@ class Simulation(Configurable, Saveable):
                 SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]
             ).add(SetupMode.OLD, Config.MODEL, self.configs[Config.MODEL.value]).add(
                 SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]
-            )
-            fiberset.generate(sim_directory, super_sample=True).write(WriteMode.DATA, ss_fibercoords_directory)
+            ).generate(sim_directory, super_sample=True).write(WriteMode.DATA, ss_fibercoords_directory)
             self.ss_fiberset_map_pairs.append((fiberset.out_to_fib, fiberset.out_to_in))
             self.ss_fibersets.append(fiberset)
-            # TODO: check that all SS bases coords contain all r egular fiberet coords
-
         return self
 
     def interpolate_2d(self, down_coords, super_coords, data_vector):
@@ -687,13 +684,7 @@ class Simulation(Configurable, Saveable):
             weighted_potentials += bases[src_ind] * src_weight
         # throw error if there are any nans in the neuron_potentials_input
         if np.isnan(weighted_potentials).any():
-            warnings.warn('NANs in neuron_potentials_input. Using interpolation to fix missing values.', stacklevel=2)
-            # temporary fix for nans in neuron_potentials_input
-            # TODO: make this better
-            while np.isnan(weighted_potentials).any():
-                this_index = np.where(np.isnan(weighted_potentials))[0]
-                weighted_potentials[this_index] = weighted_potentials[this_index - 1]
-        return weighted_potentials
+            raise ValueError("NaNs in weighted potentials, check that your fiber locations are valid")
         return weighted_potentials
 
     def indices_fib_to_n(self, fiberset_ind, fiber_ind) -> tuple[int, int]:

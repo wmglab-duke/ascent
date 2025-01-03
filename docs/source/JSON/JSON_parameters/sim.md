@@ -316,7 +316,6 @@ length of the fiber). Required.
 
 - `“mode”`: The value (String) is the “FiberGeometry” mode that tells
   the program which fiber geometries to simulate in NEURON ([NEURON Fiber Models](../../Running_ASCENT/Info.md#implementation-of-neuron-fiber-models)). Required.
-  %TODO add link to docs for pyfibers once published and to package
 
   - As listed in [Enums](../../Code_Hierarchy/Python.md#enums), known modes include
 

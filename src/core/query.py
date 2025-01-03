@@ -555,7 +555,7 @@ class Query(Configurable, Saveable):
         imembrane_file_name = os.path.join(
             os.getcwd(),
             f"samples/{sample_results['index']}/models/{model_results['index']}/sims/{sim}/n_sims/"
-            f"{nsim}/data/outputs/adjusted_imembrane_inner0_fiber0_amp0.dat.npy",  # TODO fix to just.npy
+            f"{nsim}/data/outputs/adjusted_imembrane_inner0_fiber0_amp0.npy",  # TODO fix to just.npy
         )
         current_matrix = np.load(imembrane_file_name)  # should be columns=section and rows = time step
         waveform_file = os.path.join(

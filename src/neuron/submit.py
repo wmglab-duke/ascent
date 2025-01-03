@@ -699,22 +699,6 @@ def pre_submit_setup():
     return run_inds, submission_context
 
 
-def get_installed_packages():
-    """Return a dictionary of all installed packages.
-
-    :return: dictionary (key: string pkg name; value: string version (e.g., "0.0.1"))
-    """
-    command = ["conda", "list"]
-    output = subprocess.check_output(command).decode("utf-8")
-    conda_data = output.splitlines()
-    packages = {}
-    for line in conda_data:
-        data = line.split()
-        if '#' not in data[0]:
-            packages[data[0]] = data[1]
-    return packages
-
-
 # main
 def main():
     """Prepare fiber submissions and run NEURON sims.
