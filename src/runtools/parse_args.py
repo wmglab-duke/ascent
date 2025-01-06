@@ -59,12 +59,6 @@ pipeline_parser.add_argument(
     help="Wait the specified number of hours for a comsol license to become available.",
 )
 pipeline_parser.add_argument(
-    '-R',
-    '--run-group',
-    type=str,
-    help="Use a list of runs from rungroups.json. Any additional run indices passed will be appended.",
-)
-pipeline_parser.add_argument(
     '-P',
     '--partial-fem',
     choices=["cuff_only", "nerve_only"],
