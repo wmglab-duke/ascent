@@ -714,6 +714,9 @@ def main():
     reqver = '0.1.4'
     if Version(pyfibers.__version__) < Version(reqver):
         raise ImportError(f'Error: PyFibers version is {pyfibers.__version__}, but version {reqver} is required.')
+    if Version(pyfibers.__version__) >= Version('0.2.0'):
+        raise NotImplementedError('Support for version 0.2.0 of PyFibers has not been verified, please downgrade to an older version')
+
 
     # pre submit setup
     run_inds, submission_context = pre_submit_setup()
