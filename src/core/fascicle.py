@@ -285,7 +285,7 @@ class Fascicle:
         self.inners = [self.outer.deepcopy()]
 
         # scale up outer trace
-        self.outer.thickness = self.outer.offset(fit=fit)
+        self.peri_thickness = self.outer.offset(fit=fit)
 
         # check for any bad traces
         self.validate()
