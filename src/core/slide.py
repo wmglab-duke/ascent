@@ -535,8 +535,8 @@ class Slide:
         out_to_in = []
         xy_points = np.asarray(points)[:, :2]
 
+        inner_ind = 0  # noqa SIM113
         for i, fascicle in enumerate(self.fascicles):
-            inner_ind = 0  # noqa SIM113
             out_to_in.append([])
             out_to_fib.append([])
             if len(fascicle.inners) > 0:
