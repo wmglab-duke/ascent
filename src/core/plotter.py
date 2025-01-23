@@ -243,7 +243,10 @@ class _HeatmapPlotter:
                 warnings.warn(
                     'Missing fiber threshold, color will appear as missing color (defaults to red).', stacklevel=2
                 )
-                fiber_color_list.append(self.missing_color)
+                if self.mode in ['fibers', 'fibers_on_off']:
+                    fiber_color_list.append(self.missing_color)
+                else:
+                    fiber_color_list.append(None)
             elif self.mode == 'fibers':
                 fiber_color_list.append(_mapthresh(fiberthresh))
             elif self.mode == 'fibers_on_off':
