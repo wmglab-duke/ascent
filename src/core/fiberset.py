@@ -20,6 +20,7 @@ import scipy.stats as stats
 from nd_line.nd_line import nd_line
 from shapely.affinity import scale
 from shapely.geometry import LineString, Point
+from shapely.ops import unary_union
 
 from src.utils import (
     Config,
@@ -1116,18 +1117,16 @@ class FiberSet(Configurable, Saveable):
             warnings.warn("Ignoring xy_trace_buffer since xy_mode is centroid", stacklevel=2)
 
         # Check that fibers are within exactly one inner
+        allpoly = unary_union([inner.polygon().buffer(0) for inner in all_inners])
         invalid_fibers = []
         for fiber in self.fibers:
             fib_data = fiber['fiber'] if isinstance(fiber, dict) else fiber
-            for inner in all_inners:
-                if Point(fib_data[0]).within(inner.polygon().buffer(0)):
-                    # If first point in inner, all points must be in this inner
-                    break
-                # else
-                # continue to next inner, if no inner contains fib_data, next if stmt will find correct value anyway
-            inner = inner.polygon().buffer(0)
-            if not all(Point(p).within(inner) for p in fib_data):
-                invalid_fibers.append(fib_data)
+            if self.z_mode == FiberZMode.EXTRUSION:
+                if not Point(fib_data[0]).within(allpoly):
+                    invalid_fibers.append(fib_data)
+            else:
+                if not all(Point(p).within(allpoly) for p in fib_data):
+                    invalid_fibers.append(fib_data)
 
         if len(invalid_fibers) > 0:
             fibs = self.fibers + invalid_fibers

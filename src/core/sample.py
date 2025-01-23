@@ -957,6 +957,9 @@ class Sample(Configurable, Saveable):
             out_to_fib, _ = init_slide.map_points(flat_points)
             for fasc_idx, otf in enumerate(out_to_fib):
                 for inner_idx, fiber_inds in enumerate(otf):
+                    if len(fiber_inds) == 0:
+                        # No fibers in this inner
+                        continue
                     if len(slide.fascicles[fasc_idx].inners) == 0:
                         # This shouldn't happen
                         warnings.warn('Transforming with no inners', stacklevel=2)
