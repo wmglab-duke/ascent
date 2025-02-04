@@ -705,6 +705,7 @@ def main():
     """Prepare fiber submissions and run NEURON sims.
 
     :raises ImportError: If PyFibers is not installed.
+    :raises NotImplementedError: If PyFibers version is not supported.
     """
     # check for PyFibers
     try:
@@ -716,8 +717,9 @@ def main():
     if Version(pyfibers.__version__) < Version(reqver):
         raise ImportError(f'Error: PyFibers version is {pyfibers.__version__}, but version {reqver} is required.')
     if Version(pyfibers.__version__) >= Version('0.2.0'):
-        raise NotImplementedError('Support for version 0.2.0 of PyFibers has not been verified, please downgrade to an older version')
-
+        raise NotImplementedError(
+            'Support for version 0.2.0 of PyFibers has not been verified, please downgrade to an older version'
+        )
 
     # pre submit setup
     run_inds, submission_context = pre_submit_setup()

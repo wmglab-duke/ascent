@@ -22,7 +22,7 @@ repos:
     exclude: .zenodo.json
   # sort python imports
 - repo: https://github.com/pycqa/isort
-  rev: 5.13.2
+  rev: 6.0.0
   hooks:
   - id: isort
   # format f strings
@@ -38,13 +38,13 @@ repos:
     args: [--py310-plus]
   # format python code
 - repo: https://github.com/psf/black
-  rev: 24.10.0
+  rev: 25.1.0
   hooks:
   - id: black
     language_version: python3
   # format docstrings
 - repo: https://github.com/PyCQA/docformatter
-  rev: v1.7.5
+  rev: master #update to proper version once fix to work with precommit v5 is released
   hooks:
   - id: docformatter
     additional_dependencies:
@@ -84,13 +84,13 @@ repos:
     - flake8-return
   # format and lint markdown
 - repo: https://github.com/igorshubovych/markdownlint-cli
-  rev: v0.43.0
+  rev: v0.44.0
   hooks:
   - id: markdownlint-fix
     args: [--disable, 'md013,md034,md033,md036']
   # check config files
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.30.0
+  rev: 0.31.1
   hooks:
   - id: check-gitlab-ci
   - id: check-readthedocs
