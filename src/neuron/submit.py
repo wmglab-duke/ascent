@@ -692,9 +692,10 @@ def pre_submit_setup():
     else:
         submission_context = 'cluster' if shutil.which('sbatch') is not None else 'local'
 
-    # convert array_launch.slurm to UNIX format
-    subprocess.run(['dos2unix', 'array_launch.slurm'])
-    print('Converted array_launch.slurm to UNIX format')
+    if submission_context == "cluster":
+        # convert array_launch.slurm to UNIX format
+        subprocess.run(['dos2unix', 'array_launch.slurm'])
+        print('Converted array_launch.slurm to UNIX format')
 
     return run_inds, submission_context
 
