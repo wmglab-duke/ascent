@@ -44,7 +44,6 @@ extensions = [
     'sphinx_rtd_dark_mode',
     'sphinx_github_changelog',
     'sphinx_inline_tabs',
-    'sphinx.ext.autodoc',
 ]
 
 source_suffix = {
@@ -106,6 +105,8 @@ html_show_sphinx = False
 # -- Options for extensions -------------------------------------------------
 
 myst_heading_anchors = 4
+
+myst_enable_extensions = ["dollarmath", "amsmath"]
 
 bibtex_bibfiles = ['refs.bib']
 
