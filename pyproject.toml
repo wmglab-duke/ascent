@@ -9,7 +9,7 @@ license = {file = "LICENSE"}
 name = "ASCENT"
 readme = "README.md"
 requires-python = ">=3.10"
-version = "v1.3.0"
+version = "v1.3.2"
 
 [project.urls]
 changelog = "https://github.com/wmglab-duke/ascent/releases"
