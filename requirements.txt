@@ -8,7 +8,7 @@ pandas
 pillow
 pip
 pyclipper
-pyfibers # Until available on PyPI, this must be installed from the repository
+# pyfibers # Uncomment when available on PyPI.
 pygame
 pymunk
 quantiphy
