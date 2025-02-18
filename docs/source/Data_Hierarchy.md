@@ -9,7 +9,7 @@ cross-sectional geometry of a nerve sample, (2) **_Model_** (COMSOL
 parameters): for defining and solving three-dimensional FEM, including
 geometry of nerve, cuff, and medium, spatial discretization (i.e.,
 mesh), materials, boundary conditions, and physics, and (3) **_Sim_**
-(NEURON parameters): for defining fiber models, stimulation waveforms,
+(fiber placement and NEURON simulation parameters): for defining fiber models, stimulation waveforms,
 amplitudes, and durations, intracellular test pulses (for example, when
 seeking to determine block thresholds), parameters for the bisection search
 protocol and termination criteria for thresholds, and flags to save

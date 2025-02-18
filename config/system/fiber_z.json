@@ -99,7 +99,7 @@
       "passive_end_nodes": 1,
       "sampling": "discrete"
     },
-    "SMALL_MRG_INTERPOLATION_V1": {
+    "SMALL_MRG_INTERPOLATION": {
       "delta_z": "-3.22*diameter**2 + 148*diameter - 128",
       "diameter": true,
       "fiber_type": 2,

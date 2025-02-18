@@ -8,7 +8,6 @@ source code can be found on the following GitHub repository:
 https://github.com/wmglab-duke/ascent
 """
 
-
 import os
 import subprocess
 import sys
@@ -24,15 +23,19 @@ def run(args):
     """Run the pipeline.
 
     :param args: The command line arguments.
+    :raises Exception: If the Python version is not 3.10 or newer.
+    :raises ValueError: If run group inputs are invalid
     """
     # test
-    if not (sys.version_info.major == 3 and sys.version_info.minor >= 7):
-        print(f'You are running Python {sys.version_info.major}.{sys.version_info.minor}, but 3.7 or later required')
-        sys.exit()
+    if not (sys.version_info.major == 3 and sys.version_info.minor >= 10):
+        raise Exception('Python 3.10 or newer is required to run this script.')
 
     # create bin/ directory for storing compiled Java files if it does not yet exist
     if not (os.path.exists('bin')):
         os.mkdir('bin')
+
+    if not args.run_indices:
+        raise ValueError('No run indices provided.')
 
     for argument in args.run_indices:
         # START timer

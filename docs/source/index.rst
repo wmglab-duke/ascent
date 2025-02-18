@@ -8,7 +8,7 @@ This documentation is an adaptation and update of the supplements associated wit
 
 **Please check out the associated** `publication <https://doi.org/10.1371/journal.pcbi.1009285>`_ **in PLOS Computational Biology!**
 
-**Cite both the ASCENT paper and the DOI for the release of the repository used for your work. If you use the neural recording feature, also cite the neural recording paper. We encourage you to clone the most recent commit of the repository.**
+**Cite the ASCENT paper, PyFibers paper, and the DOI for the release of the repository used for your work. If you use the neural recording feature or SMALL_MRG_INTERPOLATION model, also cite the neural recording paper. We encourage you to clone the most recent commit of the repository.**
 
 * **Cite the ASCENT paper:**
 
@@ -16,15 +16,19 @@ This documentation is an adaptation and update of the supplements associated wit
 
     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2021). ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A pipeline for sample-specific computational modeling of electrical stimulation of peripheral nerves. PLOS Computational Biology, 17(9), e1009285. https://doi.org/10.1371/journal.pcbi.1009285.
 
+     **Peña, E.**, Pelot, N. A., & Grill, W. M. (2024). Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters. PLoS computational biology, 20(3), e1011833. https://doi.org/10.1371/journal.pcbi.1011833
+
   .. tab:: MLA
 
     Musselman, Eric D., et al. "ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves." PLOS Computational Biology, vol. 17, no. 9, Sept. 2021, p. e1009285. PLoS Journals, https://doi.org/10.1371/journal.pcbi.1009285.
+
+      Peña, Edgar et al. “Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters.” PLoS computational biology vol. 20,3 e1011833. 1 Mar. 2024, doi:10.1371/journal.pcbi.1011833
 
   .. tab:: BibTeX
 
     .. code-block:: BibTeX
 
-        @article{Musselman2021,
+         @article{Musselman2021,
           doi = {10.1371/journal.pcbi.1009285},
           url = {https://doi.org/10.1371/journal.pcbi.1009285},
           year = {2021},
@@ -38,6 +42,20 @@ This documentation is an adaptation and update of the supplements associated wit
           title = {{ASCENT} (Automated Simulations to Characterize Electrical Nerve Thresholds): A pipeline for sample-specific computational modeling of electrical stimulation of peripheral nerves},
           journal = {{PLOS} Computational Biology}
         }
+
+* **Cite the PyFibers paper:**
+
+  .. tab:: APA
+
+    Placeholder
+
+  .. tab:: MLA
+
+    Placeholder
+
+  .. tab:: BibTeX
+
+    Placeholder
 
 * **Cite the neural recording paper:**
 

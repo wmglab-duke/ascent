@@ -31,6 +31,7 @@ from src.utils import (
     MaskError,
     MaskFileNames,
     MaskInputMode,
+    MaskSpaceMode,
     NerveMode,
     PerineuriumThicknessMode,
     ReshapeNerveMode,
@@ -224,10 +225,7 @@ class Sample(Configurable, Saveable):
         :raises ValueError: If more than one slide provided
         :return: self
         """
-        scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE, optional=True)
-        # For backwards compatibility, if scale mode is not specified assume a mask image is provided
-        if scale_input_mode is None:
-            scale_input_mode = ScaleInputMode.MASK
+        scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE)
 
         sample_index = self.search(Config.RUN, 'sample')
 
@@ -319,12 +317,12 @@ class Sample(Configurable, Saveable):
         self.scale_input_mode = self.search_mode(ScaleInputMode, Config.SAMPLE, optional=True)
         self.sample_rotation = self.search(Config.SAMPLE, "rotation", optional=True)
         self.contour_mode = self.search_mode(ContourMode, Config.SAMPLE, optional=True)
+        self.mask_space_mode = self.search_mode(MaskSpaceMode, Config.SAMPLE, optional=True)
 
-        # For backwards compatibility, if scale mode is not specified assume a mask image is provided
-        if self.scale_input_mode is None:
-            self.scale_input_mode = ScaleInputMode.MASK
-        if self.contour_mode is None:
-            self.contour_mode = ContourMode.SIMPLE
+        # Set defaults for optional modes
+        self.scale_input_mode = self.scale_input_mode or ScaleInputMode.MASK
+        self.contour_mode = self.contour_mode or ContourMode.NONE
+        self.mask_space_mode = self.mask_space_mode or MaskSpaceMode.CARTESIAN
 
     @staticmethod
     def mask_exists(mask_file_name: MaskFileNames):
@@ -342,7 +340,10 @@ class Sample(Configurable, Saveable):
         :raises MaskError: If the mask has an invalid number of objects
         :return: Slide object
         """
-        img = np.flipud(cv2.imread(MaskFileNames.ORIENTATION.value, -1))
+        img = cv2.imread(MaskFileNames.ORIENTATION.value, -1)
+
+        if self.mask_space_mode != MaskSpaceMode.IMAGE:
+            img = np.flipud(img)
 
         if len(img.shape) > 2 and img.shape[2] > 1:
             img = img[:, :, 0]
@@ -429,7 +430,7 @@ class Sample(Configurable, Saveable):
                 outer_mask = None
 
         # generate fascicle objects from masks
-        return Fascicle.to_list(inner_mask, outer_mask, self.contour_mode)
+        return Fascicle.to_list(inner_mask, outer_mask, self.contour_mode, self.mask_space_mode)
 
     def get_epineurium_from_mask(self):
         """Generate epineurium trace from mask.
@@ -444,7 +445,10 @@ class Sample(Configurable, Saveable):
         if len(img_nerve.shape) > 2 and img_nerve.shape[2] > 1:
             img_nerve = img_nerve[:, :, 0]
 
-        contour, _ = cv2.findContours(np.flipud(img_nerve), cv2.RETR_TREE, self.contour_mode.value)
+        if self.mask_space_mode != MaskSpaceMode.IMAGE:
+            img_nerve = np.flipud(img_nerve)
+
+        contour, _ = cv2.findContours(img_nerve, cv2.RETR_TREE, self.contour_mode.value)
         return Nerve(
             Trace(
                 [point + [0] for point in contour[0][:, 0, :]],
@@ -511,23 +515,20 @@ class Sample(Configurable, Saveable):
         s_mode = self.search_mode(ShrinkageMode, Config.SAMPLE, optional=True)
         s_pre = self.search(Config.SAMPLE, "scale", "shrinkage")
         if s_mode is None:
-            print(
-                'WARNING: ShrinkageMode in Config.Sample is not defined or mode provided is not a known option. '
-                'Proceeding with backwards compatible (i.e., original default functionality) of LENGTH_FORWARDS'
-                ' shrinkage correction.\n'
-            )
+            print('No ShrinkageMode in Config.Sample, defaulting to LENGTH_FORWARDS shrinkage correction. ')
             shrinkage_correction = 1 + s_pre
+            s_mode = ShrinkageMode.LENGTH_FORWARDS
+
+        if s_mode == ShrinkageMode.LENGTH_BACKWARDS:
+            shrinkage_correction = 1 / (1 - s_pre)
+        elif s_mode == ShrinkageMode.LENGTH_FORWARDS:
+            shrinkage_correction = s_pre + 1
+        elif s_mode == ShrinkageMode.AREA_BACKWARDS:
+            shrinkage_correction = 1 / np.sqrt(1 - s_pre)
+        elif s_mode == ShrinkageMode.AREA_FORWARDS:
+            shrinkage_correction = np.sqrt(1 + s_pre)
         else:
-            if s_mode == ShrinkageMode.LENGTH_BACKWARDS:
-                shrinkage_correction = 1 / (1 - s_pre)
-            elif s_mode == ShrinkageMode.LENGTH_FORWARDS:
-                shrinkage_correction = s_pre + 1
-            elif s_mode == ShrinkageMode.AREA_BACKWARDS:
-                shrinkage_correction = 1 / np.sqrt(1 - s_pre)
-            elif s_mode == ShrinkageMode.AREA_FORWARDS:
-                shrinkage_correction = np.sqrt(1 + s_pre)
-            else:
-                raise ValueError("Invalid ShrinkageMode defined in sample.json")
+            raise ValueError("Invalid ShrinkageMode defined in sample.json")
 
         if shrinkage_correction < 1:
             raise ValueError(
@@ -606,6 +607,7 @@ class Sample(Configurable, Saveable):
         """
         if self.deform_mode != DeformationMode.PHYSICS:
             raise ValueError("Invalid DeformationMode in Sample.")
+
         if 'morph_count' in self.search(Config.SAMPLE):
             morph_count = self.search(Config.SAMPLE, 'morph_count')
         else:
@@ -657,8 +659,8 @@ class Sample(Configurable, Saveable):
         ]
 
         for move, angle, fascicle in zip(movements, rotations, slide.fascicles):
-            fascicle.shift(list(move) + [0])
-            fascicle.rotate(angle)
+            fascicle.shift(list(move) + [0])  # apply deformation shifts
+            fascicle.rotate(angle)  # apply deformation rotations
 
         if deform_ratio != 1 and partially_deformed_nerve is not None:
             partially_deformed_nerve.shift(-np.asarray(list(partially_deformed_nerve.centroid()) + [0]))
@@ -670,10 +672,11 @@ class Sample(Configurable, Saveable):
         if slide.nerve.area() != pre_area:
             slide.nerve.scale((pre_area / slide.nerve.area()) ** 0.5)
         else:
-            print(f'Note: nerve area before deformation was {pre_area}, post deformation is {self.nerve.area()}')
+            print(f'Note: nerve area before deformation was {pre_area}, post deformation is {slide.nerve.area()}')
 
         # shift slide about (0,0)
         slide.move_center(np.array([0, 0]))
+
         return slide
 
     def populate(self) -> 'Sample':
@@ -762,10 +765,10 @@ class Sample(Configurable, Saveable):
             # repositioning!
             for slide in self.slides:
                 self.deform_slide(slide)
+
         for slide in self.slides:
             # shift slide about (0,0)
             slide.move_center(np.array([0, 0]))
-
             # Rotate sample
             if self.sample_rotation is not None:
                 if slide.orientation_angle is not None:

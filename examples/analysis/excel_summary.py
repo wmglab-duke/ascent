@@ -24,7 +24,7 @@ q = Query(
 ).run()
 
 q.excel_output(
-    '/Users/jakecariello/Desktop/test.xlsx',
+    'out/analysis/test.xlsx',
     sample_keys=[['sample'], ['sex']],
     model_keys=[['cuff', 'rotate', 'add_ang']],
     individual_indices=False,

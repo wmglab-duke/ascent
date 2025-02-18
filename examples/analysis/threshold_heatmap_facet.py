@@ -27,14 +27,14 @@ q = Query(
 ).run()
 
 # Get threshold data
-fdata = q.threshold_data()
+data = q.common_data_extraction(data_types=['threshold'])
 
 # Specify keyword arguments to pass to heatmaps()
 heatmap_kws = {'min_max_ticks': False}
 
 # Build heatmap grid
-g = sns.FacetGrid(fdata, row='model', col='nsim', sharex=False, sharey=False)
-g.map(heatmaps, *fdata.columns, **heatmap_kws)
+g = sns.FacetGrid(data, row='model', col='nsim', sharex=False, sharey=False)
+g.map(heatmaps, *data.columns, **heatmap_kws)
 
 # Title and clear axis labels
 plt.subplots_adjust(top=0.8)

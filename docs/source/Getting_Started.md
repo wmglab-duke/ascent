@@ -10,7 +10,7 @@ In ASCENT, all programs/commands are run from a command line environment (Bash t
 
 First, these software packages must be manually installed:
 
-- [Miniconda](https://docs.conda.io/en/latest/miniconda.html)/[Anaconda](https://www.anaconda.com/products/individual) We recommend that you install Miniconda (Miniconda is a stripped down version of Anaconda; Anaconda is optional for intermediate users). If you already have an existing installation, there is no need to reinstall.
+- [Miniconda](https://docs.conda.io/en/latest/miniconda.html) or [Anaconda](https://www.anaconda.com/products/individual) (Anaconda is recommended, but Miniconda can save on storage space). If you already have an existing installation, there is no need to reinstall.
   - Recommended: Select add to path
   - Recommended: Select "Install for individual user"
 - [Java SE Development Kit 8 (1.8)](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html) (need to register for a free account)
@@ -18,7 +18,7 @@ First, these software packages must be manually installed:
 - [COMSOL Multiphysics 5.4 or newer](https://www.comsol.com/product-download) (requires purchase of license; only base package needed, which includes the COMSOL Java API)
   - Once COMSOL is installed, alter 'File System Access' permissions via File → Preferences → Security → Methods and Java Libraries → File System Access → All Files.
   - Note that COMSOL versions may slightly change (<1%) the outputs from ASCENT. Please avoid comparing results across COMSOL versions where possible.
-- [NEURON 7.6.7 or newer](https://nrn.readthedocs.io/en/latest/install/install_instructions.html) (newer versions have been released, but compatibility has yet to be confirmed; choose appropriate installer depending on operating system; install auxiliary software as prompted by NEURON installer)
+- [NEURON 8.0.1 or newer](https://nrn.readthedocs.io/en/latest/install/install_instructions.html)
   - Depending on your operating system, some additional dependencies may be required. Make sure to follow the installation instructions carefully.
   - NEURON must be in your PATH in order to run simulations. Either choose the add to path option during installation, or on Linux, you can add to your bash profile: `export PATH=<path/to/neuron/>:$PATH`. The NEURON path should end with `bin`.
    ```{caution}
@@ -57,7 +57,7 @@ After confirming that you are in the correct directory, the script will install 
      - ASCENT_JDK_PATH: Path to the JDK 1.8 installation, ending in `bin`, as seen in the template and [JSON Overview](JSON/JSON_overview). Hint: This is the correct path if the directory contains many executables (for Windows: java.exe, etc.; MacOS/Linux: java, etc.).
      - ASCENT_PROJECT_PATH: Path to the root directory of the pipeline, as chosen for step 1.
      - ASCENT_NSIM_EXPORT_PATH: Path to the export location for NEURON "simulation" directories. This path only depends on the user's desired file system organization.
-   - Manual Setup: Copy the file `config/templates/env.json` into `config/system/env.json` (new file). This file holds important paths for software used by the pipeline (see env.json in [Enums](Code_Hierarchy/Python.md#enums) and [JSON Overview](JSON/JSON_overview)). Then, edit each of the four values as specified below. Use `\\` in Windows and `/` in macOS/Linux operating systems. Note that the file separators are operating system dependent, so even if you installed in step 2 with Unix-like command environment on a Windows machine (e.g., using [Git Bash](https://gitforwindows.org/), [Cygwin](https://www.cygwin.com/), or a VM with [Ubuntu](https://ubuntu.com/)), you will still need to choose the proper file separator for Windows, i.e., `\\`). See example env.json files for both macOS and Windows ([Environment Parameters](JSON/JSON_parameters/env)).
+   - Manual Setup: Copy the file `config/templates/windows_env.json` or `config/templates/unix_env.json` (depending on your operating system) into `config/system/env.json` (new file). This file holds important paths for software used by the pipeline (see env.json in [Enums](Code_Hierarchy/Python.md#enums) and [JSON Overview](JSON/JSON_overview)). Then, edit each of the four values as specified below. Use `\\` in Windows and `/` in macOS/Linux operating systems. Note that the file separators are operating system dependent, so even if you installed in step 2 with Unix-like command environment on a Windows machine (e.g., using [Git Bash](https://gitforwindows.org/), [Cygwin](https://www.cygwin.com/), or a VM with [Ubuntu](https://ubuntu.com/)), you will still need to choose the proper file separator for Windows, i.e., `\\`). See example env.json files for both macOS and Windows ([Environment Parameters](JSON/JSON_parameters/env)).
    - Automatic setup: Upon the initiation of your first run, you will be prompted to enter the above four paths if you did not choose to complete the manual setup. Enter them as prompted, following the guidelines detailed above and exemplified in [JSON Overview](JSON/JSON_overview). Note that you may at any time update paths with `python run env_setup` to rewrite this file if the information should change.
 
 ## Metadata required to model an in vivo experiment using the ASCENT pipeline
@@ -230,7 +230,7 @@ use indices that are consistent with the indices of **_Sample_**,
 
    b. The `mock_morphology_generator.py` script ([Mock Morphology](MockSample)).
 
-   1. Copy `mock_sample.json` from `config/templates/` to
+   1. Copy `mock_sample.json` from `config/templates/advanced` to
       `config/user/mock_samples/` as `<mock_sample_index>.json`
       and update file contents, including the "NAME" parameter
       used to construct the destination path for the output binary

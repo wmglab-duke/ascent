@@ -65,6 +65,7 @@ class FiberSet(Configurable, Saveable):
             Config.FIBER_Z,
             os.path.join('config', 'system', 'fiber_z.json'),
         )
+        # Note: eventually all fiber creation code here should be replaced with PyFibers code
 
     def init_post_config(self):
         """Make sure Model and Simulation are configured.
@@ -87,20 +88,13 @@ class FiberSet(Configurable, Saveable):
         # Load fiber xy and z modes
         xy_mode_name: str = self.search(Config.SIM, 'fibers', 'xy_parameters', 'mode')
         self.xy_mode: FiberXYMode = [mode for mode in FiberXYMode if str(mode).split('.')[-1] == xy_mode_name][0]
-        try:
-            fiber_z_mode_name: str = self.search(Config.SIM, 'fibers', 'z_parameters', 'mode')
-            # If fiber z mode is in SIM file, cast to Enum FiberZMode object to maintain enum code consistency
-            # (eventhough this can easily be done without enums & using string equality).
-            self.z_mode: FiberZMode = [mode for mode in FiberZMode if str(mode).split('.')[-1] == fiber_z_mode_name][0]
-        except KeyError:  # Backwards compatibility.
-            # If fiber z mode doesn't exist in new position under Sim > fibers > z_parameters > mode,
-            # look for it where it used to be located (in model.json) in previous ascent versions
-            warnings.warn(
-                'No fiber_z mode specified in sim.json under "fibers" > "z_parameters" > "mode". '
-                'Proceeding with fiber_z mode from location in model.json.',
-                stacklevel=2,
-            )
-            self.z_mode = self.search_mode(FiberZMode, Config.MODEL)
+
+        fiber_z_mode_name: str = (
+            self.search(Config.SIM, 'fibers', 'z_parameters', 'mode', optional=True) or FiberZMode.EXTRUSION.name
+        )
+        # If fiber z mode is in SIM file, cast to Enum FiberZMode object to maintain enum code consistency
+        # (eventhough this can easily be done without enums & using string equality).
+        self.z_mode: FiberZMode = [mode for mode in FiberZMode if str(mode).split('.')[-1] == fiber_z_mode_name][0]
 
         # Generate fibers accordingly depending on fiber z mode.
         if self.z_mode == FiberZMode.EXTRUSION:
@@ -408,25 +402,19 @@ class FiberSet(Configurable, Saveable):
         explicit_index = self.search(Config.SIM, 'fibers', 'xy_parameters', 'explicit_fiberset_index')
         # 3D fiber file format is stored in .npy pickled files; can't be stored in .txt file.
         file_extension = 'npy' if is_3d else 'txt'
-        if explicit_index is not None:
-            input_sample_name = self.sample.configs['sample']['sample']
-            explicit_source = os.path.join(
-                'input', input_sample_name, 'explicit_fibersets', f'{explicit_index}.{file_extension}'
-            )
-            explicit_dest = os.path.join(sim_directory, f'explicit.{file_extension}')
-            shutil.copyfile(explicit_source, explicit_dest)
-        else:
-            print(
-                '\t\tWARNING: Explicit fiberset index not specified.'
-                '\n\t\tProceeding with backwards compatible check for explicit.txt in:'
-                f'\n\t\t{sim_directory}'
-            )
-        if not os.path.exists(os.path.join(sim_directory, f'explicit.{file_extension}')):
+        input_sample_name = self.sample.configs['sample']['sample']
+        explicit_source = os.path.join(
+            'input', input_sample_name, 'explicit_fibersets', f'{explicit_index}.{file_extension}'
+        )
+        explicit_dest = os.path.join(sim_directory, f'explicit.{file_extension}')
+
+        if not os.path.isfile(explicit_source):
             raise FileNotFoundError(
-                f"FiberXYMode is EXPLICIT or EXPLICIT_3D in Sim, but no explicit.{file_extension} file with "
-                "coordinates is in the Sim directory. See config/system/templates/explicit.txt for example "
-                "of this file's required format."
+                f"FiberXYMode is EXPLICIT or EXPLICIT_3D in Sim, but did not find the file {explicit_source}. "
+                "See config/templates/advanced/explicit.txt or config/templates/advanced/explicit_3d.npy for examples."
             )
+
+        shutil.copyfile(explicit_source, explicit_dest)
 
         if is_3d:
             points = np.load(explicit_dest, allow_pickle=True)
@@ -603,18 +591,20 @@ class FiberSet(Configurable, Saveable):
             **scatter_kws,
         )
 
-    def _generate_longitudinal(  # noqa: C901
-        self, fibers_xy: np.ndarray, override_length=None, super_sample: bool = False
+    def _generate_longitudinal(  # noqa: C901 #This should be replaced with pyfibers code in the future
+        self, fibers_xy: np.ndarray, override_length=None, super_sample: bool = False, override_shift: float = None
     ) -> np.ndarray:
         """Generate the 1D longitudinal coordinates of the fibers.
 
         :param fibers_xy: The xy coordinates of the fibers.
         :param override_length: The length of the fibers (forced).
         :param super_sample: Whether to use supersampling.
+        :param override_shift: The shift of the fibers (forced).
+        :raises ValueError: If the diameter is not within the valid range.
         :return: The longitudinal coordinates of the fibers.
         """
 
-        def clip(values: list, start, end, myel: bool, is_points: bool = False) -> list:
+        def clip(values: list, start, end, myel: bool, is_points: bool = False, zbuffer=1) -> list:
             step = 1
             if myel:
                 step = 11
@@ -650,9 +640,13 @@ class FiberSet(Configurable, Saveable):
                         (paranodal_length_1 / 2) + (node_length / 2),
                     ]
                 # account for difference between last node z and half fiber length -> must shift extra distance
-                if shift is None:
+                if override_shift is not None:  # if override shift provided, use that
+                    modshift = (
+                        override_shift % delta_z
+                    )  # meaningless to shift by more than a node length, so mod by delta_z
+                elif shift is None:  # if no shift provided, use 0
                     modshift = 0
-                else:
+                else:  # finally if shifting and not overriding, use the shift
                     modshift = shift % delta_z
                 my_z_shift_to_center_in_fiber_range = model_length / 2 - sum(z_steps) + modshift
                 reverse_z_steps = z_steps.copy()
@@ -709,13 +703,12 @@ class FiberSet(Configurable, Saveable):
                 )
                 paranodal_length_2 = eval(paranodal_length_2_str)
 
-                if fiber_geometry_mode_name == FiberGeometry.SMALL_MRG_INTERPOLATION_V1.value:
+                if fiber_geometry_mode_name == FiberGeometry.SMALL_MRG_INTERPOLATION.value:
                     delta_z = eval(delta_z_str)
                     inter_length = eval(inter_length_str)
                     if diameter > 16.0 or diameter < 1.011:
                         raise ValueError(
-                            "Diameter entered for SMALL_MRG_INTERPOLATION_V1 must be"
-                            "between 1.011 and 16.0 (inclusive)."
+                            "Diameter entered for SMALL_MRG_INTERPOLATION must be" "between 1.011 and 16.0 (inclusive)."
                         )
                 elif fiber_geometry_mode_name == FiberGeometry.MRG_INTERPOLATION.value:
                     if diameter > 16.0 or diameter < 2.0:
@@ -790,6 +783,7 @@ class FiberSet(Configurable, Saveable):
                 self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'min'),
                 self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'max'),
                 myel,
+                zbuffer=10 if not super_sample else 5,  # Instead of fixed value make could set as supersample dz
             )
 
             my_fiber = [(my_x, my_y, z) for z in z_offset]
@@ -881,6 +875,10 @@ class FiberSet(Configurable, Saveable):
         )
 
         fiber_geometry_mode_name: str = self.search(Config.SIM, 'fibers', 'mode')
+        if fiber_geometry_mode_name == "SMALL_MRG_INTERPOLATION_V1":
+            raise ValueError(
+                "the name SMALL_MRG_INTERPOLATION_V1 is deprecated. Please use SMALL_MRG_INTERPOLATION instead."
+            )
 
         # use key from above to get myelination mode from fiber_z
         diameter = self.search(Config.SIM, 'fibers', FiberZMode.parameters.value, 'diameter')
@@ -1044,8 +1042,8 @@ class FiberSet(Configurable, Saveable):
             self.search(Config.MODEL, 'medium', 'proximal', 'length') if (override_length is None) else override_length
         )
         if (
-            'min' not in self.configs['sims']['fibers']['z_parameters'].keys()
-            or 'max' not in self.configs['sims']['fibers']['z_parameters'].keys()
+            'min' not in self.configs['sims']['fibers']['z_parameters']
+            or 'max' not in self.configs['sims']['fibers']['z_parameters']
             or override_length is not None
         ):
             fiber_length = model_length if override_length is None else override_length

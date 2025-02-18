@@ -5498,20 +5498,7 @@ class Part {
                     icMesh.set("filename", mesh_inner_path);
                     icMesh.set("type", "closed");
 
-                    if (modelData.has("inner_interp_tol") && !modelData.has("trace_interp_tol")) {
-                        icMesh.set("rtol", modelData.getDouble("inner_interp_tol"));
-                    } else if (
-                        modelData.has("trace_interp_tol") && !modelData.has("inner_interp_tol")
-                    ) {
-                        icMesh.set("rtol", modelData.getDouble("trace_interp_tol")); // backwards compatibility
-                    } else if (
-                        modelData.has("trace_interp_tol") && modelData.has("inner_interp_tol")
-                    ) {
-                        throw new Exception(
-                            "Both trace_interp_tol and inner_interp_tol defined in Model. " +
-                            "Use new convention for inners (inner_interp_tol) and outers (outer_interp_tol) separately!"
-                        );
-                    }
+                    icMesh.set("rtol", modelData.getDouble("inner_interp_tol"));
 
                     String icSurfLabel = "outer" + index + " Inner Surface " + mesh_inner_index;
                     GeomFeature icSurf = innersPlane
@@ -5557,18 +5544,7 @@ class Part {
                 outeric1.set("filename", mesh_outer_path);
                 outeric1.set("type", "closed");
 
-                if (modelData.has("outer_interp_tol") && !modelData.has("trace_interp_tol")) {
-                    outeric1.set("rtol", modelData.getDouble("outer_interp_tol"));
-                } else if (
-                    modelData.has("trace_interp_tol") && !modelData.has("outer_interp_tol")
-                ) {
-                    outeric1.set("rtol", modelData.getDouble("trace_interp_tol")); // backwards compatibility
-                } else if (modelData.has("trace_interp_tol") && modelData.has("outer_interp_tol")) {
-                    throw new Exception(
-                        "Both trace_interp_tol and inner_interp_tol defined in Model. " +
-                        "Use new convention for inners (outer_interp_tol), outers (outer_interp_tol), and nerve (nerve_interp_tol) separately!"
-                    );
-                }
+                outeric1.set("rtol", modelData.getDouble("outer_interp_tol"));
 
                 String outericSurfaceLabel = "outer" + index + " Outer Surface";
                 outerPlane.geom().create(im.next("csol", outericSurfaceLabel), "ConvertToSolid");
@@ -5718,22 +5694,7 @@ class Part {
                 nerveic.set("type", "closed");
 
                 //set interpolation tolerance for nerve curve
-                if (modelData.has("nerve_interp_tol") && !modelData.has("trace_interp_tol")) {
-                    nerveic.set("rtol", modelData.getDouble("nerve_interp_tol"));
-                } else if (
-                    modelData.has("trace_interp_tol") && !modelData.has("nerve_interp_tol")
-                ) {
-                    nerveic.set("rtol", modelData.getDouble("trace_interp_tol")); // backwards compatibility
-                } else if (modelData.has("trace_interp_tol") && modelData.has("nerve_interp_tol")) {
-                    throw new Exception(
-                        "Both trace_interp_tol and nerve_interp_tol defined in Model. " +
-                        "Use new convention for inners (outer_interp_tol), outers (outer_interp_tol), and nerve (nerve_interp_tol) separately!"
-                    );
-                } else {
-                    throw new Exception(
-                        "You must specify a nerve interpolation tolerance (nerve_interp_tol in model.json)"
-                    );
-                }
+                nerveic.set("rtol", modelData.getDouble("nerve_interp_tol"));
 
                 //Generate surface from curve
                 String nerveicSurfaceLabel = "Epineurium Outer Surface";

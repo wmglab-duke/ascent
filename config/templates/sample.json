@@ -1,5 +1,4 @@
 {
-  "Morphology": null,
   "boundary_separation": {
     "fascicles": 10.0,
     "nerve": 10.0
@@ -21,7 +20,7 @@
     "shrinkage_definition": "LENGTH_BACKWARDS"
   },
   "morph_count": 36,
-  "pseudonym": "template sample",
+  "pseudonym": "give_me_a_name",
   "render_deform": false,
   "sample": "Rat16-3",
   "scale": {

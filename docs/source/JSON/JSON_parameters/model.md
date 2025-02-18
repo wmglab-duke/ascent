@@ -46,7 +46,6 @@ the following syntax:
   "inner_interp_tol": Double,
   "outer_interp_tol": Double,
   "nerve_interp_tol": Double,
-
   // EXAMPLE for modeling a single stimulation cuff
   "cuff": [{
     "preset": String,
@@ -91,7 +90,6 @@ the following syntax:
       }
     }
   ]
-
   "min_radius_enclosing_circle": Double,
   "mesh": {
   "quality_measure": String,
@@ -284,6 +282,9 @@ cuff to model on the nerve in addition to how it is placed on the nerve
 - `“preset”`: The value (String) indicates which cuff to model, selected
   from the list of filenames of the “preset” cuffs in
   `config/system/cuffs/<filename>.json` ([Fig 3A](https://doi.org/10.1371/journal.pcbi.1009285.g003) and [Creating Custom Cuffs](../../Primitives_and_Cuffs/Custom_Cuffs)). Required.
+
+- `“index”`: The value (Integer) is used to identify each cuff by a number. This parameter will correspond to the "cuff_index"
+  parameter in **_Simulation_** to define the given cuffs weights and if the cuff is used for stimulation (index matched with `"cuff_index"` in `"active_srcs"`) or recording (index matched with `"cuff_index"` in `"active_recs"`) . Each cuff should have a unique index value. The current implementation has only been tested for up to two cuffs. Required.
 
 - `“rotate”`: Contains two keys: `“pos_ang”` (automatically populated
   based on “CuffShiftMode”, i.e., `“cuff_shift”` parameter in

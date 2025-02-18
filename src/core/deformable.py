@@ -220,6 +220,7 @@ class Deformable:
         :param end: end trace
         :param count: number of morph steps
         :param deform_ratio: deform ratio
+        :raises RuntimeError: If no traces are generated for deformation steps.
         :return: list of morph steps
         """
         # Find point along old_nerve that is closest to major axis of best fit ellipse
@@ -275,6 +276,8 @@ class Deformable:
             for i, point in enumerate(trace.points):
                 point += vectors[i] * ratio
             traces.append(trace)
+        if len(traces) == 0:
+            raise RuntimeError('No traces for deformation steps.')
         if deform_ratio == 0:  # still need fascicle sep physics with deform_ratio = 0, so pass starting trace only
             return [traces[0]]
         return traces[: int((deform_ratio if deform_ratio is not None else 1) * count)]
@@ -294,7 +297,7 @@ class Deformable:
         width = int(1.5 * (bounds[2] - bounds[0])) / 2
         height = int(1.5 * (bounds[3] - bounds[1])) / 2
 
-        slide.move_center(np.array([1.5 * width, 1.5 * height]))
+        slide.move_center(np.array([width, height]))
 
         # get start boundary
         boundary_start = slide.nerve.deepcopy()

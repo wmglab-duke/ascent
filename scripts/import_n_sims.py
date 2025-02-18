@@ -50,17 +50,20 @@ def run(args):
                             sim,
                             os.path.join(nsim_source, 'n_sims'),
                             len(sim_config['protocol']['amplitudes']),
+                            verbose=args.verbose,
                         )
                     else:
-                        check = Simulation.thresholds_exist(sample, model, sim, os.path.join(nsim_source, 'n_sims'))
+                        check = Simulation.thresholds_exist(
+                            sample, model, sim, os.path.join(nsim_source, 'n_sims'), verbose=args.verbose
+                        )
                     if check is False:
+                        print('At least one threshold (or activation log if running FINITE AMPLITUDES) was missing...')
+                        if not args.verbose:
+                            print('Rerun with -v to see which files are missing')
                         if args.force is True:
                             print('Force argument passed, continuing with import')
                         else:
-                            print(
-                                'At least one threshold (or activation log if running FINITE AMPLITUDES) was missing,'
-                                f' skipping import for run {argument} sample {sample} model {model} sim {sim}'
-                            )
+                            print(f' skipping import for run {argument} sample {sample} model {model} sim {sim}')
                             continue
                     Simulation.import_n_sims(
                         sample,

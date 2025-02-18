@@ -68,7 +68,7 @@ Indicate the method used to mesh the FEM in addition to the number of domain ele
 
 Indicate that the FEM was solved using Laplace’s equation once for each contact delivering 1 mA of current. Indicate if the outer surfaces of the model were grounded or set to insulation.
 
-## HOC/MOD files
+## NEURON (MOD/Python) files
 
 If using novel fiber model ultrastructure or channel mechanisms, please share the code required to implement it in ASCENT.
 

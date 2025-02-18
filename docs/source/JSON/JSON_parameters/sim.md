@@ -168,36 +168,30 @@ following syntax:
       "period_repeats ": Integer
     }
   },
-  "intracellular_stim": {
-    "times": {
-      "pw": Double,
-      "IntraStim_PulseTrain_delay": Double,
-      "IntraStim_PulseTrain_dur": Double
-    },
-    "pulse_repetition_freq": Double,
-    "amp": Double,
-    "ind": Integer
+  "instrinsic_activity": {
+    "argument": object, // See PyFibers documentation for arguments
   },
   "saving": {
     "aploctime": Boolean,
     "space": {
       "vm": Boolean,
       "gating": Boolean,
+      "i_membrane": Boolean,
       "times": [Double],
     },
     "time": {
       "vm": Boolean,
       "gating": Boolean,
       "istim": Boolean,
+      "i_membrane": Boolean,
       "locs": [Double] OR String
     },
-    "end_ap_times": {
-      "loc_min": Double,
-      "loc_max": Double,
-      "threshold": Double
-    }
     "runtimes": Boolean,
-    "3D_fiber_intermediate_data": Boolean
+    "3D_fiber_intermediate_data": Boolean,
+    "cap_recording": {
+      "save_adjusted_im": Boolean,
+      "downsample": Double
+    }
   },
 
   // EXAMPLE PROTOCOL for FINITE_AMPLITUDES
@@ -209,6 +203,9 @@ following syntax:
     "threshold": {
       "value": Double,
       "ap_detect_location": Double
+    },
+    "run_sim_kws": {
+        "argument": object // See PyFibers documentation for arguments
     }
   },
 
@@ -230,6 +227,9 @@ following syntax:
     "termination_criteria": {
       "mode": "ABSOLUTE_DIFFERENCE",
       "percent": Double
+    },
+    "find_threshold_kws": {
+        "argument": object // See PyFibers documentation for arguments
     }
   },
 
@@ -251,6 +251,9 @@ following syntax:
     "termination_criteria": {
       "mode": String,
       "percent": Double
+    },
+    "find_threshold_kws": {
+        "argument": object // See PyFibers documentation for arguments
     }
   },
   "supersampled_bases": {
@@ -287,15 +290,15 @@ fiber are calculated in the following way for an example weighting:
 `"example_cuff_preset.json": [[1, -1]]` // [[weight<sub>1</sub> (for src 1 on),
 weight<sub>2</sub> (for src 2 on)]]
 
-$$V_{e}=(\textrm{amplitude})*\textrm{potentials}$$
+$$V_{e}=(amplitude)*potentials$$
 
-$$\textrm{potentials}=(\textrm{weight}_{1})*\textrm{bases}_{1}(x,y,z)+(\textrm{weight}_{2})*\textrm{bases}_{2}(x,y,z)$$
+$$potentials=(weight_{1})*bases_{1}(x,y,z)+(weight_{2})*bases_{2}(x,y,z)$$
 
 The value of potentials/ is applied to a model fiber in NEURON
 multiplied by the stimulation amplitude, which is either from a list of
 finite amplitudes or a bisection search for thresholds ([Simulation Protocols](../../Running_ASCENT/Info.md#simulation-protocols))
 
-$$\textrm{potentials}=(1)*\textrm{bases}_{1}(x,y,z)+(-1)*\textrm{bases}_{2}(x,y,z)$$
+$$potentials=(1)*bases_{1}(x,y,z)+(-1)*bases_{2}(x,y,z)$$
 
 - `“cuff_index”`: The value (Integer) used to designate which cuff will be used for
   stimulation and which cuff will be used for recording. The index value must correspond to the “index” value in the Model "cuff" configuration. Required.
@@ -308,7 +311,7 @@ $$\textrm{potentials}=(1)*\textrm{bases}_{1}(x,y,z)+(-1)*\textrm{bases}_{2}(x,y,
 `“fibers”`: The value is a JSON Object containing key-value pairs that
 define how potentials are sampled in the FEM for application as
 extracellular potentials in NEURON (i.e., the Cartesian coordinates of
-the midpoint for each compartment (i.e., section or segment) along the
+the midpoint for each compartment (i.e., section) along the
 length of the fiber). Required.
 
 - `“mode”`: The value (String) is the “FiberGeometry” mode that tells
@@ -321,7 +324,8 @@ length of the fiber). Required.
     - `“MRG_INTERPOLATION”` (interpolates the discrete diameters
       from published MRG fiber models)
 
-    - `SMALL_MRG_INTERPOLATION_V1` (interpolates diameters from published literature data on small myelinated fibers; used by {cite:p}`Pena2024` to model myelinated fibers with >1.011 um diameter; uses the same ion channels as MRG_DISCRETE and MRG_INTERPLOATION, but decreases the maximum conductance of sodium ion channels and increases the maximum conductance of potassium ion channels to ensure one action potential per stimulus pulse.)
+    - `SMALL_MRG_INTERPOLATION` (interpolates diameters from published literature data on small myelinated fibers; used by
+      {cite:p}`Pena2024` to model myelinated fibers with >1.011 um diameter; uses the same ion channels as MRG_DISCRETE and MRG_INTERPLOATION, but decreases the maximum conductance of sodium ion channels and increases the maximum conductance of potassium ion channels to ensure one action potential per stimulus pulse.)
 
     - `“TIGERHOLM”` (published C-fiber model)
 
@@ -395,11 +399,11 @@ length of the fiber). Required.
   - `full_nerve_length`: (Boolean) Optional. If true, suppresses the warning message associated with using the full length nerve when `"min"` and `"max"` are not defined. Must be false or not defined if `"min"` and `"max"` are defined.
 
   - `“offset”`: The value (Double or String) is the fraction
-    of the node-node length (myelinated fibers) or segment length
+    of the node-node length (myelinated fibers) or section length
     (unmyelinated fibers) that the center coordinate of the fiber is
     shifted along the z-axis from the longitudinal center of the
     proximal medium. If the value is "random", the offset will
-    be randomly selected between +/- 0.5 section/segment length; to
+    be randomly selected between +/- 0.5 internodal length; to
     avoid the randomized longitudinal placement, set the offset
     value to ‘0’ for no offset.
 
@@ -470,7 +474,7 @@ length of the fiber). Required.
   - `“EXPLICIT”`: The mode looks for a `“<explicit_index>.txt”` file in the user-created directory
     (`input/<input sample name>/explicit_fibersets`, where `<input sample name>` is the `sample` parameter in
     **_Sample_**) for user-specified fiber (x,y)-coordinates, defined in microns from the *bottom left corner
-    of the input images*, (see `config/templates/explicit.txt`). Note, this file is only required if the user
+    of the input images*, (see `config/templates/advanced/explicit.txt`). Note, this file is only required if the user
     is using the `“EXPLICIT”` `“FiberXYMode”`. An error is thrown if any explicitly defined coordinates are
     not inside any fascicle inner boundaries.
 
@@ -479,7 +483,7 @@ length of the fiber). Required.
   - `“EXPLICIT_3D”`: The mode looks for a `“<explicit_index>.npy”` file in the user-created directory
     (`input/<input sample name>/explicit_fibersets`, where `<input sample name>` is the `sample` parameter
     in **_Sample_**) for user-specified fiber (x,y,z)-coordinates in microns from the left x, bottom y, and
-    bottom z coordinates of the input image (see `config/templates/explicit_3D.npy`). Note, this file is
+    bottom z coordinates of the input image (see `config/templates/advanced/explicit_3D.npy`). Note, this file is
     only required if the user is using the `“EXPLICIT_3D”` `“FiberXYMode”`. The explicit coordinates data
     structure in the pickled `.npy` file must be a numpy array of fibers, where each index contains a 2D
     np.array of fiber xyz-points (e.g., np.array(np.array(fiber 1 xyz-coords), ..., np.array(fiber N
@@ -489,7 +493,7 @@ length of the fiber). Required.
     fiber is individually extruded to the length of the model.
 
     To visualize the `explicit_3D.npy` template, open a command-line window and change directories to
-    `config/templates/`. Enter `python` to start an interactive python session and enter
+    `config/templates/advanced`. Enter `python` to start an interactive python session and enter
     `import numpy as np`. Then run the `np.load('explicit_3D.npy', allow_pickle=True)` to load and print
     the file contents to the consol. The template file contains two short fibers of varying lengths, and
     is compatible with the ascent tutorial.
@@ -701,36 +705,10 @@ waveform parameters among the lists (i.e., the Cartesian product).
     “off” to accommodate for any extra time after the number of
     period repeats and before “off”. Required.
 
-`“intracellular_stim”`: The value (JSON Object) contains key-value pairs
-to define the settings of the monophasic pulse train of the
-intracellular stimulus ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
-
-- `“times”`: The key-value pairs define the time durations
-  characteristic of the intracellular stimulation. Required.
-
-  - `“pw”`: The value (Double, units: milliseconds) defines the pulse
-    duration of the intracellular stimulation. Required.
-
-  - `“IntraStim_PulseTrain_delay”`: The value (Double, units:
-    milliseconds) defines the delay from the start of the simulation
-    (i.e., t=0) to the onset of the intracellular stimulation.
-    Required.
-
-  - `“IntraStim_PulseTrain_dur”`: The value (Double, units:
-    milliseconds) defines the duration from the start of the
-    simulation (i.e., t=0) to the end of the intracellular
-    stimulation. Required.
-
-- `“pulse_repetition_freq”`: The value (Double, units: Hz) defines the
-  intracellular stimulation frequency. Required.
-
-- `“amp”`: The value (Double, units: nA) defines the intracellular
-  stimulation amplitude. Required.
-
-- `“ind”`: The value (Integer) defines the section index (unmyelinated)
-  or node of Ranvier number (myelinated) receiving the intracellular
-  stimulation. The number of sections/nodes of Ranvier is indexed from
-  0 and starts at the end of the fiber closest to z = 0. Required.
+`"intrinsic_activity"`: The value (JSON Object) contains key-value pairs
+to define intrinsic activity for the fiber ([NEURON Scripts](../../Code_Hierarchy/NEURON)).
+Optional, though required if searching for block thresholds.
+The key-value pairs are passed to [PyFibers: Fiber.add_intrinsic_activity()](<<link>>).
 
 `“saving”`: The value (JSON Object) contains key-value pairs to define
 which state variables NEURON will save during its simulations and at
@@ -746,19 +724,23 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
 - `“space”`:
 
   - `“vm”`: The value (Boolean), if true, tells the program to save
-    the transmembrane potential at all segments (unmyelinated) and
-    sections (myelinated) at the time stamps defined in “times” (see
+    the transmembrane potential at all sections (unmyelinated) /
+    nodes (myelinated) at the time stamps defined in “times” (see
     below). Required.
 
   - `“gating”`: The value (Boolean), if true, tells the program to
-    save channel gating parameters at all segments (unmyelinated)
-    and sections (myelinated) at the time values defined in “times”
-    (see below). Note: Only implemented for MRG fibers. Required.
+    save channel gating parameters at all sections (unmyelinated) /
+    nodes (myelinated) at the time values defined in “times”
+    (see below). Required.
+
+  - `"i_membrane"`: The value (Boolean), if true, tells the program to
+  save the transmembrane current at all  sections (unmyelinated) /
+    nodes (myelinated) at the time values defined in “times” (see below). Required.
 
   - `“times”`: The value (List\[Double\], units: milliseconds) contains the
     times in the simulation at which to save the values of the state
     variables (i.e., “gating” or “vm”) that the user has selected to
-    save for all segments (unmyelinated) and sections (myelinated).
+    save for all  sections (unmyelinated) / nodes (myelinated) .
     Required.
 
 - `“time”`:
@@ -769,8 +751,11 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
 
   - `“gating”`: The value (Boolean), if true, tells the program to
     save the channel gating parameters at each time step at the
-    locations defined in “locs” (see below). Note: Only implemented
-    for MRG fibers. Required.
+    locations defined in “locs” (see below). Required.
+
+  - `"i_membrane"`: The value (Boolean), if true, tells the program to
+    save the transmembrane current at each time step at the locations
+    defined in “locs” (see below). Required.
 
   - `“istim”`: The value (Boolean), if true, tells the program to save
     the applied intracellular stimulation at each time step.
@@ -782,27 +767,7 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
     state variables that the user has selected to save for all
     timesteps. Alternatively, the user can use the value “all”
     (String) to prompt the program to save the state variables at
-    all segments (unmyelinated) and sections (myelinated). Required.
-
-- `“end_ap_times”`:
-
-  - `“loc_min”`: The value (Double) tells the program at which location to save
-    times at which V<sub>m</sub> passes the threshold voltage (defined below)
-    with a positive slope. The value must be between 0 and 1, and less than the
-    value for `“loc_max”`. Be certain not to record from the end section (i.e., 0)
-    if it is passive. A value 0 corresponds to z=0, and a value of 1 corresponds to
-    z=length of proximal domain. Required if this JSON object (which is optional) is included.
-
-  - `“loc_max”`: The value (Double) tells the program at which location to save
-    times at which V<sub>m</sub> passes the threshold voltage (defined below)
-    with a positive slope. The value must be between 0 and 1, and greater than the
-    value for `“loc_min”`. Be certain not to record from the end section (i.e., 1)
-    if it is passive. A value 0 corresponds to z=0, and a value of 1 corresponds to
-    z=length of proximal domain. Required if this JSON object (which is optional) is included.
-
-  - `“threshold”`: The value (Double, units: mV) is the threshold value for V<sub>m</sub> to pass
-    for an action potential to be detected. Required if this JSON object (which is optional)
-    is included.
+     all sections (unmyelinated) / nodes (myelinated). Required.
 
 - `“runtimes”`: The value (Boolean), if true, tells the program to save
   the NEURON runtime for either the finite amplitude or bisection search for
@@ -811,11 +776,11 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
 
 - `"3D_fiber_intermediate_data"`: The value (Boolean), if true, tells the program to save the fiber lengths and longitudinal coordinate compartment spacings for sampled potentials into directories within the sample called `tracto_lengths/`, `tracto_coords/`, `3D_tracto_fiberset/` respectively.
 
-- `“cap_recording”`:
+- `"cap_recording"`: Controls associated with generation of single fiber action potentials and compound action potentials. Optional.
 
-  - `“Imembrane_matrix”`: The value (Boolean), if true, tells the program to save the
-    transmembrane current matrix for each fiber. These are memory-intensive matrices that contain the transmembrane currents for all fiber compartments across all time points. The matrices are required if the user aims to later generate current templates using the `examples\analysis\generate_templates.py` script. Default: False. Optional.
+  - `"save_adjusted_im"`: The value (Boolean), if true, tells the program to save, for each fiber, a matrix of extracellular currents *adjusted for periaxonal current*. This is distinct from the transmembrane current (if the user wishes to save transmembrane current, see `"i_membrane"` saving above). Each sections current is adjusted based on the perixanoal current in the extracellular space in order to accurately calculate a recorded signal. Therefore, this parameter is only considered if a model contains a recording cuff, and will be ignored if no recording cuff is present. These are memory-intensive matrices that contain the current for all sections, for all time points. The matrices are required if the user aims to later generate current templates using the `examples\analysis\generate_templates.py` script. Default: False. Optional.
 
+  - `"downsample"`: The value (Double), if provided, instructs the program to downsample in time by the provided factor before calculating periaxonal-adjusted currents and single fiber action potentials. This is useful for reducing the memory footprint of the simulation. Must be greater than or equal to 1. Default: 1. Optional.
 
 `“protocol”`:
 
@@ -828,6 +793,31 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
     - `“ACTIVATION_THRESHOLDS”`
     - `“BLOCK_THRESHOLDS”`
     - `“FINITE_AMPLITUDES”`
+
+- `"run_sim_kws"`: Additional keyword arguments to pass to PyFibers `ScaledStim.run_sim()` method. Optional.
+  Only used if protocol is `“FINITE_AMPLITUDES”`. For threshold search protocols, these should be included in `"find_threshold_kws"`.
+  See [PyFibers ScaledStim.run_sim()](<<link>>) for more information.
+  Note: you should not include in this json object any keyword arguments already set by other parameters within sim.json, or parameters set by ASCENT. This includes:
+  - `"stimamp"`
+  - `"ap_detect_location"`
+
+
+- `"find_threshold_kws"`: Additional keyword arguments to pass to PyFibers `ScaledStim.find_threshold()` method. Optional.
+  Only used if protocol is `“ACTIVATION_THRESHOLDS”` or `“BLOCK_THRESHOLDS”`.
+  Since `find_threshold()` passes extra arguments to `run_sim()`, you may also include keyword arguments for `run_sim()` here.
+  See [PyFibers ScaledStim.find_threshold()](<<link>>) and [PyFibers ScaledStim.run_sim()](<<link>>) for more information.
+  Note: you should not include in this json object any keyword arguments already set by other parameters within sim.json, or parameters set by ASCENT. This includes:
+    - `"condition"`
+    - `"bounds_search_mode"`
+    - `"bounds_search_step"`
+    - `"termination_mode"`
+    - `"termination_tolerance"`
+    - `"stimamp_top"`
+    - `"stimamp_bottom"`
+    - `"max_iterations"`
+    - `"block_delay"`
+    - any parameters listed as "do not include" for `run_sim_kws` above.
+    - any parameters which use imported enums (e.g., `"bisection_mean"`)
 
 - `“initSS”`: The value (Double, hint: should be negative or zero,
   units: milliseconds) is the time allowed for the system to reach
@@ -932,68 +922,8 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
 
     - `"sim"`: The value (Integer) indicates which sim index to use fo the scout Sim (can be the current Sim's index). Required if `"scout"` is used.
 
-<!-- end list -->
-
-- `“termination_criteria”`: Required for threshold finding protocols
-  (i.e., `“ACTIVATION_THRESHOLDS”` and `“BLOCK_THRESHOLDS”`) ([Simulation Protocols](../../Running_ASCENT/Info.md#simulation-protocols)).
-
-  - `“mode”`: The value (String) is the `“TerminationCriteriaMode”` that
-    tells the program when the upper and lower bound have converged
-    on a solution of appropriate precision. Required.
-
-    - As listed in Enums ([Enums](../../Code_Hierarchy/Python.md#enums)), known `“TerminationCriteriaModes”`
-      include:
-
-      - `“ABSOLUTE_DIFFERENCE”`: If the upper bound and lower
-        bound in the bisection search are within a fixed
-        “tolerance” amount (e.g., 0.001 mA), the upper bound
-        value is threshold.
-
-        - `“tolerance”`: The value (Double) is the absolute
-          difference between upper and lower bound in the
-          bisection search for finding threshold (unit: mA).
-          Required.
-
-      - `“PERCENT_DIFFERENCE”`: If the upper bound and lower
-        bound in the bisection search are within a relative
-        “percent” amount (e.g., 1%), the upper bound value is
-        threshold. This mode is generally recommended as the
-        `ABSOLUTE_DIFFERENCE` approach requires adjustment of the
-        “tolerance” to be suitable for different threshold
-        magnitudes.
-
-        - `“percent”`: The value (Double) is the percent
-          difference between upper and lower bound in the
-          bisection search for finding threshold (e.g., 1 is 1%).
-          Required.
-
-`“supersampled_bases”`: Optional. Required only for either generating or
-reusing super-sampled bases. This can be a memory efficient process by
-eliminating the need for long-term storage of the bases/ COMSOL `*.mph`
-files. Control of `“supersampled_bases”` belongs in **_Sim_** because the
-(x,y)-fiber locations in the nerve are determined by **_Sim_**. The
-potentials are sampled densely along the length of the nerve at
-(x,y)-fiber locations once so that in a future pipeline run different
-fiber types can be simulated at the same location in the nerve cross-section without loading COMSOL files into memory.
-
-- `“generate”`: The value (Boolean) indicates if the program will create
-  super-sampled fiber coordinates and super-sampled bases (i.e.,
-  sampled potentials from COMSOL). Required only if generating
-  `ss_bases/`.
-
-- `“use”`: The value (Boolean) if true directs the program to
-  interpolate the super-sampled bases to create the extracellular
-  potential inputs for NEURON. If false, the program will sample along
-  the length of the COMSOL FEM at the coordinates explicitly required
-  by “fibers”. Required only if generating `ss_bases/`.
-
-- `“dz”`: The value (Double, units: micrometer) is the spatial sampling
-  of the super-sampled bases. Required only if generating `ss_bases/`.
-
-- `“source_sim”`: The value (Integer) is the **_Sim_** index that
-  contains the super-sampled bases. If the user sets both “generate”
-  and “use” to true, then the user should indicate the index of the
-  current **_Sim_** here. Required only if generating `ss_bases/`.
+- `“exit_interval”`: The value (Double, units: milliseconds) is the time interval how often NEURON should check
+simulation for an AP and exit the simulation. Optional.
 
 <!-- end list -->
 

@@ -412,9 +412,12 @@ structure (`sims/<sim index>/n_sims/<n_sim index>/data/inputs/` and
 `sims/<sim index>/n_sims/<n_sim index>/data/outputs/`).
 Corresponding to the `n_sim’s` `master_product_index`, files are copied
 into the `n_sim` directory for a "reduced" **_Sim_**, stimulation
-waveform, and fiber potentials. Additionally, the program writes a HOC
-file (i.e., `"launch.hoc"`) containing parameters for and a call to our
-`Wrapper.hoc` file using the Python `HocWriter` class.
+waveform, and fiber potentials. Additionally, the program creates an instance
+of the Fiber object (`fiber.py`) for each `n_sim` (`sims/<sim index>/n_sims/<n_sim index>/fiber.obj`)
+to be used during NEURON job submissions. Each instance of the Fiber object is
+configured with `fiber_z.json`, **_Model_**, and "reduced" **_Sim_**. `Fiber.inherit()` initializes the object
+with universal attributes for all fibers in a given n_sim (i.e., fiber diameter, min, max, offset, seed from
+`fibers/z_parameters` in **_Sim_**, fiber model type from **_Sim_**, and model temperature from **_Model_**).
 
 To conveniently submit the `n_sim` directories to a computer cluster, we
 created methods within Simulation named `export_n_sims()`,
@@ -426,10 +429,13 @@ directory named `n_sims/` contains all `n_sims`. Each `n_sim` is renamed
 corresponding to its sample, model, sim, and `master_product_index`
 (`<sample_index>_<model_index>_<sim_index>_<master_product_index>`)
 and is therefore unique. Analogously, `export_run()` creates a copy of
-**_Run_** within the target directory in a directory named `runs/`. Lastly,
-`export_neuron_files()` is used to create a copy of the NEURON `*.hoc`
+**_Run_** within the target directory in a directory named `runs/`.
+`export_neuron_files()` is used to create a copy of the NEURON `*.py`
 and `*.mod` files in the target directory in directories named
-`"HOC_Files"` and `"MOD_Files"`, respectively.
+`"NEURON_Files"` and `"MOD_Files"`, respectively. `export_src_files()` is used to
+create a copy of the necessary files `src/core/` and `src/utils/`
+for submitting NEURON jobs. Finally, `export_system_config_files()` is used to
+create a copy of necessary system configuration files in `config/system/`.
 
 ## Fiberset
 

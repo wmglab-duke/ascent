@@ -12,17 +12,16 @@ import argparse
 import json
 import multiprocessing
 import os
-import pickle
 import re
 import shutil
 import subprocess
 import sys
 import time
 import warnings
-from json import JSONDecodeError
 
 import numpy as np
 import pandas as pd
+from packaging.version import Version
 from tqdm import tqdm
 
 
@@ -42,7 +41,7 @@ class ListAction(argparse.Action):
             with open(run_path + '/' + j) as f:
                 try:
                     rundata = json.load(f)
-                except JSONDecodeError as e:
+                except JSONDecodeError as e:  # noqa: F821
                     print(f'WARNING: Could not load {j}, check for syntax errors. Original error: {e}')
                     continue
                 data.append(
@@ -102,6 +101,12 @@ parser.add_argument(
     '--all-runs',
     action='store_true',
     help='Submit all runs in the present export folder. If supplying this argument, do not pass any run indices',
+)
+parser.add_argument(
+    '-f',
+    '--force-rerun',
+    action='store_true',
+    help='Rerun fibers even if the outputs already exist',
 )
 parser.add_argument(
     '-s',
@@ -203,95 +208,6 @@ def ensure_dir(directory):
     os.makedirs(directory, exist_ok=True)
 
 
-def auto_compile(override: bool = False):
-    """Compile NEURON files if they have not been compiled yet.
-
-    :param override: if True, compile regardless of whether the files have already been compiled
-    :return: True if ran compilation, False if not
-    """
-    if (
-        (not os.path.exists(os.path.join('MOD_Files', 'x86_64', 'special')) and OS == 'UNIX-LIKE')
-        or (not os.path.exists(os.path.join('MOD_Files', 'nrnmech.dll')) and OS == 'WINDOWS')
-        or override
-    ):
-        print('compiling NEURON files...')
-        os.chdir(os.path.join('MOD_Files'))
-        exit_data = subprocess.run(['nrnivmodl'], shell=True, capture_output=True, text=True)
-        # note, nrnivmodl always returns 0, even if it fails
-        if (
-            exit_data.returncode != 0
-            or (not os.path.exists(os.path.join('x86_64', 'special')) and OS == 'UNIX-LIKE')
-            or (not os.path.exists(os.path.join('nrnmech.dll')) and OS == 'WINDOWS')
-        ):
-            print(exit_data.stderr)
-            sys.exit("Error in compiling of NEURON files. Exiting...")
-        os.chdir('..')
-        return True
-
-    print('skipped compile')
-    return False
-
-
-def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind):
-    """Get the diameter of the fiber from the inner fiber diameter key.
-
-    :param my_inner_fiber_diam_key: the key for the fiber diameters
-    :param my_inner_ind: the index of the inner
-    :param my_fiber_ind: the index of the fiber within the inner
-    :return: the diameter for this fiber
-    """
-    for item in my_inner_fiber_diam_key:
-        if item[0] == my_inner_ind and item[1] == my_fiber_ind:
-            my_diameter = item[2]
-            break
-
-    if isinstance(my_diameter, list) and len(my_diameter) == 1:
-        my_diameter = my_diameter[0]
-
-    return my_diameter
-
-
-def get_deltaz(fiber_model, diameter):
-    """Get the deltaz (node spacing) for a given fiber model and diameter.
-
-    :param fiber_model: the string name of the fiber model
-    :param diameter: the diameter of the fiber in microns
-    :return: the deltaz for this fiber, the neuron flag for the fiber model
-    """
-    fiber_z_config = load(os.path.join('config', 'system', 'fiber_z.json'))
-    fiber_model_info: dict = fiber_z_config['fiber_type_parameters'][fiber_model]
-
-    if fiber_model_info.get("geom_determination_method") == 0:
-        diameters, delta_zs, paranodal_length_2s = (
-            fiber_model_info[key] for key in ('diameters', 'delta_zs', 'paranodal_length_2s')
-        )
-        diameter_index = diameters.index(diameter)
-        delta_z = delta_zs[diameter_index]
-
-    elif fiber_model_info.get("geom_determination_method") == 1:
-        paranodal_length_2_str, delta_z_str, inter_length_str = (
-            fiber_model_info[key] for key in ('paranodal_length_2', 'delta_z', 'inter_length')
-        )
-
-        if diameter >= 5.643:
-            delta_z = eval(delta_z_str["diameter_greater_or_equal_5.643um"])
-        else:
-            delta_z = eval(delta_z_str["diameter_less_5.643um"])
-
-    elif fiber_model_info.get("geom_determination_method") == 2:  # SMALL_MRG_INTERPOLATION_V1 fiber
-        paranodal_length_2_str, delta_z_str, inter_length_str = (
-            fiber_model_info[key] for key in ('paranodal_length_2', 'delta_z', 'inter_length')
-        )
-        delta_z = eval(delta_z_str)
-
-    elif fiber_model_info.get("neuron_flag") == 3:  # C Fiber
-        delta_z = fiber_model_info["delta_zs"]
-
-    neuron_flag = fiber_model_info.get("neuron_flag")
-
-    return delta_z, neuron_flag
-
-
 def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
     """Get threshold bounds (upper and lower) for this simulation.
 
@@ -372,79 +288,52 @@ def get_thresh_bounds(sim_dir: str, sim_name: str, inner_ind: int):
 
 
 def make_task(
-    sub_con: str,
     my_os: str,
+    sub_con: str,
     start_p: str,
     sim_p: str,
-    inner: int,
-    fiber: int,
-    top: float,
-    bottom: float,
-    diam: float,
-    deltaz: float,
-    axonnodes: int,
+    inner_ind: int,
+    fiber_ind: int,
+    stimamp_top: float,
+    stimamp_bottom: float,
+    potentials_path: str,
+    waveform_path: str,
+    n_sim: int,
 ):
     """Create shell script used to run a fiber simulation.
 
     :param sub_con: the string name of the submission context.
     :param my_os: the string name of the operating system
+    :param sub_con: the string name of the submission context
     :param start_p: the string path to the start_dir
     :param sim_p: the string path to the sim_dir
-    :param inner: the index of the inner this fiber is in
-    :param fiber: the index of the fiber this simulation is for
-    :param top: the upper threshold bound
-    :param bottom: the lower threshold bound
-    :param diam: the diameter of the fiber
-    :param deltaz: the deltaz for the fiber
-    :param axonnodes: the number of axon nodes
+    :param inner_ind: the index of the inner this fiber is in
+    :param fiber_ind: the index of the fiber this simulation is for
+    :param stimamp_top: top stimamp to start bounds search
+    :param stimamp_bottom: bottom stimamp to start bounds search
+    :param potentials_path: the string path to the potentials text file
+    :param waveform_path: the string path to the waveform text file
+    :param n_sim: the index of the n_sim
     """
     with open(start_p, 'w+') as handle:
+        lines = [
+            'cd ../../\n',
+            f'python -u run_controls.py '
+            f'\"{inner_ind}\" '
+            f'\"{fiber_ind}\" '
+            f'\"{stimamp_top}\" '
+            f'\"{stimamp_bottom}\" '
+            f'\"{potentials_path}\" '
+            f'\"{waveform_path}\" '
+            f'\"{sim_p}\" ',
+            f'\"{n_sim}\" ',
+        ]
+
         if my_os == 'UNIX-LIKE':
-            lines = [
-                '#!/bin/bash\n',
-                f'cd "{sim_p}\"\n',
-                'chmod a+rwx special\n',
-                './special -nobanner '
-                '-c \"strdef sim_path\" '
-                f'-c \"sim_path=\\\"{sim_p}\\\"\" '
-                f'-c \"inner_ind={inner}\" '
-                f'-c \"fiber_ind={fiber}\" '
-                f'-c \"stimamp_top={top}\" '
-                f'-c \"stimamp_bottom={bottom}\" '
-                f'-c \"fiberD={diam:.6f}\" '
-                f'-c \"deltaz={deltaz:.4f}\" '
-                f'-c \"axonnodes={axonnodes}\" '
-                '-c \"saveflag_end_ap_times=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
-                '-c \"saveflag_runtime=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
-                '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n',
-            ]
-            if sub_con != 'cluster':
-                lines.remove(f'cd "{sim_p}\"\n')
+            lines.insert(0, '#!/bin/bash\n')
 
-            # copy special files ahead of time to avoid 'text file busy error'
-            if not os.path.exists('special'):
-                shutil.copy(os.path.join('MOD_Files', 'x86_64', 'special'), sim_p)
-
-        else:  # OS is 'WINDOWS'
-            sim_path_win = os.path.join(*sim_p.split(os.pathsep)).replace('\\', '\\\\')
-            main_path_win = os.getcwd().replace('\\', '/')
-            lines = [
-                'nrniv -nobanner '
-                f'-dll \"{main_path_win}/MOD_Files/nrnmech.dll\" '
-                '-c \"strdef sim_path\" '
-                f'-c \"sim_path=\\\"{sim_path_win}\"\" '
-                f'-c \"inner_ind={inner}\" '
-                f'-c \"fiber_ind={fiber}\" '
-                f'-c \"stimamp_top={top}\" '
-                f'-c \"stimamp_bottom={bottom}\" '
-                f'-c \"fiberD={diam:.6f}\" '
-                f'-c \"deltaz={deltaz:.4f}\" '
-                f'-c \"axonnodes={axonnodes}\" '
-                '-c \"saveflag_end_ap_times=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
-                '-c \"saveflag_runtime=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
-                '-c \"saveflag_ap_loctime=0\" '  # for backwards compatible, overwritten in launch.hoc if 1
-                '-c \"load_file(\\\"launch.hoc\\\")\" blank.hoc\n'
-            ]
+            if sub_con == 'cluster':
+                lines.remove('cd ../../\n')
 
         handle.writelines(lines)
         handle.close()
@@ -601,71 +490,32 @@ def make_fiber_tasks(submission_list, submission_context):
         ]:
             ensure_dir(cur_dir)
 
-        # ensure blank.hoc exists
-        blank_path = os.path.join(sim_path, 'blank.hoc')
-        if not os.path.exists(blank_path):
-            with open(blank_path, 'w'):
-                pass
-
-        # load JSON file with bisection search amplitudes
-        n_sim = sim_name.split('_')[-1]
-        sim_config = load(os.path.join(sim_path, f'{n_sim}.json'))
-        fiber_model = sim_config['fibers']['mode']
-
-        # load the inner x fiber -> diam key saved in the n_sim folder
-        inner_fiber_diam_key_file = os.path.join(fibers_path, 'inner_fiber_diam_key.obj')
-        inner_fiber_diam_key = None
-        if os.path.exists(inner_fiber_diam_key_file):
-            with open(inner_fiber_diam_key_file, 'rb') as f:
-                inner_fiber_diam_key = pickle.load(f)
-            f.close()
-        else:
-            diameter = sim_config['fibers']['z_parameters']['diameter']
-
         for fiber_data in runfibers:
-            cuff_type, inner_ind, fiber_ind = fiber_data['cuff_type'], fiber_data['inner'], fiber_data['fiber']
 
-            if inner_fiber_diam_key is not None:
-                diameter = get_diameter(inner_fiber_diam_key, inner_ind, fiber_ind)
-            deltaz, neuron_flag = get_deltaz(fiber_model, diameter)
-
-            # get the axonnodes from data/inputs/inner{}_fiber{}.dat top line
-            if cuff_type:
-                fiber_ve_path = os.path.join(
-                    fibers_path,
-                    f'{cuff_type[0]}_inner{inner_ind}_fiber{fiber_ind}.dat',
-                )
-            else:  # Backwards compatibility
-                fiber_ve_path = os.path.join(
-                    fibers_path,
-                    f'inner{inner_ind}_fiber{fiber_ind}.dat',
-                )
-
-            fiber_ve = np.loadtxt(fiber_ve_path)
-            n_fiber_coords = int(fiber_ve[0])
-
-            if neuron_flag == 2:
-                axonnodes = int(1 + (n_fiber_coords - 1) / 11)
-            elif neuron_flag == 3:
-                axonnodes = int(n_fiber_coords)
+            inner_ind, fiber_ind = fiber_data['inner'], fiber_data['fiber']
 
             start_path = f"{start_path_base}{fiber_data['job_number']}{'.sh' if OS == 'UNIX-LIKE' else '.bat'}"
 
+            potentials_path = os.path.join(sim_path, 'data', 'inputs', f'src_inner{inner_ind}_fiber{fiber_ind}.dat')
+
+            waveform_path = os.path.join(sim_path, 'data', 'inputs', 'waveform.dat')
+            n_sim = sim_name.split('_')[-1]
+
             stimamp_top, stimamp_bottom = get_thresh_bounds(sim_dir, sim_name, inner_ind)
-            if stimamp_top is not None and stimamp_bottom is not None:
-                make_task(
-                    submission_context,
-                    OS,
-                    start_path,
-                    sim_path,
-                    inner_ind,
-                    fiber_ind,
-                    stimamp_top,
-                    stimamp_bottom,
-                    diameter,
-                    deltaz,
-                    axonnodes,
-                )
+            assert stimamp_top is not None and stimamp_bottom is not None, 'Stimamps cannot be None'
+            make_task(
+                OS,
+                submission_context,
+                start_path,
+                sim_path,
+                inner_ind,
+                fiber_ind,
+                stimamp_top,
+                stimamp_bottom,
+                potentials_path,
+                waveform_path,
+                n_sim,
+            )
 
 
 def make_run_sub_list(run_number: int):
@@ -727,11 +577,19 @@ def make_run_sub_list(run_number: int):
                                 f'thresh_inner{inner_ind}_fiber{fiber_ind}.dat',
                             )
 
-                        if os.path.exists(search_path):
+                        if os.path.exists(search_path) and not args.force_rerun:
                             if args.verbose:
                                 print(f'Found {search_path} -->\t\tskipping inner ({inner_ind}) fiber ({fiber_ind})')
                                 time.sleep(1)
                             continue
+                        if args.force_rerun:
+                            warnings.warn(
+                                "Re-running existing fibers (due to -f/--force-rerun argument). "
+                                "Use -v flag to see which ones.",
+                                stacklevel=2,
+                            )
+                            if args.verbose:
+                                print(f'Found {search_path} -->\t\tre-running inner ({inner_ind}) fiber ({fiber_ind})')
 
                         submit_list[sim_name].append(
                             {"job_number": i, "cuff_type": cuff_type, "inner": inner_ind, "fiber": fiber_ind}
@@ -825,8 +683,7 @@ def pre_submit_setup():
     if len(args.run_indices) == 0:
         sys.exit("Error: No run indices to use.")
     run_inds = args.run_indices
-    # compile MOD files if they have not yet been compiled
-    auto_compile(args.force_recompile)
+
     # check for submission context
     if args.cluster_submit:
         submission_context = 'cluster'
@@ -835,12 +692,35 @@ def pre_submit_setup():
     else:
         submission_context = 'cluster' if shutil.which('sbatch') is not None else 'local'
 
+    if submission_context == "cluster":
+        # convert array_launch.slurm to UNIX format
+        subprocess.run(['dos2unix', 'array_launch.slurm'])
+        print('Converted array_launch.slurm to UNIX format')
+
     return run_inds, submission_context
 
 
 # main
 def main():
-    """Prepare fiber submissions and run NEURON sims."""
+    """Prepare fiber submissions and run NEURON sims.
+
+    :raises ImportError: If PyFibers is not installed.
+    :raises NotImplementedError: If PyFibers version is not supported.
+    """
+    # check for PyFibers
+    try:
+        import pyfibers
+    except ImportError:
+        sys.exit('Error: PyFibers is not installed. Please install it to run this script.')
+    # check version
+    reqver = '0.1.4'
+    if Version(pyfibers.__version__) < Version(reqver):
+        raise ImportError(f'Error: PyFibers version is {pyfibers.__version__}, but version {reqver} is required.')
+    if Version(pyfibers.__version__) >= Version('0.2.0'):
+        raise NotImplementedError(
+            'Support for version 0.2.0 of PyFibers has not been verified, please downgrade to an older version'
+        )
+
     # pre submit setup
     run_inds, submission_context = pre_submit_setup()
     # get list of simulations to be submitted

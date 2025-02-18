@@ -299,6 +299,6 @@ are populated. Required.
 ## Example
 
 ```{eval-rst}
-.. include:: ../../../../config/templates/mock_sample.json
+.. include:: ../../../../config/templates/advanced/mock_sample.json
    :code: javascript
 ```

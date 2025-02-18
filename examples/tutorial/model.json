@@ -18,6 +18,7 @@
     "recess": "saline"
   },
   "cuff": {
+    "index": 0,
     "preset": "Purdue.json",
     "rotate": {
       "add_ang": 0

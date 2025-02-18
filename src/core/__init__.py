@@ -18,7 +18,6 @@ from src.core.mock_sample import MockSample
 from src.core.simulation import Simulation
 from src.core.waveform import Waveform
 from src.core.fiberset import FiberSet
-from src.core.hocwriter import HocWriter
 from src.core.query import Query
 from src.core.model import Model
 from src.core import plotter
@@ -37,7 +36,6 @@ __all__ = [
     'Simulation',
     'Waveform',
     'FiberSet',
-    'HocWriter',
     'Query',
     'plotter',
 ]

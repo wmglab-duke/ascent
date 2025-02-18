@@ -32,7 +32,8 @@ following syntax:
   },
   "export_behavior": String,
   "popup_plots": Boolean,
-  "auto_submit_fibers": Boolean
+  "auto_submit_fibers": Boolean,
+  "delete_fibersets": Boolean
 }
 ```
 
@@ -104,6 +105,9 @@ to saving the plots in the relevant folders (i.e., the sample and sim folders).
 `"auto_submit_fibers"`: The value (Boolean), if true, will cause the program to automatically start fiber simulations after each run is completed.
 If submitting locally, the program will not continue to the next run until all fiber simulations are complete. If submitting via a computer cluster,
 the next run will start after all batch NEURON jobs are submitted.
+
+`"delete_fibersets"`: (Boolean) Optional. The value, if true, will delete the directory containing (x, y, z) coordinates
+for all fibersets of the **_Sims_** being run (`samples/<sample_index>/models/<model_index>/sims/<sim_index>/fibersets/`).
 
 ## Example
 

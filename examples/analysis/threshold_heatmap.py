@@ -12,6 +12,7 @@ import os
 import sys
 
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
+os.chdir('../..')
 
 import matplotlib.pyplot as plt
 
@@ -28,7 +29,8 @@ q = Query(
 ).run()
 
 # Build heatmap
-heatmaps(data=q.threshold_data())
+data = q.common_data_extraction(data_types=['threshold'])
+heatmaps(data=data)
 plt.title('Activation threshold heatmap')
 
 save_directory = os.path.join('output', 'analysis')

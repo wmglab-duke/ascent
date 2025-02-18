@@ -11,6 +11,7 @@ import base64
 import json
 import os
 import pickle
+import shutil
 import subprocess
 import sys
 import time
@@ -120,8 +121,9 @@ class Runner(Configurable):
 
         # ensure NEURON files exist in export location
         Simulation.export_neuron_files(os.environ[Env.NSIM_EXPORT_PATH.value])
-        Simulation.export_system_config_files(os.path.join(os.environ[Env.NSIM_EXPORT_PATH.value], 'config', 'system'))
 
+        # ensure config/system/slurm_params.json exists, required for cluster submissions
+        Simulation.export_slurm_files(os.path.join(os.environ[Env.NSIM_EXPORT_PATH.value], 'config', 'system'))
         for deprecated_key in ['break_points', 'local_avail_cpus', 'submission_context', 'partial_fem']:
             if deprecated_key in self.configs[Config.RUN.value]:
                 warnings.warn(
@@ -212,7 +214,7 @@ class Runner(Configurable):
             model.add(SetupMode.OLD, Config.MODEL, model_config).add(SetupMode.OLD, Config.SAMPLE, sample).add(
                 SetupMode.OLD, Config.RUN, self.configs[Config.RUN.value]
             ).add(SetupMode.OLD, Config.CLI_ARGS, self.configs[Config.CLI_ARGS.value]).compute_cuff_shift(
-                sample, all_configs[Config.SAMPLE.value][0]
+                sample.slides[0], all_configs[Config.SAMPLE.value][0]
             ).compute_electrical_parameters().validate().write(
                 model_config_file
             ).save(
@@ -300,9 +302,12 @@ class Runner(Configurable):
         xy_dict: dict = simulation.configs['sims']['fibers']['xy_parameters']
 
         if source_xy_dict != xy_dict:
-            raise IncompatibleParametersError(
-                "Trying to use super-sampled potentials that do not match your Sim's xy_parameters perfectly"
-            )
+            if xy_dict['mode'] == 'EXPLICIT':
+                warnings.warn('Cannot verify supersampled xy match since fiber xy mode is EXPLICIT', stacklevel=2)
+            else:
+                raise IncompatibleParametersError(
+                    "Trying to use super-sampled potentials that do not match your Sim's xy_parameters perfectly"
+                )
         return source_sim_obj_dir
 
     def generate_nsims(self, sim_index, model_num, sample_num):
@@ -333,6 +338,10 @@ class Runner(Configurable):
         simulation: Simulation = self.load_obj(sim_obj_path)
         simulation.build_n_sims(sim_dir, sim_num)
 
+        # delete folder containing fiberset .txt files
+        if self.configs[Config.RUN.value].get('delete_fibersets'):
+            shutil.rmtree(os.path.join(sim_dir, sim_num, 'fibersets'))
+
         # get export behavior
         if self.configs[Config.CLI_ARGS.value].get('export_behavior') is not None:
             export_behavior = self.configs[Config.CLI_ARGS.value]['export_behavior']
@@ -357,7 +366,7 @@ class Runner(Configurable):
         # ensure run configuration is present
         Simulation.export_run(self.number, os.environ[Env.PROJECT_PATH.value], os.environ[Env.NSIM_EXPORT_PATH.value])
 
-    def run(self, smart: bool = True):
+    def run(self, smart: bool = True):  # noqa C901
         """Run the pipeline.
 
         :param smart: bool telling the program whether to reprocess the sample or not if it already exists as sample.obj
@@ -368,118 +377,129 @@ class Runner(Configurable):
 
         all_configs = self.setup_run()
 
+        # iterate through models
+        if 'models' not in all_configs:
+            print('NO MODELS TO MAKE IN Config.RUN - killing process')
+            return
         self.bases_potentials_exist: list[bool] = []  # if all of these are true, skip Java
         self.ss_bases_exist: list[bool] = []  # if all of these are true, skip Java
 
         sample, sample_num = self.generate_sample(all_configs, smart=smart)
+        for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
+            # loop through each model
+            model_num = self.prep_model(all_configs, model_index, model_config, sample, sample_num, smart=smart)
+            if 'sims' in all_configs:
+                # iterate through simulations
+                for sim_index, sim_config in enumerate(all_configs['sims']):
+                    # generate simulation object
+                    simulation, sim_obj_dir = self.sim_setup(
+                        sim_index, sim_config, sample_num, model_num, smart, sample, model_config
+                    )
 
-        # iterate through models
-        if 'models' not in all_configs:
-            print('NO MODELS TO MAKE IN Config.RUN - killing process')
-        else:
-            for model_index, model_config in enumerate(all_configs[Config.MODEL.value]):
-                # loop through each model
-                model_num = self.prep_model(all_configs, model_index, model_config, sample, sample_num, smart=smart)
-                if 'sims' in all_configs:
-                    # iterate through simulations
-                    for sim_index, sim_config in enumerate(all_configs['sims']):
-                        # generate simulation object
-                        simulation, sim_obj_dir = self.sim_setup(
-                            sim_index, sim_config, sample_num, model_num, smart, sample, model_config
-                        )
+                    # CHECK IF POTENTIALS EXIST FOR EACH FIBERSET X BASIS
+                    # DON'T NEED POTENTIALS TO EXIST IF WE ARE USING SUPER SAMPLED ONES
+                    if (
+                        'supersampled_bases' not in simulation.configs['sims']
+                        or not simulation.configs['sims']['supersampled_bases']['use']
+                    ):
+                        self.bases_potentials_exist.append(simulation.bases_potentials_exist(sim_obj_dir))
 
-                        # CHECK IF POTENTIALS EXIST FOR EACH FIBERSET X BASIS
-                        # DON'T NEED POTENTIALS TO EXIST IF WE ARE USING SUPER SAMPLED ONES
-                        if (
-                            'supersampled_bases' not in simulation.configs['sims']
-                            or not simulation.configs['sims']['supersampled_bases']['use']
-                        ):
-                            self.bases_potentials_exist.append(simulation.bases_potentials_exist(sim_obj_dir))
+                    # CHECK IF THE SUPERSAMPLED BASES EXIST FOR EACH BASIS
+                    # check if supersampled bases exist and if so, validate supersampling parameters
+                    if 'supersampled_bases' in simulation.configs['sims']:
+                        if simulation.configs['sims']['supersampled_bases']['generate']:
+                            self.ss_bases_exist.append(simulation.ss_bases_exist(sim_obj_dir))
+                        if simulation.configs['sims']['supersampled_bases']['use']:
+                            source_sim_obj_dir = self.validate_supersample(simulation, sample_num, model_num)
+                            self.ss_bases_exist.append(simulation.ss_bases_exist(source_sim_obj_dir))
 
-                        # CHECK IF THE SUPERSAMPLED BASES EXIST FOR EACH BASIS
-                        # check if supersampled bases exist and if so, validate supersampling parameters
-                        if 'supersampled_bases' in simulation.configs['sims']:
-                            if simulation.configs['sims']['supersampled_bases']['generate']:
-                                self.ss_bases_exist.append(simulation.ss_bases_exist(sim_obj_dir))
-                            if simulation.configs['sims']['supersampled_bases']['use']:
-                                source_sim_obj_dir = self.validate_supersample(simulation, sample_num, model_num)
-                                self.ss_bases_exist.append(simulation.ss_bases_exist(source_sim_obj_dir))
+        if self.configs[Config.CLI_ARGS.value].get('break_point') == 'pre_java':
+            print('KILLING PRE JAVA')
+            return
 
-            if self.configs[Config.CLI_ARGS.value].get('break_point') == 'pre_java' or (
-                ('break_points' in self.configs[Config.RUN.value])
-                and self.search(Config.RUN, 'break_points').get('pre_java') is True
-            ):
-                print('KILLING PRE JAVA')
+        if 'models' in all_configs and 'sims' not in all_configs:
+            # Model Configs Provided, but not Sim Configs
+            print('\nTO JAVA\n')
+            run_config = os.path.join(
+                os.environ[Env.PROJECT_PATH.value], 'config', 'user', 'runs', f'{self.number}.json'
+            )
+            self.handoff(run_config)
+            print('\nNEURON Simulations NOT created since no Sim indices indicated in Config.SIM\n')
+            return
+
+        # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
+        if 'models' in all_configs and 'sims' in all_configs:
+            if all(self.bases_potentials_exist) and all(self.ss_bases_exist):
+                print('\nSKIPPING JAVA - all required extracted potentials already exist\n')
+            # only transition to java if necessary (there are potentials that do not exist)
+            else:
+                print('\nTO JAVA\n')
+                run_config = os.path.join(
+                    os.environ[Env.PROJECT_PATH.value], 'config', 'user', 'runs', f'{self.number}.json'
+                )
+                self.handoff(run_config)
+                print('\nTO PYTHON\n')
+
+            if self.configs[Config.CLI_ARGS.value].get('break_point') == 'post_java':
+                print('KILLING POST JAVA')
                 return
 
-            # handoff (to Java) -  Build/Mesh/Solve/Save bases; Extract/Save potentials if necessary
-            if 'models' in all_configs and 'sims' in all_configs:
-                # only transition to java if necessary (there are potentials that do not exist)
-                if not all(self.bases_potentials_exist) or not all(self.ss_bases_exist):
-                    print('\nTO JAVA\n')
-                    self.handoff(self.number)
-                    print('\nTO PYTHON\n')
-                else:
-                    print('\nSKIPPING JAVA - all required extracted potentials already exist\n')
+            self.remove(Config.RUN)
+            run_path = os.path.join('config', 'user', 'runs', f'{self.number}.json')
+            self.add(SetupMode.NEW, Config.RUN, run_path)
 
-                self.remove(Config.RUN)
-                run_path = os.path.join('config', 'user', 'runs', f'{self.number}.json')
-                self.add(SetupMode.NEW, Config.RUN, run_path)
+            #  continue by using simulation objects
+            models_exit_status = self.search(Config.RUN, "models_exit_status")
 
-                #  continue by using simulation objects
-                models_exit_status = self.search(Config.RUN, "models_exit_status")
+            # if all potentials exist, set all exit statuses to True
+            if all(self.bases_potentials_exist) and all(self.ss_bases_exist):
+                models_exit_status = [True for _ in models_exit_status]
 
-                for model_index, _model_config in enumerate(all_configs[Config.MODEL.value]):
-                    model_num = self.configs[Config.RUN.value]['models'][model_index]
-                    conditions = [
-                        models_exit_status is not None,
-                        len(models_exit_status) > model_index,
-                    ]
-                    model_ran = models_exit_status[model_index] if all(conditions) else True
-                    ss_use_notgen = [
-                        (
-                            'supersampled_bases' in sim_config
-                            and sim_config['supersampled_bases']['use']
-                            and not sim_config['supersampled_bases']['generate']
-                        )
-                        for sim_config in all_configs['sims']
-                    ]
+            for model_index, _model_config in enumerate(all_configs[Config.MODEL.value]):
+                model_num = self.configs[Config.RUN.value]['models'][model_index]
+                conditions = [
+                    models_exit_status is not None,
+                    len(models_exit_status) > model_index,
+                ]
+                model_ran = models_exit_status[model_index] if all(conditions) else True
+                ss_use_notgen = [
+                    (
+                        'supersampled_bases' in sim_config
+                        and sim_config['supersampled_bases']['use']
+                        and not sim_config['supersampled_bases']['generate']
+                    )
+                    for sim_config in all_configs['sims']
+                ]
 
-                    if model_ran or np.all(ss_use_notgen):
-                        for sim_index, _sim_config in enumerate(all_configs['sims']):
-                            # generate output neuron sims
-                            self.generate_nsims(sim_index, model_num, sample_num)
-                        print(
-                            f'Model {model_num} data exported to appropriate '
-                            f'folders in {os.environ[Env.NSIM_EXPORT_PATH.value]}'
-                        )
+                if model_ran or np.all(ss_use_notgen):
+                    for sim_index, _sim_config in enumerate(all_configs['sims']):
+                        # generate output neuron sims
+                        self.generate_nsims(sim_index, model_num, sample_num)
+                    print(
+                        f'Model {model_num} data exported to appropriate '
+                        f'folders in {os.environ[Env.NSIM_EXPORT_PATH.value]}'
+                    )
 
-                    elif not models_exit_status[model_index]:
-                        print(
-                            f'\nDid not create NEURON simulations for Sims associated with: \n'
-                            f'\t Model Index: {model_num} \n'
-                            f'since COMSOL failed to create required potentials. \n'
-                        )
+                elif not models_exit_status[model_index]:
+                    print(
+                        f'\nDid not create NEURON simulations for Sims associated with: \n'
+                        f'\t Model Index: {model_num} \n'
+                        f'since COMSOL failed to create required potentials. \n'
+                    )
 
-            elif 'models' in all_configs and 'sims' not in all_configs:
-                # Model Configs Provided, but not Sim Configs
-                print('\nTO JAVA\n')
-                self.handoff(self.number)
-                print('\nNEURON Simulations NOT created since no Sim indices indicated in Config.SIM\n')
-
-    def handoff(self, run_number: int, class_name='ModelWrapper'):
+    def handoff(self, config_path, class_name='ModelWrapper', modelfolder="model"):
         """Handoff to Java.
 
-        :param run_number: int, run number
+        :param config_path: str, path to run configuration file
         :param class_name: str, class name of Java class to run
+        :param modelfolder: str, folder containing Java class
         :raises JavaError: if Java fails to run
         """
         comsol_path = os.environ[Env.COMSOL_PATH.value]
         jdk_path = os.environ[Env.JDK_PATH.value]
         project_path = os.environ[Env.PROJECT_PATH.value]
-        run_path = os.path.join(project_path, 'config', 'user', 'runs', f'{run_number}.json')
 
-        # Encode command line args as jason string, then encode to base64 for passing to java
+        # Encode command line args as json string, then encode to base64 for passing to java
         argstring = json.dumps(self.configs[Config.CLI_ARGS.value])
         argbytes = argstring.encode('ascii')
         argbase = base64.b64encode(argbytes)
@@ -490,19 +510,19 @@ class Runner(Configurable):
             compile_command = (
                 f'""{jdk_path}\\javac" '
                 f'-cp "..\\bin\\json-20190722.jar";"{comsol_path}\\plugins\\*" '
-                f'model\\*.java -d ..\\bin"'
+                f'{modelfolder}\\*.java -d ..\\bin"'
             )
             java_command = (
                 f'""{comsol_path}\\java\\win64\\jre\\bin\\java" '
                 f'-cp "{comsol_path}\\plugins\\*";"..\\bin\\json-20190722.jar";"..\\bin" '
-                f'model.{class_name} "{project_path}" "{run_path}" "{argfinal}""'
+                f'{modelfolder}.{class_name} "{project_path}" "{config_path}" "{argfinal}""'
             )
         else:
             server_command = [f'{comsol_path}/bin/comsol', 'mphserver', '-login', 'auto']
 
             compile_command = (
                 f'{jdk_path}/javac -classpath ../bin/json-20190722.jar:'
-                f'{comsol_path}/plugins/* model/*.java -d ../bin'
+                f'{comsol_path}/plugins/* {modelfolder}/*.java -d ../bin'
             )
             if sys.platform.startswith('linux'):  # linux
                 java_comsol_path = comsol_path + '/java/glnxa64/jre/bin/java'
@@ -513,7 +533,7 @@ class Runner(Configurable):
                 f'{java_comsol_path} '
                 f'-cp .:$(echo {comsol_path}/plugins/*.jar | '
                 f'tr \' \' \':\'):../bin/json-20190722.jar:'
-                f'../bin model.{class_name} "{project_path}" "{run_path}" "{argfinal}"'
+                f'../bin {modelfolder}.{class_name} "{project_path}" "{config_path}" "{argfinal}"'
             )
 
         # start comsol server

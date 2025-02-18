@@ -10,13 +10,17 @@
 
 **ASCENT** is an open source platform for simulating peripheral nerve stimulation. For more information, see the ASCENT documentation: [https://wmglab-duke-ascent.readthedocs.io/en/latest/](https://wmglab-duke-ascent.readthedocs.io/en/latest/)
 
-**Cite both the paper and the DOI for the release of the repository used for your work. We encourage you to clone the most recent commit of the repository.**
+**Cite the ASCENT paper, PyFibers paper, and the DOI for the release of the repository used for your work. We encourage you to clone the most recent commit of the repository.**
 
-- **If you use ASCENT, cite the nerve stimulation modeling paper:**
+- **Cite the ASCENT paper:**
 
   > **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2021). ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A pipeline for sample-specific computational modeling of electrical stimulation of peripheral nerves. PLOS Computational Biology, 17(9), e1009285. <https://doi.org/10.1371/journal.pcbi.1009285>
 
-- **If you use the neural recording feature, also cite the nerve recording modeling paper:**
+- **Cite the PyFibers paper:**
+
+  > Placeholder
+
+- **If you use the neural recording feature or SMALL_MRG_INTERPOLATION model, also cite the nerve recording modeling paper:**
 
   > Peña, E., Pelot, N.A., Grill, W.M., 2024. Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters. PLoS Comput Biol 20, e1011833. https://doi.org/10.1371/journal.pcbi.1011833
 

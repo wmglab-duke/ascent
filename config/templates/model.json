@@ -76,7 +76,7 @@
   },
   "nerve_interp_tol": 0.002,
   "outer_interp_tol": 0.02,
-  "pseudonym": "template model",
+  "pseudonym": "give_me_a_name",
   "solver": {
     "sorder": 2,
     "type": "iterative"

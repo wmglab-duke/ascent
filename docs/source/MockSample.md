@@ -7,7 +7,7 @@ pipeline.
 
 The user defines the parameter values in
 `config/user/mock_samples/<mock_sample_index>.json` (with a template
-provided in `config/templates/mock_sample.json`). The mock sample
+provided in `config/templates/advanced/mock_sample.json`). The mock sample
 morphology is then created using the JSON file by executing `"python run mock_morphology_generator <mock_sample_index>"` at the project
 root. The mock morphology generator uses the MockSample Python class to
 create binary images of the nerve, inner perineurium traces (fascicles),
