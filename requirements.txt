@@ -1,7 +1,7 @@
 ffmpeg
 matplotlib
 nd_line
-numpy
+numpy==1.26.4
 opencv-python
 openpyxl
 pandas
