@@ -456,15 +456,15 @@ layer approximation (except with "peanut" fascicles; see an example in
 [Fig 2](https://doi.org/10.1371/journal.pcbi.1009285.g002)), termed "contact impedance" in COMSOL (if **_Model’s_**
 `"use_ci"` parameter is true ([Model Parameters](../JSON/JSON_parameters/model))), which relates the normal component of
 the current density through the surface
-![f5] to the drop in electric
-potentials ![f3] and the sheet resistance ![f4]:
+$(\vec{n}\cdot\vec{J_{1}})$ to the drop in electric
+potentials $(V_{1}-V_{2})$ and the sheet resistance $(\rho_{s})$:
 
-![f1]
+$$\vec{n}\cdot\vec{J_{1}}=\frac{1}{\rho_{s}}(V_{1}-V_{2})$$
 
-The sheet resistance ![f4] is defined as the sheet thickness
-![f6] divided by the material bulk conductivity ![f7] :
+The sheet resistance $(\rho_{s})$ is defined as the sheet thickness
+$(d_{s})$ divided by the material bulk conductivity $(\sigma_{s})$:
 
-![f2]
+$$\rho_{s}=\frac{d_{s}}{\sigma_{s}}$$
 
 Our previously published work quantified the relationship between fascicle diameter and perineurium thickness {cite:p}`Pelot2020` (Table A).
 
@@ -490,11 +490,3 @@ modes:
 - "MANUAL": Conductivity value assigned to the perineurium is as
   explicitly defined in either `materials.json` or **_Model_** without
   any corrections for temperature or frequency.
-
-[f1]: https://chart.apis.google.com/chart?cht=tx&chl=\vec{n}\cdot\vec{J_{1}}=\frac{1}{\rho_{s}}(V_{1}-V_{2})
-[f2]: https://chart.apis.google.com/chart?cht=tx&chl=\rho_{s}=\frac{d_{s}}{\sigma_{s}}
-[f3]: https://chart.apis.google.com/chart?cht=tx&chl=(V_{1}-V_{2})
-[f4]: https://chart.apis.google.com/chart?cht=tx&chl=(\rho_{s})
-[f5]: https://chart.apis.google.com/chart?cht=tx&chl=(\vec{n}\cdot\vec{J_{1}})
-[f6]: https://chart.apis.google.com/chart?cht=tx&chl=(d_{s})
-[f7]: https://chart.apis.google.com/chart?cht=tx&chl=(\sigma_{s})

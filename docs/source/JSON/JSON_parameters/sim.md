@@ -287,15 +287,15 @@ fiber are calculated in the following way for an example weighting:
 `"example_cuff_preset.json": [[1, -1]]` // [[weight<sub>1</sub> (for src 1 on),
 weight<sub>2</sub> (for src 2 on)]]
 
-![f2]
+$$V_{e}=(\textrm{amplitude})*\textrm{potentials}$$
 
-![f3]
+$$\textrm{potentials}=(\textrm{weight}_{1})*\textrm{bases}_{1}(x,y,z)+(\textrm{weight}_{2})*\textrm{bases}_{2}(x,y,z)$$
 
 The value of potentials/ is applied to a model fiber in NEURON
 multiplied by the stimulation amplitude, which is either from a list of
 finite amplitudes or a bisection search for thresholds ([Simulation Protocols](../../Running_ASCENT/Info.md#simulation-protocols))
 
-![f4]
+$$\textrm{potentials}=(1)*\textrm{bases}_{1}(x,y,z)+(-1)*\textrm{bases}_{2}(x,y,z)$$
 
 - `“cuff_index”`: The value (Integer) used to designate which cuff will be used for
   stimulation and which cuff will be used for recording. The index value must correspond to the “index” value in the Model "cuff" configuration. Required.
@@ -1066,7 +1066,3 @@ fiber types can be simulated at the same location in the nerve cross-section wit
 .. include:: ../../../../config/templates/sim.json
    :code: javascript
 ```
-
-[f2]: https://chart.apis.google.com/chart?cht=tx&chl=V_{e}=(amplitude)*potentials
-[f3]: https://chart.apis.google.com/chart?cht=tx&chl=potentials=(weight_{1})*bases_{1}(x,y,z)%2B(weight_{2})*bases_{2}(x,y,z)
-[f4]: https://chart.apis.google.com/chart?cht=tx&chl=potentials=(1)*bases_{1}(x,y,z)%2B(-1)*bases_{2}(x,y,z)

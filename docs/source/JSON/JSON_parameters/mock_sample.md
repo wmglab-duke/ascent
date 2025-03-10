@@ -15,8 +15,7 @@ To declare this entity in
 config/user/<mock_sample_index>.json, use the following syntax:
 
 ```{note}
-Eccentricity (e) is defined as a function of the major (a-) and minor (b-) axes as follows:
-![f1]
+Eccentricity ($e$) is defined as a function of the major ($a$) and minor ($b$) axes as follows: $e=\sqrt{1-\frac{b^{2}}{a^{2}}}$
 ```
 
 ```javascript
@@ -303,5 +302,3 @@ are populated. Required.
 .. include:: ../../../../config/templates/mock_sample.json
    :code: javascript
 ```
-
-[f1]: https://chart.apis.google.com/chart?cht=tx&chl=e=\sqrt{1-\frac{b^{2}}{a^{2}}}
