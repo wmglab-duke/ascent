@@ -50,13 +50,13 @@
     }
   ],
 
-  "description": "ASCENT v1.3.1 Release Notes\n\nv1.3.0 -> v1.3.1: new features\n\nmoved FiberZMode from model.json into sim.json\nadded \"EXPLICIT\" FiberZMode to model explicitly provided 3D fiber coordinates\nadded \"EXPLICIT_3D\" FiberXYMode to pair with the explicit FiberZMode when modeling explicit 3D fiber coordinates\nadded 3D plotting function to visualize 3D fibers within fascicles/nerve\nadded pop-up plots for when invalid fibers are detected\nv1.3.0 -> v1.3.1: docs\n\nadded documentation for the new JSON configuration properties used for modeling user-defined 3D explicit fibers and included explicit_3D template example file\nadded DOI information for new papers using ASCENT\nadded cuff parameter descriptions to the ImThera_flip_100.json cuff preset\nadded documentation for implementations of clinically used cuff electrodes (Cuff Sources)\nupdated documentation for dataset generation tool\nv1.3.0 -> v1.3.1: bug fixes\n\nfixed error when importing from ascent's classes in analysis scripts by adding root directory to sys.path\nfixed error when unpacking a sim object's potentials_product attribute that does not contain any active recording cuffs\nv1.3.0 -> v1.3.1: miscellaneous\n\nupgraded to Python 3.10 for windows install\nadded nd_line python package to required package dependencies in requirements.txt",
+  "description": "v1.3.1 -> v1.4.0: new features\n•\tadded post-hoc interpolation of fiber diameters and locations\n•\tadded “init_slides” property to Sample object representing the nerve geometry before transforms (centering, smoothing, perineurium generation, etc.)\nv1.3.1 -> v1.4.0: docs\n•\tadded documentation the new post-hoc analysis script\n•\treformatted documentation\nv1.3.1 -> v1.4.0: bug fixes\n•\tfixed SFAP extraction time offset and indexing\n•\tfixed NEURON file export dutils error\n•\tfixed model basis recycling naming convention\n•\tfixed checks for missing thresholds on import\n•\tfixed “inners_on_off” missing threshold handling\nv1.3.1 -> v1.4.0: miscellaneous\n•\tupgraded environment Python to version 3.11\n•\tadded Mock Morphology Generator warning about area uncertainty\n•\tadded warning for COMSOL version differences\n•\trefactored Mock Morphology Generator implementation\n•\tupdated linting and typehints\n•\tadded warning for ARM architectures\n",
 
-  "notes": "Research supported by the National Institutes of Health SPARC Program (OT2 OD025340)",
+  "notes": "Research supported by the National Institutes of Health SPARC Program (OT2 OD025340) (75N98022C00018)",
 
   "license": "GNU General Public License v2.0 only",
 
-  "title": "ASCENT V1.3.1",
+  "title": "ASCENT V1.4.0",
 
   "keywords": ["Peripheral Nerve Stimulation", "Finite Element Model"],
 
