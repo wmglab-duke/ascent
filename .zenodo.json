@@ -58,6 +58,8 @@
 
   "title": "ASCENT V1.4.0",
 
+  "version": "1.4.0",
+
   "keywords": ["Peripheral Nerve Stimulation", "Finite Element Model"],
 
   "communities": [{ "identifier": "The Grill Lab" }],
