@@ -20,9 +20,9 @@
 
   > Peña, E., Pelot, N.A., Grill, W.M., 2024. Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters. PLoS Comput Biol 20, e1011833. https://doi.org/10.1371/journal.pcbi.1011833
 
-- **Cite the code (replace "ZENODO.TBD" with the DOI for the version of code used: [![DOI](https://zenodo.org/badge/379064819.svg)](https://zenodo.org/badge/latestdoi/379064819)):**
+- **Cite the code (replace DOI and VERSION with the DOI and version number of code used. Latest release: [![DOI](https://zenodo.org/badge/379064819.svg)](https://zenodo.org/badge/latestdoi/379064819) click to see all releases)**
 
-  > **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2025). wmglab-duke/ascent: ASCENT v1.4.0 (v1.4.0) [Computer software]. Zenodo. https://doi.org/ZENODO.TBD
+  > **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2025). wmglab-duke/ascent: ASCENT vVERSION (vVERSION) [Computer software]. Zenodo. https://doi.org/DOI
 
 ---
 
