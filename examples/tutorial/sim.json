@@ -20,7 +20,6 @@
     },
     "xy_trace_buffer": 5.0,
     "z_parameters": {
-      "mode": "EXTRUSION",
       "diameter": 8.7,
       "max": 12500,
       "min": 0,

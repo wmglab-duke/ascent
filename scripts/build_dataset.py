@@ -883,7 +883,7 @@ def query_excel_output(queried_indices_info_path, queried_indices_path, query_cr
         queried_indices_info = load(queried_indices_info_path)
 
         q.excel_output(queried_indices_path, **queried_indices_info)
-        
+
         print(f'Excel file for you to edit saved to: {queried_indices_path}')
         print(
             'Modify this file if you wish to not export all data '

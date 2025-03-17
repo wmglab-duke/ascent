@@ -145,10 +145,6 @@ class FiberSet(Configurable, Saveable):
         if self.z_mode == FiberZMode.EXPLICIT:
             self.plot_3d_fibers_on_sample(self.fibers)  # Visualize 3D fibers
 
-        else:
-            raise NotImplementedError("That FiberZMode is not yet implemented.")
-
-        self.validate()
         return self
 
     def write(self, mode: WriteMode, path: str):
@@ -516,6 +512,7 @@ class FiberSet(Configurable, Saveable):
 
         # Transform from list of arrays to 3D array now that all fibers are the same length
         return np.stack(points)
+
     def plot_fibers_on_sample(self, sim_directory, z_index=0):
         """Plot the xy coordinates of the fibers on the sample.
 
@@ -897,54 +894,6 @@ class FiberSet(Configurable, Saveable):
 
         # else UNMYELINATED
         return generate_z_unmyel(diams)
-
-    def _generate_3d_longitudinal(  # noqa: C901
-        self, fibers_xyz: np.ndarray, sim_directory: str, super_sample: bool = False
-    ) -> np.ndarray:
-        """Generate the 1D longitudinal coordinates for each invidual 3D fiber.
-
-        :param fibers_xyz: The xyz coordinates of the fibers.
-        :param sim_directory: The directory to save the simulation files to.
-        :param super_sample: Whether to use supersampling.
-        :return: The longitudinal coordinates of the fibers.
-        """
-        save = self.search(Config.SIM, 'saving', '3D_fiber_intermediate_data', optional=True)
-        if save:
-            [
-                os.makedirs(os.path.join(sim_directory, s), exist_ok=True)
-                for s in ['3D_fiber_lengths', '3D_fiber_coords']
-            ]
-
-        # Generate the longitudinal coordinate points for sampling potentials, depending on individual fiber's length
-        fibers = []
-        for idx, fiber in enumerate(fibers_xyz):
-            nd = nd_line(fiber)
-            le = nd.length  # Euclidean fiber length
-            fiber_dict = self._generate_longitudinal([(0, 0)], super_sample=super_sample, override_length=le)[0]
-            longitudinal_coords = fiber_dict['fiber']
-            longitudinal_coords = np.vstack(longitudinal_coords)[:, -1]  # Reshape
-            coords = np.zeros([len(longitudinal_coords), 3])
-            coords[:, 2] = longitudinal_coords
-
-            # Map compartment coordinates to points along the 3D nerve to obtain where to sample potentials
-            sample_points = [tuple(nd.interp(p)) for p in longitudinal_coords]
-            fiber_dict['fiber'] = sample_points
-            fibers.append(fiber_dict)
-
-            if save:
-                np.savetxt(
-                    f'{sim_directory}/3D_fiber_lengths/{idx}.dat',
-                    [le],
-                )
-                np.savetxt(  # Seems unnecessary, but 3D pipeline did it so maintained functionality here.
-                    f'{sim_directory}/3D_fiber_coords/{idx}.dat',
-                    coords,
-                    delimiter=' ',
-                    fmt='%.10f',
-                    header=str(len(longitudinal_coords)),
-                    comments='',
-                )
-        return fibers
 
     def _generate_3d_longitudinal(  # noqa: C901
         self, fibers_xyz: np.ndarray, sim_directory: str, super_sample: bool = False
