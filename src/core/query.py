@@ -12,7 +12,6 @@ import os
 import pickle
 import struct
 import warnings
-from typing import List, Union
 
 import numpy as np
 import pandas as pd
@@ -28,7 +27,7 @@ class Query(Configurable, Saveable):
     IMPORTANT: MUST BE RUN FROM PROJECT LEVEL
     """
 
-    def __init__(self, criteria: Union[str, dict]):
+    def __init__(self, criteria: str | dict):
         """Set up Query object.
 
         :param criteria: dictionary of search criteria
@@ -193,7 +192,7 @@ class Query(Configurable, Saveable):
 
         return self._result
 
-    def get_config(self, mode: Config, indices: List[int]) -> dict:
+    def get_config(self, mode: Config, indices: list[int]) -> dict:
         """Load .json config file for given mode and indices.
 
         :param mode: Config enum (e.g. Config.SAMPLE)
@@ -204,7 +203,7 @@ class Query(Configurable, Saveable):
         return self.load(self.build_path(mode, indices))
 
     @staticmethod
-    def get_object(mode: Object, indices: List[int]) -> Union[Sample, Simulation]:
+    def get_object(mode: Object, indices: list[int]) -> Sample | Simulation:
         """Load pickled object for given mode and indices.
 
         :param mode: mode of object (e.g. Object.SAMPLE)
@@ -217,8 +216,8 @@ class Query(Configurable, Saveable):
 
     @staticmethod
     def build_path(
-        mode: Union[Config, Object],
-        indices: List[int] = None,
+        mode: Config | Object,
+        indices: list[int] = None,
         just_directory: bool = False,
     ) -> str:
         """Build path to config or object file for given mode and indices.
@@ -262,7 +261,7 @@ class Query(Configurable, Saveable):
         if just_directory:
             result = os.path.join(*result.split(os.sep)[:-1])
 
-        return result
+        return result  # noqa: R504
 
     def _match(self, criteria: dict, data: dict) -> bool:
         for key in criteria.keys():
@@ -275,37 +274,42 @@ class Query(Configurable, Saveable):
             d_val = data[key]
 
             # now lots of control flow - dependent on the types of the variables
-
             # if c_val is a dict, recurse
-            if type(c_val) is dict:
+            if isinstance(c_val, dict):
                 if not self._match(c_val, d_val):
                     return False
 
             # neither c_val nor d_val are list
-            elif not any(type(v) is list for v in (c_val, d_val)):
+            elif not any(isinstance(v, list) for v in (c_val, d_val)):
                 if c_val != d_val:
                     return False
 
             # c_val IS list, d_val IS NOT list
-            elif type(c_val) is list and type(d_val) is not list:
+            elif isinstance(c_val, list) and not isinstance(d_val, list):
                 if d_val not in c_val:
                     return False
 
             # c_val IS NOT list, d_val IS list
-            elif type(c_val) is not list and type(d_val) is list:
+            elif not isinstance(c_val, list) and isinstance(d_val, list):
                 # "partial matches" indicates that other values may be present in d_val
                 if not self.search(Config.CRITERIA, 'partial_matches') or c_val not in d_val:
                     return False
 
             # both c_val and d_val are list
-            else:  # all([type(v) is list for v in (c_val, d_val)]):
+            else:  # all([isinstance(v, list) for v in (c_val, d_val)]):
                 # "partial matches" indicates that other values may be present in d_val
                 if not self.search(Config.CRITERIA, 'partial_matches') or not all(c_i in d_val for c_i in c_val):
                     return False
 
         return True
 
-    def sfap_data(self, fiber_indices: List[int] = None, all_fibers: bool = False, ignore_missing: bool = False, amplitude_indices: List[int]=[0]):
+    def sfap_data(
+        self,
+        fiber_indices: list[int] = None,
+        all_fibers: bool = False,
+        ignore_missing: bool = False,
+        amplitude_indices: tuple[int] = (0,),
+    ):
         """Obtain SFAP data as a pandas DataFrame for user-defined fiber indices or all fibers.
 
         :param fiber_indices: list of fiber indexes to pull SFAP data for. Default: single fiber 0.
@@ -347,7 +351,7 @@ class Query(Configurable, Saveable):
                             master_indices.append(i)
 
                     # init SFAP container for this model, sim, nsim
-                    sfap_data: List[float] = []
+                    sfap_data: list[dict] = []
                     for nsim_index, (
                         potentials_product_index,
                         waveform_index,
@@ -414,12 +418,11 @@ class Query(Configurable, Saveable):
                                     sfap_data.append(base)
 
         sfap_data = pd.DataFrame(sfap_data)
-        output = sfap_data.loc[sfap_data.fiberset_index.isin(fiber_indices)] if not all_fibers else sfap_data
-        return output
+        return sfap_data.loc[sfap_data['index'].isin(fiber_indices)] if not all_fibers else sfap_data
 
     def threshold_data(
         self,
-        sim_indices: List[int] = None,
+        sim_indices: list[int] = None,
         ignore_missing=False,
         meanify=False,
     ):
@@ -483,7 +486,7 @@ class Query(Configurable, Saveable):
                         n_sim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
 
                         # init thresholds container for this model, sim, nsim
-                        thresholds: List[float] = []
+                        thresholds: list[float] = []
 
                         # fetch all thresholds
                         for inner in range(n_inners):
@@ -590,9 +593,9 @@ class Query(Configurable, Saveable):
         :param: console_output: Print progress to console. Defaults to False.
         """
         sims: dict = {}
-        sample_keys: List[list] = sample_keys if sample_keys else []
-        model_keys: List[list] = model_keys if model_keys else []
-        sim_keys: List[list] = sim_keys if sim_keys else []
+        sample_keys: list[list] = sample_keys if sample_keys else []
+        model_keys: list[list] = model_keys if model_keys else []
+        sim_keys: list[list] = sim_keys if sim_keys else []
 
         # SAMPLE
         sample_results: dict
@@ -748,7 +751,7 @@ class Query(Configurable, Saveable):
         imembrane_file_name = os.path.join(
             os.getcwd(),
             f"samples/{sample_results['index']}/models/{model_results['index']}/sims/{sim}/n_sims/"
-            f"{nsim}/data/outputs/Imembrane_axon0_fiber0_amp0.dat",
+            f"{nsim}/data/outputs/Imembrane_inner0_fiber0_amp0.dat",
         )
 
         with open(imembrane_file_name, 'rb') as file:

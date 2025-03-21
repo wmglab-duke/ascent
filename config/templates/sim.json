@@ -1,100 +1,121 @@
 {
-  "pseudonym": "template sim",
-  "n_dimensions": 1,
   "active_srcs": {
-    "CorTec300.json": [[1, -1]],
-    "default": [[1, -1]]
+    "CorTec300.json": [
+      [
+        1,
+        -1
+      ]
+    ],
+    "default": [
+      [
+        1,
+        -1
+      ]
+    ]
   },
   "fibers": {
     "mode": "MRG_DISCRETE",
+    "xy_parameters": {
+      "maximum_number": 100,
+      "minimum_number": 1,
+      "mode": "UNIFORM_DENSITY",
+      "seed": 123,
+      "target_density": 0.0005,
+      "target_number": 50,
+      "top_down": true
+    },
     "xy_trace_buffer": 5.0,
     "z_parameters": {
-      "mode": "EXTRUSION",
-      "diameter": [1, 2, 5.7, 7.3, 8.7, 10],
-      "min": 0,
+      "diameter": [
+        1,
+        2,
+        5.7,
+        7.3,
+        8.7,
+        10
+      ],
       "max": 12500,
+      "min": 0,
+      "mode": "EXTRUSION",
       "offset": 0,
       "seed": 123
-    },
-    "xy_parameters": {
-      "mode": "UNIFORM_DENSITY",
-      "top_down": true,
-      "minimum_number": 1,
-      "target_density": 0.0005,
-      "maximum_number": 100,
-      "target_number": 50,
-      "seed": 123
-    }
-  },
-  "waveform": {
-    "global": {
-      "dt": 0.001,
-      "on": 1,
-      "off": 49,
-      "stop": 50
-    },
-    "BIPHASIC_PULSE_TRAIN": {
-      "pulse_width": 0.1,
-      "inter_phase": 0,
-      "pulse_repetition_freq": 1,
-      "digits": 1
     }
   },
   "intracellular_stim": {
-    "times": {
-      "pw": 0,
-      "IntraStim_PulseTrain_delay": 0,
-      "IntraStim_PulseTrain_dur": 0
-    },
-    "pulse_repetition_freq": 0,
     "amp": 0,
-    "ind": 2
+    "ind": 2,
+    "pulse_repetition_freq": 0,
+    "times": {
+      "IntraStim_PulseTrain_delay": 0,
+      "IntraStim_PulseTrain_dur": 0,
+      "pw": 0
+    }
   },
-  "saving": {
-    "space": {
-      "vm": false,
-      "gating": false,
-      "times": [0]
-    },
-    "time": {
-      "vm": false,
-      "gating": false,
-      "istim": false,
-      "locs": [0]
-    },
-    "end_ap_times": {
-      "loc_min": 0.1,
-      "loc_max": 0.9,
-      "threshold": -30
-    },
-    "runtimes": false,
-    "aploctime": false
-  },
+  "n_dimensions": 1,
   "protocol": {
-    "mode": "ACTIVATION_THRESHOLD",
-    "initSS": -200,
-    "dt_initSS": 10,
-    "threshold": {
-      "value": -30,
-      "n_min_aps": 1,
-      "ap_detect_location": 0.9
-    },
     "bounds_search": {
-      "mode": "PERCENT_INCREMENT",
-      "top": -1,
       "bottom": -0.01,
+      "mode": "PERCENT_INCREMENT",
+      "scout_sim": false,
       "step": 50,
-      "scout_sim": false
+      "top": -1
     },
+    "dt_initSS": 10,
+    "initSS": -200,
+    "mode": "ACTIVATION_THRESHOLD",
     "termination_criteria": {
       "mode": "PERCENT_DIFFERENCE",
       "percent": 1
+    },
+    "threshold": {
+      "ap_detect_location": 0.9,
+      "n_min_aps": 1,
+      "value": -30
+    }
+  },
+  "pseudonym": "template sim",
+  "saving": {
+    "aploctime": false,
+    "end_ap_times": {
+      "loc_max": 0.9,
+      "loc_min": 0.1,
+      "threshold": -30
+    },
+    "runtimes": false,
+    "space": {
+      "gating": false,
+      "times": [
+        0
+      ],
+      "vm": false
+    },
+    "time": {
+      "gating": false,
+      "istim": false,
+      "locs": [
+        0
+      ],
+      "vm": false
     }
   },
   "supersampled_bases": {
-    "generate": false,
-    "use": false,
     "dz": 1.0,
-    "source_sim": 1009
+    "generate": false,
+    "source_sim": 1009,
+    "use": false
+  },
+  "waveform": {
+    "BIPHASIC_PULSE_TRAIN": {
+      "digits": 1,
+      "inter_phase": 0,
+      "pulse_repetition_freq": 1,
+      "pulse_width": 0.1
+    },
+    "global": {
+      "dt": 0.001,
+      "off": 49,
+      "on": 1,
+      "stop": 50
+    }
   }
 }

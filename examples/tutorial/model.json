@@ -1,30 +1,22 @@
 {
-  "pseudonym": "tutorial model",
-  "modes": {
-    "use_ci": true,
-    "cuff_shift": "AUTO_ROTATION_MIN_CIRCLE_BOUNDARY",
-    "rho_perineurium": "RHO_WEERASURIYA"
-  },
-  "medium": {
-    "proximal": {
-      "distant_ground": false,
-      "length": 12500,
-      "radius": 3000
+  "conductivities": {
+    "conductor": "platinum",
+    "endoneurium": "endoneurium",
+    "epineurium": "epineurium",
+    "fill": "saline",
+    "insulator": "silicone",
+    "medium": {
+      "label": "special medium for beta test",
+      "unit": "[S/m]",
+      "value": "1/20"
     },
-    "distal": {
-      "exist": true,
-      "distant_ground": true,
-      "shift": {
-        "x": 0,
-        "y": 0,
-        "z": 0
-      },
-      "length": 12500,
-      "radius": 5000
-    }
+    "perineurium": {
+      "label": "RHO_WEERASURIYA @ 1 Hz",
+      "unit": "[S/m]",
+      "value": "0.0008703220191470844"
+    },
+    "recess": "saline"
   },
-  "inner_interp_tol": 0.01,
-  "outer_interp_tol": 0.01,
   "cuff": {
     "preset": "Purdue.json",
     "rotate": {
@@ -34,57 +26,65 @@
       "x": 0,
       "y": 0,
       "z": 0
-    },
-    "index": 0
-  },
-  "mesh": {
-    "quality_measure": "vollength",
-    "shape_order": "quadratic",
-    "proximal": {
-      "hcurve": 0.2,
-      "hmin": 10,
-      "hnarrow": 1,
-      "type": {
-        "im": "ftet",
-        "name": "FreeTet"
-      },
-      "hmax": 1600,
-      "hgrad": 2.2
-    },
-    "distal": {
-      "hcurve": 0.2,
-      "hmin": 10,
-      "hnarrow": 1,
-      "type": {
-        "im": "ftet",
-        "name": "FreeTet"
-      },
-      "hmax": 1600,
-      "hgrad": 2.5
     }
   },
   "frequency": 1,
-  "temperature": 37,
-  "conductivities": {
-    "recess": "saline",
-    "medium": {
-      "unit": "[S/m]",
-      "label": "special medium for beta test",
-      "value": "1/20"
+  "inner_interp_tol": 0.01,
+  "medium": {
+    "distal": {
+      "distant_ground": true,
+      "exist": true,
+      "length": 12500,
+      "radius": 5000,
+      "shift": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      }
     },
-    "fill": "saline",
-    "insulator": "silicone",
-    "conductor": "platinum",
-    "endoneurium": "endoneurium",
-    "perineurium": {
-      "unit": "[S/m]",
-      "label": "RHO_WEERASURIYA @ 1 Hz",
-      "value": "0.0008703220191470844"
-    },
-    "epineurium": "epineurium"
+    "proximal": {
+      "distant_ground": false,
+      "length": 12500,
+      "radius": 3000
+    }
   },
+  "mesh": {
+    "distal": {
+      "hcurve": 0.2,
+      "hgrad": 2.5,
+      "hmax": 1600,
+      "hmin": 10,
+      "hnarrow": 1,
+      "type": {
+        "im": "ftet",
+        "name": "FreeTet"
+      }
+    },
+    "proximal": {
+      "hcurve": 0.2,
+      "hgrad": 2.2,
+      "hmax": 1600,
+      "hmin": 10,
+      "hnarrow": 1,
+      "type": {
+        "im": "ftet",
+        "name": "FreeTet"
+      }
+    },
+    "quality_measure": "vollength",
+    "shape_order": "quadratic"
+  },
+  "modes": {
+    "cuff_shift": "AUTO_ROTATION_MIN_CIRCLE_BOUNDARY",
+    "rho_perineurium": "RHO_WEERASURIYA",
+    "use_ci": true
+  },
+  "nerve_interp_tol": 0.02,
+  "outer_interp_tol": 0.01,
+  "pseudonym": "tutorial model",
   "solver": {
     "sorder": 2,
     "type": "iterative"
-  }
+  },
+  "temperature": 37
 }

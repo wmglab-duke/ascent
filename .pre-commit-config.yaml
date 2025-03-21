@@ -3,102 +3,104 @@
 default_language_version:
   python: python3 # or python3
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-    hooks:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.6.0
+  hooks:
       # checking for syntax
-      - id: check-yaml
-      - id: check-toml
-      - id: check-json
+  - id: check-yaml
+  - id: check-toml
+  - id: check-json
       # simple formatting
-      - id: requirements-txt-fixer
-      - id: end-of-file-fixer
-      - id: trailing-whitespace
-      - id: check-added-large-files
+  - id: requirements-txt-fixer
+  - id: end-of-file-fixer
+  - id: trailing-whitespace
+  - id: check-added-large-files
       # checks for unresolved merge conflicts
-      - id: check-merge-conflict
+  - id: check-merge-conflict
+  - id: pretty-format-json
+    args: [--autofix]
+    exclude: .zenodo.json
   # sort python imports
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
+- repo: https://github.com/pycqa/isort
+  rev: 5.13.2
+  hooks:
+  - id: isort
   # format f strings
-  - repo: https://github.com/ikamensh/flynt/
-    rev: "1.0.1"
-    hooks:
-      - id: flynt
+- repo: https://github.com/ikamensh/flynt/
+  rev: 1.0.1
+  hooks:
+  - id: flynt
   # pyupgrade (migrate code to newer syntax)
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.0
-    hooks:
-      - id: pyupgrade
-        args: ["--py37-plus", "--py36-plus"]
+- repo: https://github.com/asottile/pyupgrade
+  rev: v3.17.0
+  hooks:
+  - id: pyupgrade
+    args: [--py310-plus]
   # format python code
-  - repo: https://github.com/psf/black
-    rev: 24.1.1
-    hooks:
-      - id: black
-        language_version: python3
-  - repo: https://github.com/PyCQA/docformatter
-    rev: v1.7.5 # maintain at 1.5.1 to avoid errors
-    hooks:
-      - id: docformatter
-        additional_dependencies:
-          - docformatter[tomli]
-        args: ["--in-place", "--config", "./pyproject.toml"]
-  # format markdown, yaml, json
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
-    hooks:
-      - id: prettier
-        exclude_types: [python, markdown]
-        args: ["--print-width", "100"]
-  # format java. Seperate from the above for different tab width
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
-    hooks:
-      - id: prettier
-        name: prettier-java
-        types: [java]
-        additional_dependencies:
-          - prettier
-          - prettier-plugin-java
-        args: ["--tab-width", "4", "--print-width", "100"]
+- repo: https://github.com/psf/black
+  rev: 24.8.0
+  hooks:
+  - id: black
+    language_version: python3
+  # format docstrings
+- repo: https://github.com/PyCQA/docformatter
+  rev: v1.7.5
+  hooks:
+  - id: docformatter
+    additional_dependencies:
+    - docformatter[tomli]
+    args: [--in-place, --config, ./pyproject.toml]
+  #format toml and yaml
+- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  rev: v2.14.0
+  hooks:
+  - id: pretty-format-toml
+    args: [--autofix]
+  - id: pretty-format-yaml
+    args: [--autofix]
+  # - id: pretty-format-java #TODO get working, or another formatter
+  #   args: [--autofix]
   # lint python code
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
-    hooks:
-      - id: flake8
-        additional_dependencies:
-          - flake8-eradicate
-          - flake8-bugbear
-          - flake8-simplify
-          - flake8-builtins
-          - flake8-comprehensions
-          - flake8-use-fstring
-          - flake8-docstrings
-          - flake8-rst-docstrings
-          - flake8-blind-except
-          - pep8-naming
-          - darglint
-          - flake8-deprecated
+- repo: https://github.com/pycqa/flake8
+  rev: 7.1.1
+  hooks:
+  - id: flake8
+    additional_dependencies:
+    - flake8-eradicate
+    - flake8-bugbear
+    - flake8-simplify
+    - flake8-builtins
+    - flake8-comprehensions
+    - flake8-use-fstring
+    - flake8-docstrings
+    - flake8-rst-docstrings
+    - flake8-blind-except
+    # - flake8-requirements
+    - flake8-deprecated
+    - pep8-naming
+    - darglint
+    - flake8-warnings
+    - flake8-pie
+    # - flake8-annotations #TODO enable
+    # - flake8-annotations-complexity #TODO enable
+    - flake8-return
   # format and lint markdown
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.39.0
-    hooks:
-      - id: markdownlint-fix
-        args: ["--disable", "md013,md034,md033,md036"]
+- repo: https://github.com/igorshubovych/markdownlint-cli
+  rev: v0.41.0
+  hooks:
+  - id: markdownlint-fix
+    args: [--disable, 'md013,md034,md033,md036']
   # check config files
-  - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.27.3
-    hooks:
-      - id: check-gitlab-ci
-      - id: check-readthedocs
+- repo: https://github.com/python-jsonschema/check-jsonschema
+  rev: 0.29.1
+  hooks:
+  - id: check-gitlab-ci
+  - id: check-readthedocs
   # linting for rst files
-  - repo: https://github.com/rstcheck/rstcheck
-    rev: v6.2.0
-    hooks:
-      - id: rstcheck
-        additional_dependencies:
-          - rstcheck[sphinx]
-          - rstcheck[toml]
+- repo: https://github.com/rstcheck/rstcheck
+  rev: v6.2.4
+  hooks:
+  - id: rstcheck
+    additional_dependencies:
+    - rstcheck[sphinx]
+    - rstcheck[toml]

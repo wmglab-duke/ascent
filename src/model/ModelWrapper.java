@@ -212,7 +212,7 @@ public class ModelWrapper {
                 JSONObject itemObject = (JSONObject) item;
 
                 // add cuff cuffNum to instance label
-                String instanceLabel = (String) "Cuff " + cuffNum + "_" + itemObject.get("label");
+                String instanceLabel = "Cuff " + cuffNum + "_" + itemObject.get("label");
                 String instanceID = this.im.next("pi", instanceLabel);
                 String type = (String) itemObject.get("type");
                 String cuffName = name.split("\\.")[0];
@@ -244,7 +244,7 @@ public class ModelWrapper {
             JSONObject itemObject = (JSONObject) item;
 
             //add cuff cuff_num to instance label
-            String instanceLabel = (String) "Cuff " + cuff_num + "_" + itemObject.get("label");
+            String instanceLabel = "Cuff " + cuff_num + "_" + itemObject.get("label");
             String type = (String) itemObject.get("type");
 
             Part.addCuffPartMaterialAssignment(instanceLabel, type, this, itemObject);
@@ -778,11 +778,11 @@ public class ModelWrapper {
             if (skipMesh) {
                 String key_on_int_str = Integer.toString(key_on_int + 1);
                 Map key_on_obj = (Map) this.im.currentIDs.get(key_on_int_str);
-                key_on = (String) Integer.toString(key_on_int) + "_" + key_on_obj.get("name");
+                key_on = key_on_int + "_" + key_on_obj.get("name");
                 src = (String) key_on_obj.get("pcs");
             } else {
                 JSONObject key_on_obj = this.im.currentIDs.get(key_on_int + 1);
-                key_on = (String) Integer.toString(key_on_int) + "_" + key_on_obj.getString("name");
+                key_on = key_on_int + "_" + key_on_obj.getString("name");
                 src = (String) key_on_obj.get("pcs");
             }
 
@@ -1292,7 +1292,6 @@ public class ModelWrapper {
                                 allCuffSpec = (JSONArray) cuffObject;
                             } else if (cuffObject instanceof JSONObject) {
                                 // It's an object --> multiple cuffs in an array
-                                cuffObject = (JSONObject) cuffObject;
                                 allCuffSpec = new JSONArray();
                                 allCuffSpec.put(cuffObject);
                             }
@@ -1300,7 +1299,7 @@ public class ModelWrapper {
                             for (int i = 0; i < allCuffSpec.length(); i++) {
                                 // Read cuff to build from model.json (cuff.preset) which links to JSON containing instantiations of parts
                                 JSONObject cuffSpec = allCuffSpec.getJSONObject(i);
-                                Integer cuffIndex;
+                                int cuffIndex;
                                 try {
                                     cuffIndex = cuffSpec.getInt("index");
                                 } catch (Exception e) {
@@ -1742,7 +1741,7 @@ public class ModelWrapper {
                         JSONObject cuffSpec = allCuffSpec.getJSONObject(i);
 
                         String cuff = cuffSpec.getString("preset");
-                        Integer index;
+                        int index;
                         try {
                             index = cuffSpec.getInt("index");
                         } catch (Exception e) {
@@ -1847,7 +1846,7 @@ public class ModelWrapper {
 
                 // If no Sim configs, SKIP
                 JSONArray sims_list = run.getJSONArray("sims");
-                if (sims_list.length() >= 1) {
+                if (!sims_list.isEmpty()) {
                     try {
                         extractAllPotentials(projectPath, runPath, modelStr);
                     } catch (Exception e) {
@@ -2241,7 +2240,7 @@ public class ModelWrapper {
                         String bases_name = currentIDs
                             .getJSONObject(Integer.toString(cu + 1))
                             .getString("name");
-                        File basisFile = new File(bases_directory + "/" + bases_name + ".mph");
+                        File basisFile = new File(bases_directory + "/" + cu + "_" + bases_name + ".mph");
                         basesValid[cu] = basisFile.exists();
                     }
                 }

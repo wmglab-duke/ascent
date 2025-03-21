@@ -1,0 +1,71 @@
+{
+  "creators": [
+    {
+      "orcid": "0000-0001-5295-7267",
+      "affiliation": "Duke University",
+      "name": "Musselman, Eric D."
+    },
+    {
+      "orcid": "0000-0001-7288-9943",
+      "affiliation": "Duke University",
+      "name": "Cariello, Jake E."
+    },
+    {
+      "orcid": "0000-0003-2844-0190",
+      "affiliation": "Duke University",
+      "name": "Pelot, Nicole A."
+    },
+    {
+      "orcid": "0000-0001-5240-6588",
+      "affiliation": "Duke University",
+      "name": "Grill, Warren M."
+    }
+  ],
+
+  "contributors": [
+    {
+      "orcid": "0000-0001-9662-1247",
+      "affiliation": "Duke University",
+      "name": "Zamani, Princess T."
+    },
+    {
+      "orcid": "0000-0003-4439-4542",
+      "affiliation": "Duke University",
+      "name": "Marshall, Daniel P."
+    },
+    {
+      "orcid": "0009-0000-7165-1749",
+      "affiliation": "Duke University",
+      "name": "Zhang, Newland"
+    },
+    {
+      "orcid": "0000-0003-3148-8355",
+      "affiliation": "Duke University",
+      "name": "Peña, Edgar"
+    },
+    {
+      "orcid": "0000-0001-9743-2181",
+      "affiliation": "Duke University",
+      "name": "Baumgart, Ian"
+    }
+  ],
+
+  "description": "v1.3.1 -> v1.4.0:\nnew features\n•\tadded post-hoc interpolation of fiber diameters and locations\n•\tadded “init_slides” property to Sample object representing the nerve geometry before transforms (centering, smoothing, perineurium generation, etc.)\nv1.3.1 -> v1.4.0: docs\n•\tadded documentation the new post-hoc analysis script\n•\treformatted documentation\nv1.3.1 -> v1.4.0: bug fixes\n•\tfixed SFAP extraction time offset and indexing\n•\tfixed NEURON file export dutils error\n•\tfixed model basis recycling naming convention\n•\tfixed checks for missing thresholds on import\n•\tfixed “inners_on_off” missing threshold handling\nv1.3.1 -> v1.4.0: miscellaneous\n•\tupgraded environment Python to version 3.11\n•\tadded Mock Morphology Generator warning about area uncertainty\n•\tadded warning for COMSOL version differences\n•\trefactored Mock Morphology Generator implementation\n•\tupdated linting and typehints\n•\tadded warning for ARM architectures\n",
+
+  "notes": "Research supported by the National Institutes of Health SPARC Program (OT2 OD025340) (75N98022C00018)",
+
+  "license": "GNU General Public License v2.0 only",
+
+  "title": "ASCENT V1.4.0",
+
+  "version": "1.4.0",
+
+  "keywords": ["Peripheral Nerve Stimulation", "Finite Element Model"],
+
+  "communities": [{ "identifier": "The Grill Lab" }],
+
+  "grants": [
+    { "id": "National Institutes of Health SPARC Program (OT2 OD025340)" },
+    { "id": "National Institutes of Health SPARC Program (75N98022C00018)" }
+  ]
+}

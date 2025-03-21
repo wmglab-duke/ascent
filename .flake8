@@ -2,7 +2,10 @@
 ignore =
     # Black compatibility
     E203, W503,
+    # Allow trace to shadow builtin module
+    A005
     #place additional ignores here
+
 per-file-ignores =
     __init__.py: F401, F403
     enums.py: D

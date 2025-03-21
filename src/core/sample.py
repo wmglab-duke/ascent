@@ -7,16 +7,18 @@ refer to the LICENSE and README.md files for licensing instructions. The
 source code can be found on the following GitHub repository:
 https://github.com/wmglab-duke/ascent
 """
+import copy
 import math
 import os
 import shutil
 import warnings
-from typing import List
 
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.ndimage import binary_fill_holes
+from shapely.affinity import affine_transform
+from shapely.geometry import MultiPoint, Point
 from skimage import morphology
 
 from src.core import Deformable, Fascicle, Map, Nerve, Slide, Trace
@@ -63,7 +65,8 @@ class Sample(Configurable, Saveable):
         self.reshape_nerve_mode = None
         self.nerve_mode = None
         self.mask_input_mode = None
-        self.slides: List[Slide] = []
+        self.slides: list[Slide] = []
+        self._init_slides: list[Slide] = []
 
         # Set instance variable map
         self.map = None
@@ -78,6 +81,17 @@ class Sample(Configurable, Saveable):
             Config.CI_PERINEURIUM_THICKNESS,
             os.path.join('config', 'system', 'ci_peri_thickness.json'),
         )
+
+    @property
+    def init_slides(self) -> list[Slide]:
+        """Get initial slides list.
+
+        Getter method for initial slides, which have only been converted to micron units, but not further
+        tranformed from initial traces computed from input images.
+
+        :return: List of initial slides (converted to microns, no further transforms)
+        """
+        return self._init_slides
 
     def init_map(self, map_mode: SetupMode) -> 'Sample':
         """Initialize the map.
@@ -98,14 +112,15 @@ class Sample(Configurable, Saveable):
 
         return self
 
-    def scale(self, factor) -> 'Sample':
+    def scale(self, factor, center: list[float] = None) -> 'Sample':
         """Scale all slides to the correct unit.
 
         :param factor: factor by which to scale the image (1=no change)
+        :param center: origin [x, y] around which to scale the image
         :return: self
         """
         for slide in self.slides:
-            slide.scale(factor)
+            slide.scale(factor, center)
 
         return self
 
@@ -179,29 +194,27 @@ class Sample(Configurable, Saveable):
         """
         if scale_bar_is_literal:
             # use explicitly specified um/px scale instead of drawing from a scale bar image
-            factor = scale_bar_length
+            return scale_bar_length
+
+        # load in image
+        image_raw: np.ndarray = cv2.imread(scale_bar_mask_path)
+
+        # get maximum of each column (each "pixel" is a 4-item vector)
+        row_of_column_maxes: np.ndarray = image_raw.max(0)
+        # find the indices of columns in original image where the first pixel item was maxed (i.e. white)
+
+        if row_of_column_maxes.ndim == 2:  # masks from histology, 3 or 4 bit
+            indices = np.where(row_of_column_maxes[:, 0] == max(row_of_column_maxes[:, 0]))[0]
+        elif row_of_column_maxes.ndim == 1:  # masks from mock morphology, 1 bit
+            indices = np.where(row_of_column_maxes[:] == max(row_of_column_maxes[:]))[0]
         else:
-            # load in image
-            image_raw: np.ndarray = cv2.imread(scale_bar_mask_path)
+            raise MaskError("Invalid TIF file format passed into the program")
 
-            # get maximum of each column (each "pixel" is a 4-item vector)
-            row_of_column_maxes: np.ndarray = image_raw.max(0)
-            # find the indices of columns in original image where the first pixel item was maxed (i.e. white)
+        # find the length of the scale bar by finding total range of "max white" indices
+        scale_bar_pixels = max(indices) - min(indices) + 1
 
-            if row_of_column_maxes.ndim == 2:  # masks from histology, 3 or 4 bit
-                indices = np.where(row_of_column_maxes[:, 0] == max(row_of_column_maxes[:, 0]))[0]
-            elif row_of_column_maxes.ndim == 1:  # masks from mock morphology, 1 bit
-                indices = np.where(row_of_column_maxes[:] == max(row_of_column_maxes[:]))[0]
-            else:
-                raise MaskError("Invalid TIF file format passed into the program")
-
-            # find the length of the scale bar by finding total range of "max white" indices
-            scale_bar_pixels = max(indices) - min(indices) + 1
-
-            # calculate scale factor as unit/pixel
-            factor = scale_bar_length / scale_bar_pixels
-
-        return factor
+        # calculate scale factor as unit/pixel
+        return scale_bar_length / scale_bar_pixels
 
     def build_file_structure(self, printing: bool = False) -> 'Sample':
         """Build the file structure for morphology inputs.
@@ -416,8 +429,7 @@ class Sample(Configurable, Saveable):
                 outer_mask = None
 
         # generate fascicle objects from masks
-        fascicles = Fascicle.to_list(inner_mask, outer_mask, self.contour_mode)
-        return fascicles
+        return Fascicle.to_list(inner_mask, outer_mask, self.contour_mode)
 
     def get_epineurium_from_mask(self):
         """Generate epineurium trace from mask.
@@ -433,13 +445,11 @@ class Sample(Configurable, Saveable):
             img_nerve = img_nerve[:, :, 0]
 
         contour, _ = cv2.findContours(np.flipud(img_nerve), cv2.RETR_TREE, self.contour_mode.value)
-        nerve = Nerve(
+        return Nerve(
             Trace(
                 [point + [0] for point in contour[0][:, 0, :]],
             )
         )
-
-        return nerve
 
     def generate_slide(self, slide_info):
         """Create slide from input masks.
@@ -486,11 +496,9 @@ class Sample(Configurable, Saveable):
         if self.mask_exists(MaskFileNames.ORIENTATION):
             slide = self.calculate_orientation(slide)
 
-        slide = self.correct_shrinkage(slide)
-
         os.chdir(self.start_directory)
 
-        return slide
+        return slide  # noqa: R504
 
     def correct_shrinkage(self, slide):
         """Apply shrinkage correction to slide.
@@ -498,7 +506,6 @@ class Sample(Configurable, Saveable):
         :param slide: Slide
         :raises ValueError: if shrinkage mode is invalid
         :raises ValueError: if shrinkage correction would result in further shrinkage
-        :return: Slide
         """
         # shrinkage correction
         s_mode = self.search_mode(ShrinkageMode, Config.SAMPLE, optional=True)
@@ -530,8 +537,6 @@ class Sample(Configurable, Saveable):
 
         slide.scale(shrinkage_correction)
 
-        return slide
-
     def apply_scaling(self):
         """Scales from pixels to microns.
 
@@ -560,7 +565,7 @@ class Sample(Configurable, Saveable):
             raise FileNotFoundError("Scale bar for nerve micrograph does not exist.")
 
         # scale to microns
-        self.scale(factor)
+        self.scale(factor, [0.0, 0.0])
 
     def apply_smoothing(self):
         """Smooth traces.
@@ -577,8 +582,7 @@ class Sample(Configurable, Saveable):
                     "If NerveMode is set to PRESENT and smoothing is defined in Sample.json, "
                     "nerve_distance must be defined"
                 )
-            else:
-                self.smooth(n_distance, i_distance)
+            self.smooth(n_distance, i_distance)
 
     def prepare_perineurium(self):
         """Generate perineurium."""
@@ -628,7 +632,7 @@ class Sample(Configurable, Saveable):
         pre_area = slide.nerve.area()
         slide.nerve.offset(distance=-sep_nerve)
         slide.nerve.scale(1)
-        slide.nerve.points = np.flip(slide.nerve.points, axis=0)  # set points to opencv orientation
+        slide.nerve.points = np.flip(slide.nerve.points, axis=0)
 
         if (
             self.configs[Config.CLI_ARGS.value].get('render_deform') is True
@@ -639,7 +643,7 @@ class Sample(Configurable, Saveable):
         else:
             render_deform = False
 
-        deformable = Deformable.from_slide(slide, ReshapeNerveMode.CIRCLE)
+        deformable = Deformable.from_slide(copy.deepcopy(slide), ReshapeNerveMode.CIRCLE)
 
         movements, rotations = deformable.deform(
             morph_count=morph_count,
@@ -726,6 +730,19 @@ class Sample(Configurable, Saveable):
         # plot initial scaled sample
         populate_plotter(self.slides[0], 'Initial sample from morphology masks', 'sample_initial')
 
+        # Save untransformed slides without shrinkage correction or rotation (defined in microns)
+        self._init_slides = copy.deepcopy(self.slides)
+        for slide in self._init_slides:
+            slide.scale(1.0)  # connect trace for closed geometry
+
+        # Reset the affine transformation matrices to track only the steps after micron scaling
+        # (deformation, shrinkage correction)
+        self.__reset_transform()
+
+        # apply shrinkage correction
+        for i in range(len(self.slides)):
+            self.correct_shrinkage(self.slides[i])
+
         # apply smoothing
         self.apply_smoothing()
 
@@ -764,6 +781,9 @@ class Sample(Configurable, Saveable):
         self.slides[0].validate(plotpath=plotpath)
 
         populate_plotter(self.slides[0], 'Final sample after any user specified processing', 'sample_final')
+
+        affine_slides = self.init_transform()
+        populate_plotter(affine_slides[0], 'Sample after any user specified affine only processing', 'sample_affine')
 
         return self
 
@@ -813,27 +833,27 @@ class Sample(Configurable, Saveable):
             slide_path = os.path.join(sample_path, cassette, number)
             if not os.path.exists(slide_path):
                 raise OSError("Path to slide must have already been created.")
+
+            # change directories to slide path
+            os.chdir(slide_path)
+
+            # build the directory for output (name is the write mode)
+            if mode == WriteMode.SECTIONWISE2D:
+                directory_to_create = 'sectionwise2d'
+            elif mode == WriteMode.SECTIONWISE:
+                directory_to_create = 'sectionwise'
             else:
-                # change directories to slide path
-                os.chdir(slide_path)
+                raise NotImplementedError("Unimplemented write mode.")
 
-                # build the directory for output (name is the write mode)
-                if mode == WriteMode.SECTIONWISE2D:
-                    directory_to_create = 'sectionwise2d'
-                elif mode == WriteMode.SECTIONWISE:
-                    directory_to_create = 'sectionwise'
-                else:
-                    raise NotImplementedError("Unimplemented write mode.")
+            # clear directory if it exists, then create
+            if os.path.exists(directory_to_create):
+                shutil.rmtree(directory_to_create, ignore_errors=True)
+            os.makedirs(directory_to_create, exist_ok=True)
 
-                # clear directory if it exists, then create
-                if os.path.exists(directory_to_create):
-                    shutil.rmtree(directory_to_create, ignore_errors=True)
-                os.makedirs(directory_to_create, exist_ok=True)
+            os.chdir(directory_to_create)
 
-                os.chdir(directory_to_create)
-
-                # WRITE
-                self.slides[i].write(mode, os.getcwd())
+            # WRITE
+            self.slides[i].write(mode, os.getcwd())
 
             # go back up to start directory, then to top of loop
             os.chdir(start_directory)
@@ -863,3 +883,119 @@ class Sample(Configurable, Saveable):
 
         self.morphology = morphology_input
         return self
+
+    def init_transform(self) -> list[Slide]:
+        """Transform initial slides based on the affine transformation trackers in each trace.
+
+        Additional non-affine operations (e.g. Trace.smooth and Trace.offset) can be applied depending on configuration
+        to yield the final sample morphology. This function yields the sample transformations with only affine
+        transformations (translation, scaling, rotation).
+
+        :return: List of slides with affine transformed applied.
+        """
+        # Iterate over final slides (which have transformation trackers) and initial slides (untransformed).
+        tfm_slides = copy.deepcopy(self._init_slides)
+        for slide, init_slide in zip(self.slides, tfm_slides):
+            # Skip nerve transformation if there is no nerve (epineurium) morphology
+            if self.nerve_mode == NerveMode.PRESENT:
+                init_slide.nerve.transform(slide.nerve.transform_matrix)
+            for fasc, init_fasc in zip(slide.fascicles, init_slide.fascicles):
+                if self.mask_input_mode == MaskInputMode.INNERS and len(fasc.inners) > 0:
+                    # If only inners were initially provided, the untransformed outer corresponds to the final inner.
+                    init_fasc.outer.transform(fasc.inners[0].transform_matrix)
+                else:
+                    # Otherwise outers and inners map 1-to-1 between transformed and untransformed slide traces.
+                    init_fasc.outer.transform(fasc.outer.transform_matrix)
+                    for inner, init_inner in zip(fasc.inners, init_fasc.inners):
+                        init_inner.transform(inner.transform_matrix)
+        return tfm_slides
+
+    def point_transform(self, points: np.ndarray, by_slide=False) -> np.array:
+        """Transform points from original coordinates to final.
+
+        Transforms points from the original coordinate system to final morphology based on affine transforms tracked
+        in each trace. If the point falls within a trace, it's transformed according to that Trace's transform_matrix.
+
+        :param points: list of points with the last two dimensions corresponding to # of points and x, y, [z]
+        :param by_slide: if True, the first dimension of points corresponds to each slide in Sample.slides.
+        :return: Transformed list of points with same shape as input.
+        """
+
+        def shapely_point_transform(pts, transform_mat, return_ndim=3):
+            m_pts = MultiPoint(pts)
+            shapely_mat = Trace.get_shapely_affine(transform_mat, return_ndim)
+            m_pts = affine_transform(m_pts, shapely_mat)
+            if return_ndim == 2:
+                return np.asarray([(g.x, g.y) for g in m_pts.geoms])
+
+            return np.asarray([(g.x, g.y, g.z) for g in m_pts.geoms])
+
+        np_points = np.asarray(points)
+
+        if by_slide:
+            assert len(np_points) == len(
+                self.slides
+            ), "When using by_slide, first axis must match number of Sample slides"
+        else:
+            np_points = np.asarray([np_points for _ in self.slides])
+
+        assert len(np_points.shape) > 2, "Input must have last two axes corresponding to n_points and n_coordinates"
+
+        mat_ndim = 3
+        if np_points.shape[-1] == 2:
+            mat_ndim = 2
+        assert np_points.shape[-1] in [
+            2,
+            3,
+        ], "Points must have a last axis of length 2 or 3 corresponding to [x, y] or [x, y, z], respectively"
+
+        tfm_points = []
+        for s_points, slide, init_slide in zip(np_points, self.slides, self._init_slides):
+            flat_points = np.reshape(s_points, (-1, s_points.shape[-1]))
+
+            fibs_in_fasc = np.zeros(flat_points.shape[0])
+            out_to_fib, _ = init_slide.map_points(flat_points)
+            for fasc_idx, otf in enumerate(out_to_fib):
+                for inner_idx, fiber_inds in enumerate(otf):
+                    if len(fiber_inds) == 0:
+                        # No fibers in this inner
+                        continue
+                    if len(slide.fascicles[fasc_idx].inners) == 0:
+                        # This shouldn't happen
+                        warnings.warn('Transforming with no inners', stacklevel=2)
+                        flat_points[fiber_inds, :] = shapely_point_transform(
+                            flat_points[fiber_inds, :],
+                            slide.fascicles[fasc_idx].outer.transform_matrix,
+                            return_ndim=mat_ndim,
+                        )
+                    else:
+                        flat_points[fiber_inds, :] = shapely_point_transform(
+                            flat_points[fiber_inds, :],
+                            slide.fascicles[fasc_idx].inners[inner_idx].transform_matrix,
+                            return_ndim=mat_ndim,
+                        )
+                    fibs_in_fasc[fiber_inds] = 1
+
+            if self.nerve_mode == NerveMode.PRESENT:
+                n_nerve_pts = 0
+                for f_idx in np.flatnonzero(fibs_in_fasc == 0):
+                    if Point(flat_points[f_idx]).within(init_slide.nerve.polygon()):
+                        fibs_in_fasc[f_idx] = -1
+                        n_nerve_pts += 1
+
+                if n_nerve_pts > 0:
+                    flat_points[fibs_in_fasc == -1, :] = shapely_point_transform(
+                        flat_points[fibs_in_fasc == -1, :], slide.nerve.transform_matrix, return_ndim=mat_ndim
+                    )
+
+            tfm_points.append(flat_points.reshape(s_points.shape).tolist())
+
+        return np.asarray(tfm_points)
+
+    def __reset_transform(self):
+        """Reset the transform matrix for each Trace in Sample."""
+        for slide in self.slides:
+            if slide.nerve is not None:
+                slide.nerve.reset_transform()
+            for fascicle in slide.fascicles:
+                fascicle.reset_transform()

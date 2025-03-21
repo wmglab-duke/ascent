@@ -17,10 +17,13 @@ First, these software packages must be manually installed:
   - If your COMSOL version is 6.0 or newer, you may instead install [Java 11](https://www.oracle.com/java/technologies/downloads/#java11).
 - [COMSOL Multiphysics 5.4 or newer](https://www.comsol.com/product-download) (requires purchase of license; only base package needed, which includes the COMSOL Java API)
   - Once COMSOL is installed, alter 'File System Access' permissions via File → Preferences → Security → Methods and Java Libraries → File System Access → All Files.
+  - Note that COMSOL versions may slightly change (<1%) the outputs from ASCENT. Please avoid comparing results across COMSOL versions where possible.
 - [NEURON 7.6.7 or newer](https://nrn.readthedocs.io/en/latest/install/install_instructions.html) (newer versions have been released, but compatibility has yet to be confirmed; choose appropriate installer depending on operating system; install auxiliary software as prompted by NEURON installer)
   - Depending on your operating system, some additional dependencies may be required. Make sure to follow the installation instructions carefully.
   - NEURON must be in your PATH in order to run simulations. Either choose the add to path option during installation, or on Linux, you can add to your bash profile: `export PATH=<path/to/neuron/>:$PATH`. The NEURON path should end with `bin`.
-
+   ```{caution}
+   ASCENT may have issues running on Apple Silicon and other ARM platforms. Building an older version of NEURON (version 7.x) for ARM from source is a potential fix for these problems. Refer to the NEURON docs for prerequisites and instructions.
+   ```
 Users may also download a text editor or integrated development environment (IDE) of their choosing to view/edit code (e.g., [Atom](https://atom.io/), [Visual Studio Code](https://code.visualstudio.com/), [IntelliJ IDEA](https://www.jetbrains.com/idea/download/)). For Java code, full autocomplete functionality requires adding both the path to the COMSOL installation ending in `plugins` as well as the path `<ASCENT_PATH>/bin/json-20190722.jar` to the list of available libraries (usually from within the IDE’s project settings). To run code in your IDE, newer version of COMSOL may also require you to check the box `File>Preferences>Security>Methods and Java Libraries>Allow access to network sockets`.
 
 ### Installing ASCENT
@@ -197,7 +200,7 @@ The below example directory structure may be helpful.
 8. After the NEURON simulations have completed, move the outputs back to the ASCENT directory structure by running the command `python run import_n_sims <run_index>`.
 
     ```{admonition} Check
-    Threshold for inner0_fiber0 (`samples/<sample_index>/models/<model_index>/sims/<sim_index>/n_sims/data/outputs/thresh_inner0_fiber0.dat`) should be -0.027402 mA
+    Threshold for inner0_fiber0 (`samples/<sample_index>/models/<model_index>/sims/<sim_index>/n_sims/data/outputs/thresh_inner0_fiber0.dat`) should be -0.027402 mA (or -0.027281 mA if COMSOL 6.1 is installed).
     ```
 
 9. To generate a heatmap of activation thresholds, open the script `examples/analysis/threshold_heatmap.py` and edit the sample, model, and sim indices to match the ones you chose above. Run the script from the repository root with the command `python examples/analysis/threshold_heatmap.py`, and a heatmap plot will be generated in `output/analysis/`. Your heatmap should look like the one below.

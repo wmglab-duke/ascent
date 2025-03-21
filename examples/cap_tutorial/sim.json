@@ -1,107 +1,143 @@
 {
-  "pseudonym": "cap_template sim",
-  "n_dimensions": 1,
+  "active_recs": {
+    "CorTec300.json": [
+      1,
+      -1
+    ],
+    "cuff_index": 1,
+    "cyl_MicroLeads_300t.json": [
+      [
+        1,
+        0,
+        0
+      ]
+    ]
+  },
   "active_srcs": {
-    "CorTec300.json": [1, -1],
+    "CorTec300.json": [
+      1,
+      -1
+    ],
     "cuff_index": 0,
-    "cyl_MicroLeads_300b.json": [[1, -1]]
+    "cyl_MicroLeads_300b.json": [
+      [
+        1,
+        -1
+      ]
+    ]
   },
   "fibers": {
     "mode": "SMALL_MRG_INTERPOLATION_V1",
-    "xy_trace_buffer": 5,
-    "z_parameters": {
-      "diameter": [
-        1.012706, 1.024754, 1.036945, 1.049281, 1.061764, 2.010853, 3.006143, 4.0403, 5.058253,
-        6.040083, 7.043896, 8.022517000000001, 9.029676, 9.809011999999999
-      ],
-      "min": 0,
-      "max": 30000,
-      "offset": 0,
-      "seed": 123
-    },
+    "plot": false,
     "xy_parameters": {
       "mode": "CENTROID"
     },
-    "plot": false
-  },
-  "waveform": {
-    "global": {
-      "dt": 0.0025,
-      "on": 2,
-      "off": 49,
-      "stop": 65
-    },
-    "BIPHASIC_PULSE_TRAIN": {
-      "pulse_width": 0.05,
-      "inter_phase": 0.005,
-      "pulse_repetition_freq": 1.45,
-      "digits": 1
+    "xy_trace_buffer": 5,
+    "z_parameters": {
+      "diameter": [
+        1.012706,
+        1.024754,
+        1.036945,
+        1.049281,
+        1.061764,
+        2.010853,
+        3.006143,
+        4.0403,
+        5.058253,
+        6.040083,
+        7.043896,
+        8.022517,
+        9.029676,
+        9.809012
+      ],
+      "max": 30000,
+      "min": 0,
+      "mode": "EXTRUSION",
+      "offset": 0,
+      "seed": 123
     }
   },
   "intracellular_stim": {
-    "times": {
-      "pw": 0,
-      "IntraStim_PulseTrain_delay": 0,
-      "IntraStim_PulseTrain_dur": 0
-    },
-    "pulse_repetition_freq": 0,
     "amp": 0,
-    "ind": 2
-  },
-  "saving": {
-    "space": {
-      "vm": false,
-      "gating": false,
-      "times": [0]
-    },
-    "time": {
-      "vm": false,
-      "gating": false,
-      "istim": false,
-      "locs": [0]
-    },
-    "end_ap_times": {
-      "loc_min": 0.1,
-      "loc_max": 0.9,
-      "threshold": -30
-    },
-    "runtimes": true,
-    "aploctime": false,
-    "cap_recording": {
-      "Imembrane_matrix": true
+    "ind": 2,
+    "pulse_repetition_freq": 0,
+    "times": {
+      "IntraStim_PulseTrain_delay": 0,
+      "IntraStim_PulseTrain_dur": 0,
+      "pw": 0
     }
   },
+  "n_dimensions": 1,
   "protocol": {
-    "mode": "FINITE_AMPLITUDES",
-    "initSS": -200,
-    "dt_initSS": 10,
-    "threshold": {
-      "value": -30,
-      "n_min_aps": 1,
-      "ap_detect_location": 0.9
-    },
+    "amplitudes": [
+      -0.42752382
+    ],
     "bounds_search": {
-      "mode": "PERCENT_INCREMENT",
-      "top": -0.65,
       "bottom": -0.35,
+      "mode": "PERCENT_INCREMENT",
+      "scout_sim": false,
       "step": 10,
-      "scout_sim": false
+      "top": -0.65
     },
+    "dt_initSS": 10,
+    "initSS": -200,
+    "mode": "FINITE_AMPLITUDES",
     "termination_criteria": {
       "mode": "PERCENT_DIFFERENCE",
       "percent": 1
     },
-    "amplitudes": [-0.42752382]
+    "threshold": {
+      "ap_detect_location": 0.9,
+      "n_min_aps": 1,
+      "value": -30
+    }
+  },
+  "pseudonym": "cap_template sim",
+  "saving": {
+    "aploctime": false,
+    "cap_recording": {
+      "Imembrane_matrix": true
+    },
+    "end_ap_times": {
+      "loc_max": 0.9,
+      "loc_min": 0.1,
+      "threshold": -30
+    },
+    "runtimes": true,
+    "space": {
+      "gating": false,
+      "times": [
+        0
+      ],
+      "vm": false
+    },
+    "time": {
+      "gating": false,
+      "istim": false,
+      "locs": [
+        0
+      ],
+      "vm": false
+    }
   },
   "supersampled_bases": {
-    "generate": false,
-    "use": false,
     "dz": 1,
-    "source_sim": 1009
+    "generate": false,
+    "source_sim": 1009,
+    "use": false
   },
-  "active_recs": {
-    "CorTec300.json": [1, -1],
-    "cuff_index": 1,
-    "cyl_MicroLeads_300t.json": [[1, 0, 0]]
+  "waveform": {
+    "BIPHASIC_PULSE_TRAIN": {
+      "digits": 1,
+      "inter_phase": 0.005,
+      "pulse_repetition_freq": 1.45,
+      "pulse_width": 0.05
+    },
+    "global": {
+      "dt": 0.0025,
+      "off": 49,
+      "on": 2,
+      "stop": 65
+    }
   }
 }

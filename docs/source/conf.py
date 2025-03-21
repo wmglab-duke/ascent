@@ -20,11 +20,11 @@ sys.path.insert(0, os.path.abspath('../..'))
 # -- Project information -----------------------------------------------------
 
 project = 'ASCENT'
-copyright = '2021-2024, Duke University'  # noqa A001
+copyright = '2021-2025, Duke University'  # noqa A001
 author = 'Musselman ED, Cariello JE, Marshall DM, Grill WM, Pelot NA.'
 
 # The full version, including alpha/beta/rc tags
-release = 'v1.3.1'
+release = 'v1.4.0'
 
 # -- General configuration ---------------------------------------------------
 
@@ -44,8 +44,6 @@ extensions = [
     'sphinx_rtd_dark_mode',
     'sphinx_github_changelog',
     'sphinx_inline_tabs',
-    'sphinx.ext.autodoc',
-    'sphinx_inline_tabs',
 ]
 
 source_suffix = {
@@ -54,7 +52,7 @@ source_suffix = {
     '.md': 'markdown',
 }
 
-MOCK_MODULES = ['numpy', 'pandas']
+MOCK_MODULES = ['numpy', 'pandas', 'tqdm']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
@@ -73,6 +71,7 @@ autodoc_mock_imports = [
     'pymunk',
     'quantiphy',
     'nd_line',
+    'tqdm',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -106,6 +105,8 @@ html_show_sphinx = False
 # -- Options for extensions -------------------------------------------------
 
 myst_heading_anchors = 4
+
+myst_enable_extensions = ["dollarmath", "amsmath"]
 
 bibtex_bibfiles = ['refs.bib']
 

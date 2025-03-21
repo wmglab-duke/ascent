@@ -1,89 +1,98 @@
 {
-  "pseudonym": "tutorial sim",
-  "n_dimensions": 0,
   "active_srcs": {
-    "Purdue.json": [[1, -1]]
+    "Purdue.json": [
+      [
+        1,
+        -1
+      ]
+    ]
   },
   "fibers": {
-    "plot": false,
     "mode": "MRG_DISCRETE",
+    "plot": false,
+    "xy_parameters": {
+      "angle_offset": 0,
+      "angle_offset_is_in_degrees": true,
+      "find_centroid": true,
+      "mode": "WHEEL",
+      "point_count_per_spoke": 2,
+      "spoke_count": 6
+    },
     "xy_trace_buffer": 5.0,
     "z_parameters": {
-      "mode": "EXTRUSION",
       "diameter": 8.7,
-      "min": 0,
       "max": 12500,
+      "min": 0,
+      "mode": "EXTRUSION",
       "offset": 0,
       "seed": 123
-    },
-    "xy_parameters": {
-      "mode": "WHEEL",
-      "spoke_count": 6,
-      "point_count_per_spoke": 2,
-      "find_centroid": true,
-      "angle_offset_is_in_degrees": true,
-      "angle_offset": 0
-    }
-  },
-  "waveform": {
-    "global": {
-      "unit": "ms",
-      "dt": 0.001,
-      "start": 0,
-      "on": 1,
-      "off": 49,
-      "stop": 50
-    },
-    "BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW": {
-      "pulse_width_1": 0.1,
-      "inter_phase": 0.1,
-      "pulse_width_2": 0.4,
-      "pulse_repetition_freq": 1,
-      "digits": 1
     }
   },
   "intracellular_stim": {
-    "times": {
-      "pw": 0,
-      "IntraStim_PulseTrain_delay": 0,
-      "IntraStim_PulseTrain_dur": 0
-    },
-    "pulse_repetition_freq": 0,
     "amp": 0,
-    "ind": 2
+    "ind": 2,
+    "pulse_repetition_freq": 0,
+    "times": {
+      "IntraStim_PulseTrain_delay": 0,
+      "IntraStim_PulseTrain_dur": 0,
+      "pw": 0
+    }
   },
-  "saving": {
-    "space": {
-      "vm": false,
-      "gating": false,
-      "times": [0]
-    },
-    "time": {
-      "vm": false,
-      "gating": false,
-      "istim": false,
-      "locs": [0]
-    },
-    "runtimes": false
-  },
+  "n_dimensions": 0,
   "protocol": {
-    "mode": "ACTIVATION_THRESHOLD",
-    "initSS": -200,
-    "dt_initSS": 10,
-    "threshold": {
-      "value": -30,
-      "n_min_aps": 1,
-      "ap_detect_location": 0.9
-    },
     "bounds_search": {
+      "bottom": -0.01,
       "mode": "PERCENT_INCREMENT",
       "step": 10,
-      "top": -1,
-      "bottom": -0.01
+      "top": -1
     },
+    "dt_initSS": 10,
+    "initSS": -200,
+    "mode": "ACTIVATION_THRESHOLD",
     "termination_criteria": {
       "mode": "PERCENT_DIFFERENCE",
       "percent": 1
+    },
+    "threshold": {
+      "ap_detect_location": 0.9,
+      "n_min_aps": 1,
+      "value": -30
+    }
+  },
+  "pseudonym": "tutorial sim",
+  "saving": {
+    "runtimes": false,
+    "space": {
+      "gating": false,
+      "times": [
+        0
+      ],
+      "vm": false
+    },
+    "time": {
+      "gating": false,
+      "istim": false,
+      "locs": [
+        0
+      ],
+      "vm": false
+    }
+  },
+  "waveform": {
+    "BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW": {
+      "digits": 1,
+      "inter_phase": 0.1,
+      "pulse_repetition_freq": 1,
+      "pulse_width_1": 0.1,
+      "pulse_width_2": 0.4
+    },
+    "global": {
+      "dt": 0.001,
+      "off": 49,
+      "on": 1,
+      "start": 0,
+      "stop": 50,
+      "unit": "ms"
     }
   }
 }

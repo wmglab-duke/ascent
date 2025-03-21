@@ -1,14 +1,35 @@
 {
-  "note": "these are the indices [sample, model] (mesh.mph) or [sample, model, basis_index] (<basis_index>.mph) that we do NOT want cleared. Otherwise, cleared.",
-  "mesh.mph": [[3011, 0]],
   "<basis_index>.mph": {
     "mesh": [
-      [3011, 0, 0],
-      [3011, 1, 0]
+      [
+        3011,
+        0,
+        0
+      ],
+      [
+        3011,
+        1,
+        0
+      ]
     ],
     "solution": [
-      [3011, 0, 0],
-      [3011, 1, 0]
+      [
+        3011,
+        0,
+        0
+      ],
+      [
+        3011,
+        1,
+        0
+      ]
     ]
-  }
+  },
+  "mesh.mph": [
+    [
+      3011,
+      0
+    ]
+  ],
+  "note": "these are the indices [sample, model] (mesh.mph) or [sample, model, basis_index] (<basis_index>.mph) that we do NOT want cleared. Otherwise, cleared."
 }

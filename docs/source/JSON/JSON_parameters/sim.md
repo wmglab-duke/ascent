@@ -287,15 +287,15 @@ fiber are calculated in the following way for an example weighting:
 `"example_cuff_preset.json": [[1, -1]]` // [[weight<sub>1</sub> (for src 1 on),
 weight<sub>2</sub> (for src 2 on)]]
 
-![f2]
+$$V_{e}=(\textrm{amplitude})*\textrm{potentials}$$
 
-![f3]
+$$\textrm{potentials}=(\textrm{weight}_{1})*\textrm{bases}_{1}(x,y,z)+(\textrm{weight}_{2})*\textrm{bases}_{2}(x,y,z)$$
 
 The value of potentials/ is applied to a model fiber in NEURON
 multiplied by the stimulation amplitude, which is either from a list of
 finite amplitudes or a bisection search for thresholds ([Simulation Protocols](../../Running_ASCENT/Info.md#simulation-protocols))
 
-![f4]
+$$\textrm{potentials}=(1)*\textrm{bases}_{1}(x,y,z)+(-1)*\textrm{bases}_{2}(x,y,z)$$
 
 - `“cuff_index”`: The value (Integer) used to designate which cuff will be used for
   stimulation and which cuff will be used for recording. The index value must correspond to the “index” value in the Model "cuff" configuration. Required.
@@ -467,16 +467,36 @@ length of the fiber). Required.
       degrees. If false, the program interprets `“angle_offset”` in
       radians. Required.
 
-  - `“EXPLICIT”`: The mode looks for a `“<explicit_index>.txt”` file in the user-created directory (`input/<input sample name>/explicit_fibersets`, where `<input sample name>` is the `sample` parameter in **_Sample_**) for user-specified fiber (x,y)-coordinates (see `config/templates/explicit.txt`). Note, this file is only required if the user is using the `“EXPLICIT”` `“FiberXYMode”`. An error is thrown if any explicitly defined coordinates are not inside any fascicle inner boundaries.
+  - `“EXPLICIT”`: The mode looks for a `“<explicit_index>.txt”` file in the user-created directory
+    (`input/<input sample name>/explicit_fibersets`, where `<input sample name>` is the `sample` parameter in
+    **_Sample_**) for user-specified fiber (x,y)-coordinates, defined in microns from the *bottom left corner
+    of the input images*, (see `config/templates/explicit.txt`). Note, this file is only required if the user
+    is using the `“EXPLICIT”` `“FiberXYMode”`. An error is thrown if any explicitly defined coordinates are
+    not inside any fascicle inner boundaries.
 
     - `“explicit_fiberset_index”`: The value (Integer) indicates which explicit index file to use.
 
   - `“EXPLICIT_3D”`: The mode looks for a `“<explicit_index>.npy”` file in the user-created directory
-    (`input/<input sample name>/explicit_fibersets`, where `<input sample name>` is the `sample` parameter in **_Sample_**) for user-specified fiber (x,y,z)-coordinates in microns (see `config/templates/explicit_3D.npy`). Note, this file is only required if the user is using the `“EXPLICIT_3D”` `“FiberXYMode”`. The explicit coordinates data structure in the pickled `.npy` file must be a numpy array of fibers, where each index contains a 2D np.array of fiber xyz-points (e.g., np.array(np.array(fiber 1 xyz-coords), ..., np.array(fiber N xyz-coords)). The lengths fibers may be differ. An error is thrown if any explicitly defined coordinates are not inside any fascicle inner boundaries. If the fibers are shorter than the length of the model, the whole population of the provided fiber coordinates is centered longitudinally by default, and each fiber is individually extruded to the length of the model.
+    (`input/<input sample name>/explicit_fibersets`, where `<input sample name>` is the `sample` parameter
+    in **_Sample_**) for user-specified fiber (x,y,z)-coordinates in microns from the left x, bottom y, and
+    bottom z coordinates of the input image (see `config/templates/explicit_3D.npy`). Note, this file is
+    only required if the user is using the `“EXPLICIT_3D”` `“FiberXYMode”`. The explicit coordinates data
+    structure in the pickled `.npy` file must be a numpy array of fibers, where each index contains a 2D
+    np.array of fiber xyz-points (e.g., np.array(np.array(fiber 1 xyz-coords), ..., np.array(fiber N
+    xyz-coords)). The lengths fibers may be differ. An error is thrown if any explicitly defined coordinates
+    are not inside any fascicle inner boundaries. If the fibers are shorter than the length of the model,
+    the whole population of the provided fiber coordinates is centered longitudinally by default, and each
+    fiber is individually extruded to the length of the model.
 
-    To visualize the `explicit_3D.npy` template, open a command-line window and change directories to `config/templates/`. Enter `python` to start an interactive python session and enter `import numpy as np`. Then run the `np.load('explicit_3D.npy', allow_pickle=True)` to load and print the file contents to the consol. The template file contains two short fibers of varying lengths, and is compatible with the ascent tutorial.
+    To visualize the `explicit_3D.npy` template, open a command-line window and change directories to
+    `config/templates/`. Enter `python` to start an interactive python session and enter
+    `import numpy as np`. Then run the `np.load('explicit_3D.npy', allow_pickle=True)` to load and print
+    the file contents to the consol. The template file contains two short fibers of varying lengths, and
+    is compatible with the ascent tutorial.
 
-    To generate a 3D coordinate file: Create a python list of fibers, where each index is a 2D np.array of xyz values. To save a python list of np.arrays of varying lengths to a .npy file, use `np.save('<file name>.npy', np.array(<list of fiber arrays>, dtype=object), allow_pickle=True)`.
+    To generate a 3D coordinate file: Create a python list of fibers, where each index is a 2D np.array of
+    xyz values. To save a python list of np.arrays of varying lengths to a .npy file, use
+    `np.save('<file name>.npy', np.array(<list of fiber arrays>, dtype=object), allow_pickle=True)`.)
 
     - `“explicit_fiberset_index”`: The value (Integer) indicates which explicit index file to use.
 
@@ -1046,7 +1066,3 @@ fiber types can be simulated at the same location in the nerve cross-section wit
 .. include:: ../../../../config/templates/sim.json
    :code: javascript
 ```
-
-[f2]: https://chart.apis.google.com/chart?cht=tx&chl=V_{e}=(amplitude)*potentials
-[f3]: https://chart.apis.google.com/chart?cht=tx&chl=potentials=(weight_{1})*bases_{1}(x,y,z)%2B(weight_{2})*bases_{2}(x,y,z)
-[f4]: https://chart.apis.google.com/chart?cht=tx&chl=potentials=(1)*bases_{1}(x,y,z)%2B(-1)*bases_{2}(x,y,z)

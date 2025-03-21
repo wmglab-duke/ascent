@@ -11,16 +11,19 @@ default:
 
 workflow:
   rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
-      when: never
-    - if: $CI_COMMIT_REF_PROTECTED
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"   #run on mr
+  - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS   #don't run duplicate pipelines for MR
+    when: never
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH   #run on main
+  - if: $CI_PIPELINE_SOURCE == "push" && $CI_OPEN_MERGE_REQUESTS != "true"   #don't run on push if no MR for this branch
+    when: never
+  - if: $CI_COMMIT_REF_PROTECTED   #run on protected branches
+
 
 # Change pip's cache directory to be inside the project directory since we can
 # only cache local items.
 variables:
-  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PIP_CACHE_DIR: $CI_PROJECT_DIR/.cache/pip
 
 # Pip's cache doesn't store the python packages
 # https://pip.pypa.io/en/stable/topics/caching/
@@ -29,100 +32,100 @@ variables:
 # them in a virtualenv and cache it as well.
 
 stages: # List of stages for jobs, and their order of execution
-  - lint
-  - test
-  - deploy
+- lint
+- test
+- deploy
 
 cache:
   paths:
-    - .cache/pip
-    - venv/
+  - .cache/pip
+  - venv/
 
 before_script:
-  - python --version # For debugging
-  - pip install virtualenv
-  - virtualenv venv
-  - source venv/bin/activate
+- python --version   # For debugging
+- pip install virtualenv
+- virtualenv venv
+- source venv/bin/activate
 
 isort:
   stage: lint
   script:
-    - pip install isort
-    - isort --check-only config docs examples scripts src run tests
+  - pip install isort
+  - isort --check-only config docs examples scripts src run tests
 
 black:
   stage: lint
   script:
-    - pip install black
-    - black --check config docs examples scripts src run tests
+  - pip install black
+  - black --check config docs examples scripts src run tests
 
 flake8:
   stage: lint
   script:
-    - pip install flake8 flake8-eradicate flake8-simplify flake8-bugbear flake8-builtins flake8-comprehensions flake8-blind-except flake8-use-fstring
-    - flake8 --extend-ignore=T100,T101,T102 config docs examples scripts src run tests
+  - pip install flake8 flake8-eradicate flake8-simplify flake8-bugbear flake8-builtins flake8-comprehensions flake8-blind-except flake8-use-fstring
+  - flake8 --extend-ignore=T100,T101,T102 config docs examples scripts src run tests
 
 docstring_check:
   stage: lint
   script:
-    - pip install flake8 flake8-docstrings flake8-rst-docstrings darglint
-    - flake8 --select=D,DAR,RST config docs examples scripts src run
+  - pip install flake8 flake8-docstrings flake8-rst-docstrings darglint
+  - flake8 --select=D,DAR,RST config docs examples scripts src run
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 #Here should check that no DevelopmentError is thrown in repo
 dev_check:
   stage: lint
   script:
-    - ( ! grep "raise DevelopmentError" --include \*.py -r . )
-    - pip install flake8 flake8-fixme
-    - flake8 --select=T100,T101,T102 config docs examples scripts src run tests
+  - ( ! grep "raise DevelopmentError" --include \*.py -r . )
+  - pip install flake8 flake8-fixme
+  - flake8 --select=T100,T101,T102 config docs examples scripts src run tests
   rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+  - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
 
 #Run tests
 pytest:
   stage: test
   script:
-    - pip install -r requirements.txt
-    - pip install pytest pytest-cov
-    - apt-get update && apt-get -y install libgl1
-    - pytest --cov=src/ tests/
-    - coverage xml
+  - pip install -r requirements.txt
+  - pip install pytest pytest-cov
+  - apt-get update && apt-get -y install libgl1
+  - pytest --cov=src/ tests/
+  - coverage xml
 
 test_docs:
   stage: test
   script:
-    - pip install -U sphinx mock sphinx-rtd-theme
-    - pip install -Ur docs/rtd_requirements.txt
-    - cd docs/source; sphinx-build -W -b html . ../../public
+  - pip install -U sphinx mock sphinx-rtd-theme
+  - pip install -Ur docs/rtd_requirements.txt
+  - cd docs/source; sphinx-build -W -b html . ../../public
   except:
-    - master
+  - master
 
 compile_java:
   before_script:
-    - java -version
+  - java -version
   stage: test
   image: openjdk:8-jdk
   script:
-    - mkdir bin
-    - mkdir comsolplugins
-    - wget -q -O bin/json-20190722.jar https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar
-    - wget -qO- --header "PRIVATE-TOKEN:$COMSOL_JARS_TOKEN" "https://gitlab.oit.duke.edu/api/v4/projects/27633/repository/archive" | tar -xvz --strip-components 1 -C comsolplugins
-    - javac -classpath bin/json-20190722.jar:comsolplugins/* src/model/*.java -d bin
+  - mkdir bin
+  - mkdir comsolplugins
+  - wget -q -O bin/json-20190722.jar https://repo1.maven.org/maven2/org/json/json/20190722/json-20190722.jar
+  - wget -qO- --header "PRIVATE-TOKEN:$COMSOL_JARS_TOKEN" "https://gitlab.oit.duke.edu/api/v4/projects/27633/repository/archive" | tar -xvz --strip-components 1 -C comsolplugins
+  - javac -classpath bin/json-20190722.jar:comsolplugins/* src/model/*.java -d bin
   artifacts:
     untracked: true
 
 pages:
   stage: deploy
   script:
-    - pip install -U sphinx mock sphinx-rtd-theme
-    - pip install -Ur docs/rtd_requirements.txt
-    - cd docs/source; sphinx-build -W -b html . ../../public
+  - pip install -U sphinx mock sphinx-rtd-theme
+  - pip install -Ur docs/rtd_requirements.txt
+  - cd docs/source; sphinx-build -W -b html . ../../public
   artifacts:
     paths:
-      - public
+    - public
   only:
-    - master
+  - master

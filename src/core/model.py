@@ -378,7 +378,6 @@ class Model(Configurable, Saveable):
         if [bound[0] is None for bound in bounds].count(True) > 1 or [bound[1] is None for bound in bounds].count(
             True
         ) > 1:
-            self.throw(134)
             raise IncompatibleParametersError(
                 "Cuff configuration file has more than one condition with None for min or max. "
             )
@@ -456,7 +455,8 @@ class Model(Configurable, Saveable):
             raise IncompatibleParametersError(
                 "Cuff configuration file has no conditions that match the given parameters. "
             )
-        elif condition_match_count > 1:
+
+        if condition_match_count > 1:
             # conditions are not mutually exclusive in preset JSON file
             raise IncompatibleParametersError(
                 "Cuff configuration file has more than one condition that matches the given parameters. "

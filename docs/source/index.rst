@@ -8,20 +8,19 @@ This documentation is an adaptation and update of the supplements associated wit
 
 **Please check out the associated** `publication <https://doi.org/10.1371/journal.pcbi.1009285>`_ **in PLOS Computational Biology!**
 
-**Cite both the paper and the DOI for the release of the repository used for your work. We encourage you to clone the most recent commit of the repository.**
+**Cite both the ASCENT paper and the DOI for the release of the repository used for your work. If you use the neural recording feature, also cite the neural recording paper. We encourage you to clone the most recent commit of the repository.**
 
-* **Cite the paper:**
+* **Cite the ASCENT paper:**
 
-  .. details:: APA
-     :open:
+  .. tab:: APA
 
-     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2021). ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A pipeline for sample-specific computational modeling of electrical stimulation of peripheral nerves. PLOS Computational Biology, 17(9), e1009285. https://doi.org/10.1371/journal.pcbi.1009285
+    **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2021). ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A pipeline for sample-specific computational modeling of electrical stimulation of peripheral nerves. PLOS Computational Biology, 17(9), e1009285. https://doi.org/10.1371/journal.pcbi.1009285.
 
-  .. details:: MLA
+  .. tab:: MLA
 
-      Musselman, Eric D., et al. "ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves." PLOS Computational Biology, vol. 17, no. 9, Sept. 2021, p. e1009285. PLoS Journals, https://doi.org/10.1371/journal.pcbi.1009285.
+    Musselman, Eric D., et al. "ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves." PLOS Computational Biology, vol. 17, no. 9, Sept. 2021, p. e1009285. PLoS Journals, https://doi.org/10.1371/journal.pcbi.1009285.
 
-  .. details:: BibTeX
+  .. tab:: BibTeX
 
     .. code-block:: BibTeX
 
@@ -40,29 +39,59 @@ This documentation is an adaptation and update of the supplements associated wit
           journal = {{PLOS} Computational Biology}
         }
 
-* **Cite the code (use the DOI for the version of code used):** |doi|
+* **Cite the neural recording paper:**
 
-  .. details:: APA
-     :open:
+  .. tab:: APA
 
-     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2023). wmglab-duke/ascent: ASCENT v1.3.1 (v1.3.1) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.TBD.
+     Peña, E., Pelot, N. A., & Grill, W. M. (2024). Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters. PLoS computational biology, 20(3), e1011833. https://doi.org/10.1371/journal.pcbi.1011833.
 
-  .. details:: MLA
+  .. tab:: MLA
 
-      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.3.1. v1.3.1, Zenodo, 2023, doi:10.5281/ZENODO.TBD.
+      Peña, Edgar, Nicole A. Pelot, and Warren M. Grill. "Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters." PLoS computational biology 20.3 (2024): e1011833. https://doi.org/10.1371/journal.pcbi.1011833.
 
-
-  .. details:: BibTeX
+  .. tab:: BibTeX
 
     .. code-block:: BibTeX
 
-        @misc{https://doi.org/10.5281/zenodo.TBD,
-          doi = {10.5281/ZENODO.TBD},
-          url = {https://zenodo.org/record/TBD},
+        @article{Peña2024,
+          doi = {10.1371/journal.pcbi.1011833},
+          url = {https://doi.org/10.1371/journal.pcbi.1011833},
+          year = {2024},
+          month = mar,
+          publisher = {Public Library of Science ({PLoS})},
+          volume = {20},
+          number = {3},
+          pages = {e1011833},
+          author = {Edgar Peña and Nicole A. Pelot, and Warren M. Grill},
+          editor = {Kim T. Blackwell},
+          title = {Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters},
+          journal = {{PLOS} Computational Biology}
+        }
+
+* **Cite the code :**
+    Replace instances of <DOI> and <version> below with the DOI and version number of code used.
+    Latest release: |doi| (click to see all releases).
+
+  .. tab:: APA
+
+     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2025). wmglab-duke/ascent: ASCENT v<version> (v<version>) [Computer software]. Zenodo. https://doi.org/<DOI>.
+
+  .. tab:: MLA
+
+      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v<version>, Zenodo, 2025, doi:<DOI>.
+
+
+  .. tab:: BibTeX
+
+    .. code-block:: BibTeX
+
+        @misc{https://doi.org/<DOI>,
+          doi = {<DOI>},
+          url = {https://doi.org/<DOI>},
           author = {Musselman,  Eric D and Cariello,  Jake E and Grill,  Warren M and Pelot,  Nicole A},
-          title = {wmglab-duke/ascent: ASCENT v1.3.1},
+          title = {wmglab-duke/ascent: ASCENT v<version>},
           publisher = {Zenodo},
-          year = {2023},
+          year = {2025},
           copyright = {MIT License}
         }
 

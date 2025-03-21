@@ -10,6 +10,7 @@ https://github.com/wmglab-duke/ascent
 
 import os
 import time
+import warnings
 
 from src.core import MockSample
 from src.utils import Config, Configurable, SetupMode
@@ -20,6 +21,11 @@ def run(args):
 
     :param args: The command line arguments.
     """
+    warnings.warn(
+        "There is a known issue where the mock morphology generator will create \
+        nerve morphologies with areas slightly smaller than requested. A fix is in progress.",
+        stacklevel=2,
+    )
     start = time.time()
 
     # load mock sample configuration

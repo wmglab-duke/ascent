@@ -23,6 +23,7 @@ from json import JSONDecodeError
 
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 
 
 # %%Set up parser and top level args
@@ -225,11 +226,10 @@ def auto_compile(override: bool = False):
             print(exit_data.stderr)
             sys.exit("Error in compiling of NEURON files. Exiting...")
         os.chdir('..')
-        compiled = True
-    else:
-        print('skipped compile')
-        compiled = False
-    return compiled
+        return True
+
+    print('skipped compile')
+    return False
 
 
 def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind):
@@ -244,8 +244,7 @@ def get_diameter(my_inner_fiber_diam_key, my_inner_ind, my_fiber_ind):
         if item[0] == my_inner_ind and item[1] == my_fiber_ind:
             my_diameter = item[2]
             break
-        else:
-            continue
+
     if isinstance(my_diameter, list) and len(my_diameter) == 1:
         my_diameter = my_diameter[0]
 
@@ -480,6 +479,8 @@ def submit_fibers(submission_context, submission_data):
     sim_dir = os.path.join('n_sims')
     n_fibers = sum(len(v) for v in submission_data.values())
 
+    progress_bar = tqdm(total=n_fibers, dynamic_ncols=True, disable=args.verbose, desc='Fibers submitted')
+
     for sim_name, runfibers in submission_data.items():
         if args.verbose:
             print(f'\n\n################ {sim_name} ################\n\n')
@@ -493,8 +494,7 @@ def submit_fibers(submission_context, submission_data):
         if submission_context == 'cluster':
             cluster_submit(runfibers, sim_name, sim_path, start_path_base)
             ran_fibers += len(runfibers)
-            if not args.verbose:
-                print_progress_bar(ran_fibers, n_fibers, length=40, prefix=f'Fibers submitted: {ran_fibers}/{n_fibers}')
+            progress_bar.update(len(runfibers))
         else:
             if args.num_cpu is not None:
                 cpus = args.num_cpu
@@ -514,22 +514,9 @@ def submit_fibers(submission_context, submission_data):
             with multiprocessing.Pool(cpus) as p:
                 for x in runfibers:
                     x['verbose'] = args.verbose
-                if not args.verbose:
-                    print_progress_bar(
-                        0,
-                        len(runfibers),
-                        length=40,
-                        prefix='Sample {}, Model {}, Sim {}, n_sim {}:'.format(*sim_name.split('_')),  # noqa FS002
-                    )
                 # open pool instance, set up progress bar, and iterate over each job
-                for i, _ in enumerate(p.imap_unordered(local_submit, runfibers, 1)):
-                    if not args.verbose:
-                        print_progress_bar(
-                            i + 1,
-                            len(runfibers),
-                            length=40,
-                            prefix='Sample {}, Model {}, Sim {}, n_sim {}:'.format(*sim_name.split('_')),  # noqa FS002
-                        )
+                for _ in p.imap_unordered(local_submit, runfibers, 1):
+                    progress_bar.update(1)
             os.chdir("../..")
 
 

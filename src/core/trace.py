@@ -11,14 +11,13 @@ repository: https://github.com/wmglab-duke/ascent
 
 import random
 from copy import deepcopy
-from typing import List, Tuple, Union
 
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import pyclipper
 import pymunk
-from shapely.affinity import rotate, scale
+from shapely.affinity import affine_transform, rotate, scale
 from shapely.geometry import Point, Polygon
 from shapely.ops import nearest_points
 
@@ -44,12 +43,34 @@ class Trace:
         self.__int_points = None
         self.__min_circle = None
 
+        # Mutable tracker for affine transformations
+        self._transform_mat = np.eye(4).tolist()
+
         # add 0 as z value if only x and y given
         if np.shape(points)[1] == 2:
             points = np.append(points, np.zeros([len(points), 1]), 1)
 
         self.points = None  # must declare instance variable in __init__ at some point!
         self.append(points)
+
+    @property
+    def transform_matrix(self) -> list[list[float]]:
+        """Getter for transformation matrix property.
+
+        :return: Transformation matrix for trace.
+        """
+        return self._transform_mat
+
+    def set_transform_matrix(self, value):
+        """Setter for transformation matrix property.
+
+        :param value: Value for new transformation matrix.
+        """
+        self._transform_mat = value
+
+    def reset_transform(self):
+        """Reset the Trace transformation matrix property to identity."""
+        self._transform_mat = np.eye(4)
 
     # %% public, MUTATING methods
     def append(self, points):
@@ -133,7 +154,95 @@ class Trace:
             self.scale(1)
         self.points = np.flip(self.points, axis=0)  # set points to opencv orientation
 
-    def scale(self, factor: float = 1, center: Union[List[float], str] = 'centroid'):
+    @staticmethod
+    def get_shapely_affine(matrix: list[list[float]], return_ndim: int) -> list[float]:
+        """Convert 4x4 transformation matrix to shapely.affinity.affine_transform format.
+
+        https://shapely.readthedocs.io/en/stable/manual.html#shapely.affinity.affine_transform
+
+        :param matrix: Square (4x4) affine transformation matrix.
+        :param return_ndim: 2 for 2D (x,y) return matrix, 3 for 3d (x,y,z).
+        :raises NotImplementedError: return_ndim not supported.
+        :return: list of float parameters for affine_transform.
+        """
+        if return_ndim not in [2, 3]:
+            raise NotImplementedError(f"return_ndim not recognized as 2 or 3, received {return_ndim}")
+
+        np_mat = np.asarray(matrix)
+        if return_ndim == 2:
+            return [
+                np_mat[0, 0],
+                np_mat[0, 1],
+                np_mat[1, 0],
+                np_mat[1, 1],
+                np_mat[0, 3],
+                np_mat[1, 3],
+            ]
+        return [
+            np_mat[0, 0],
+            np_mat[0, 1],
+            np_mat[0, 2],
+            np_mat[1, 0],
+            np_mat[1, 1],
+            np_mat[1, 2],
+            np_mat[2, 0],
+            np_mat[2, 1],
+            np_mat[2, 2],
+            np_mat[0, 3],
+            np_mat[1, 3],
+            np_mat[2, 3],
+        ]
+
+    @staticmethod
+    def make_transform_matrix(angle: float, scale_factor: list[float], center: list[float]) -> np.ndarray:
+        """Construct transformation matrix to rotate, shift, and scale trace points.
+
+        Rotation and scaling will be performed after centering the points at the provided center.
+
+        :param angle: Counterclockwise xy-plane rotation in radians
+        :param scale_factor: List of (x, y, z) scaling factors
+        :param center: List of (x, y, z) center about which to apply rotation and scaling
+        :returns: 4x4 transformation matrix
+        """
+        # Assemble affine transformation matrix for each step
+        # Transformation matrices can be combined with left-side matrix multiplication
+        # Transformation steps:
+        # 1. Translate to center of points to origin (T_orig),
+        # 2. scale about origin (S),
+        # 3. rotate about origin (R),
+        # 4. translate to original center (T_center)
+        # Final transformation matrix is T_center*R*S*T_orig
+        center_mat = np.eye(4)
+        uncenter_mat = np.eye(4)
+        center_mat[: len(center), -1] = -1 * np.asarray(center)  # translates trace points center to origin
+        uncenter_mat[: len(center), -1] = np.asarray(center)  # translates trace points to original center
+        scale_mat = np.eye(4)
+        scale_mat[0, 0] = scale_factor[0]  # scale points by x factor
+        scale_mat[1, 1] = scale_factor[1]  # scale points by y factor
+        scale_mat[2, 2] = scale_factor[2]  # scale points by z factor
+        rot_mat = np.array(
+            [[np.cos(angle), -np.sin(angle), 0, 0], [np.sin(angle), np.cos(angle), 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+        )  # rotates points by angle
+
+        # Left-multiply to add subsequent steps
+        return np.dot(uncenter_mat, np.dot(rot_mat, np.dot(scale_mat, center_mat)))
+
+    def transform(self, transform_matrix: np.ndarray):
+        """Transform trace given 4x4 affine transformation matrix.
+
+        :param transform_matrix: 4x4 affine transformation matrix.
+        """
+        # Get the affine transformation matrix in Shapely affine_transform format
+        shapely_tfm = self.get_shapely_affine(transform_matrix, 3)
+        # Transform Shapely representation of Trace object
+        transformed_polygon: Polygon = affine_transform(self.polygon(), shapely_tfm)
+        # Set new trace points
+        self.points = None
+        self.append([list(coord[:2]) + [0] for coord in transformed_polygon.boundary.coords])
+        # Update transformation tracker with this matrix
+        self._transform_mat = np.dot(transform_matrix, self._transform_mat).tolist()
+
+    def scale(self, factor: float = 1, center: list[float] | str = 'centroid'):
         """Scales the trace by a given factor.
 
         :param factor: scaling factor to scale up by - multiply all points by a factor; [X 0 0; 0 Y 0; 0 0 Z]
@@ -143,16 +252,27 @@ class Trace:
         if isinstance(center, list):
             center = tuple(center)
         else:
-            if center not in ['centroid', 'center']:
+            # Same as Shapely internals for scale() origin argument
+            if center == 'centroid':
+                center = np.mean(self.points, axis=0)
+            elif center == 'center':
+                center = np.max(self.points, axis=0) + np.min(self.points, axis=0) / 2
+            else:
                 raise ValueError("Invalid scale center string.")
 
-        scaled_polygon: Polygon = scale(self.polygon(), *([factor] * 3), origin=center)
+        # Assemble affine transformation matrix
+        tfm_mat = self.make_transform_matrix(0, [factor, factor, 1], center)
+
+        # Actually do the scaling with Shapely, but equivalent to tfm_mat*self.points
+        scaled_polygon: Polygon = scale(self.polygon(), *([factor] * 3), origin=Point(center))
 
         self.points = None
         self.append([list(coord[:2]) + [0] for coord in scaled_polygon.boundary.coords])
+        # Append these transformations to transformation tracker with left multiplication
+        self._transform_mat = np.dot(tfm_mat, self._transform_mat).tolist()
         self.__update()
 
-    def rotate(self, angle: float, center: Union[List[float], str] = 'centroid'):
+    def rotate(self, angle: float, center: list[float] | str = 'centroid'):
         """Rotate the trace by a given angle.
 
         :param angle: rotates trace by radians CCW
@@ -162,13 +282,23 @@ class Trace:
         if isinstance(center, list):
             center = tuple(center)
         else:
-            if center not in ['centroid', 'center']:
+            # Same as Shapely internals for scale() origin argument
+            if center == 'centroid':
+                center = np.mean(self.points, axis=0)
+            elif center == 'center':
+                center = np.max(self.points, axis=0) + np.min(self.points, axis=0) / 2
+            else:
                 raise ValueError("Invalid scale center string.")
 
-        rotated_polygon: Polygon = rotate(self.polygon(), angle, origin=center, use_radians=True)
+        # Assemble affine transformation matrix
+        tfm_mat = self.make_transform_matrix(angle, [1, 1, 1], center)
+
+        rotated_polygon: Polygon = rotate(self.polygon(), angle, origin=Point(center), use_radians=True)
 
         self.points = None
         self.append([list(coord[:2]) + [0] for coord in rotated_polygon.boundary.coords])
+        # Append these transformations to transformation tracker with left multiplication
+        self._transform_mat = np.dot(tfm_mat, self._transform_mat).tolist()
         self.__update()
 
     def shift(self, vector):
@@ -181,9 +311,18 @@ class Trace:
         if np.shape(vector) != (3,):
             raise ValueError("Vector provided must be of shape (3) (i.e. 1-dim)")
 
+        # Assemble affine transformation matrix for each step
+        # Transformation steps:
+        # 1. Translate to center of points by the shift vector (T_shift),
+        # Final transformation matrix is T_shift
+        trans_mat = np.eye(4)
+        trans_mat[0:-1, -1] = vector
+
         # apply shift to each point
         vector = [float(item) for item in vector]
         self.points += vector
+        # Append these transformations to transformation tracker with left multiplication
+        self._transform_mat = np.dot(trans_mat, self._transform_mat)
 
         # required for mutating method
         self.__update()
@@ -202,7 +341,7 @@ class Trace:
         if mode == DownSampleMode.KEEP:
             pass  # nothing here; just showing the case for readability
         else:  # mode == DownSampleMode.REMOVE:
-            ii = [i for i in list(range(0, self.count())) if i not in ii]
+            ii = [i for i in list(range(self.count())) if i not in ii]
 
         self.points = self.points[ii, :]
 
@@ -241,7 +380,7 @@ class Trace:
         """
         return self.polygon().bounds
 
-    def random_points(self, count: int, buffer: float = 0, my_xy_seed: int = 123) -> List[Tuple[float]]:
+    def random_points(self, count: int, buffer: float = 0, my_xy_seed: int = 123) -> list[tuple[float]]:
         """Get random points within the trace.
 
         :param my_xy_seed: seed for random number generator
@@ -258,7 +397,7 @@ class Trace:
 
         min_x, min_y, max_x, max_y = trace_to_compare.polygon().bounds
 
-        points: List[Tuple[float]] = []
+        points: list[tuple[float]] = []
         random.seed(my_xy_seed)
 
         while len(points) < count:
@@ -287,7 +426,7 @@ class Trace:
         """
         return self.polygon().boundary.intersects(other.polygon().boundary)
 
-    def centroid(self) -> Tuple[float, float]:
+    def centroid(self) -> tuple[float, float]:
         """Get the centroid of the trace.
 
         :return: ellipse centroid as tuple: center --> (x, y)
@@ -322,7 +461,7 @@ class Trace:
         """
         return self.polygon().area
 
-    def min_distance(self, other: 'Trace') -> Union[float, tuple]:
+    def min_distance(self, other: 'Trace') -> float | tuple:
         """Find the minimum distance between this trace and another trace.
 
         :param other: Trace to find distance to
@@ -340,7 +479,7 @@ class Trace:
         """
         return self.polygon().boundary.hausdorff_distance(other.polygon().boundary)
 
-    def centroid_distance(self, other: 'Trace') -> Union[float, tuple]:
+    def centroid_distance(self, other: 'Trace') -> float | tuple:
         """Find the distance between the centroids of this trace and another trace.
 
         :param other: Trace to find distance to
@@ -447,14 +586,16 @@ class Trace:
 
         # add column of z-values (should all be the same)
         points = np.append(points, np.c_[self.points[:, 2]], axis=1)
+        trace = Trace(points)
+        trace.set_transform_matrix(self.transform_matrix)
 
-        return Trace(points)
+        return trace
 
     # %% output
     def plot(
         self,
         plot_format: str = 'k-',
-        color: Tuple[float, float, float, float] = None,
+        color: tuple[float, float, float, float] = None,
         ax: plt.Axes = None,
         linewidth=1,
         line_kws: dict = None,
@@ -542,7 +683,7 @@ class Trace:
         """
         return deepcopy(self)
 
-    def pymunk_poly(self) -> Tuple[pymunk.Body, pymunk.Poly]:
+    def pymunk_poly(self) -> tuple[pymunk.Body, pymunk.Poly]:
         """Generate pymunk Body and Poly objects for the Trace.
 
         :return: a body and polygon shape, rigid polygon
@@ -562,7 +703,7 @@ class Trace:
         shape.elasticity = 0.0  # they absorb all energy, i.e. they do not bounce
         return body, shape
 
-    def pymunk_segments(self, space: pymunk.Space) -> List[pymunk.Segment]:
+    def pymunk_segments(self, space: pymunk.Space) -> list[pymunk.Segment]:
         """Generate list of pymunk segment objects comprising a trace.
 
         :param space: pymunk space to add segments to
@@ -572,7 +713,7 @@ class Trace:
 
         points = np.vstack((copy.points, copy.points[0]))
 
-        segments: List[pymunk.Segment] = []
+        segments: list[pymunk.Segment] = []
 
         for first, second in zip(points[:-1], points[1:]):
             if np.array_equiv(first[:2], second[:2]):
@@ -587,171 +728,20 @@ class Trace:
             )
         return segments
 
-    # %% METHODS ADAPTED FROM: https://www.nayuki.io/res/smallest-enclosing-circle/smallestenclosingcircle-test.py
-
-    # Data conventions: A point is a pair of floats (x, y).
-    # A circle is a triple of floats (center x, center y, radius).
-
-    # Returns the smallest circle that encloses all the given points. Runs in expected O(n) time, randomized.
-    # Input: A sequence of pairs of floats or ints, e.g. [(0,5), (3.1,-2.7)].
-    # Output: A triple of floats representing a circle.
-    # Note: If 0 points are given, None is returned. If 1 point is given, a circle of radius 0 is returned.
-    #
-    # Initially: No boundary points known
-
     def make_circle(self):
         """Return the smallest circle that encloses all the given points.
 
         Runs in expected O(n) time, randomized.
         :return: A triple of floats representing a circle.
         """
-        # Convert to float and randomize order
-        shuffled = [(float(x), float(y)) for (x, y) in self.points[:, 0:2]]
-        random.shuffle(shuffled)
-
-        # Progressively add points to circle or recompute circle
-        c = None
-        for i, p in enumerate(shuffled):
-            if c is None or not self.is_in_circle(c, p):
-                c = self._make_circle_one_point(shuffled[: i + 1], p)
-        return c
-
-    def _make_circle_one_point(self, points, p):  # noqa: D102
-        """Return the smallest circle that encloses all the given points.
-
-        :param points: list of points
-        :param p: point for which to center circle
-        :return: circle enclosing all points centered on p
-        """
-        c = (p[0], p[1], 0.0)
-        for i, q in enumerate(points):
-            if not self.is_in_circle(c, q):
-                if c[2] == 0.0:
-                    c = self._make_diameter(p, q)
-                else:
-                    c = self._make_circle_two_points(points[: i + 1], p, q)
-        return c
-
-    # Two boundary points known
-    def _make_circle_two_points(self, points, p, q):  # noqa: D102
-        """Return the smallest circle that encloses all the given points.
-
-        :param points: list of points
-        :param p: point for which to center circle
-        :param q: point for which to center circle
-        :return: circle enclosing all points centered on p and q
-        """
-        circ = self._make_diameter(p, q)
-        left = None
-        right = None
-        px, py = p
-        qx, qy = q
-
-        # For each point not in the two-point circle
-        for r in points:
-            if self.is_in_circle(circ, r):
-                continue
-
-            # Form a circumcircle and classify it on left or right side
-            cross = self._cross_product(px, py, qx, qy, r[0], r[1])
-            c = self._make_circumcircle(p, q, r)
-            if c is None:
-                continue
-            elif cross > 0.0 and (
-                left is None
-                or self._cross_product(px, py, qx, qy, c[0], c[1])
-                > self._cross_product(px, py, qx, qy, left[0], left[1])
-            ):
-                left = c
-            elif cross < 0.0 and (
-                right is None
-                or self._cross_product(px, py, qx, qy, c[0], c[1])
-                < self._cross_product(px, py, qx, qy, right[0], right[1])
-            ):
-                right = c
-
-        # Select which circle to return
-        if left is None and right is None:
-            return circ
-        elif left is None:
-            return right
-        elif right is None:
-            return left
-        else:
-            return left if (left[2] <= right[2]) else right
-
-    @staticmethod
-    def _make_diameter(a, b):  # noqa: D102
-        """Return a circle that is tangent to both a and b.
-
-        :param a: point for which to center circle
-        :param b: point for which to center circle
-        :return: circle enclosing all points centered on a and b
-        """
-        cx = (a[0] + b[0]) / 2.0
-        cy = (a[1] + b[1]) / 2.0
-        r0 = np.math.hypot(cx - a[0], cy - a[1])
-        r1 = np.math.hypot(cx - b[0], cy - b[1])
-        return cx, cy, max(r0, r1)
-
-    @staticmethod
-    def _make_circumcircle(a, b, c):  # noqa: D102
-        """Use mathematical algorithm from Wikipedia: Circumscribed circle.
-
-        :param a: point a
-        :param b: point b
-        :param c: point c
-        :return: circumcircle
-        """
-        # Mathematical algorithm from Wikipedia: Circumscribed circle
-        ox = (min(a[0], b[0], c[0]) + max(a[0], b[0], c[0])) / 2.0
-        oy = (min(a[1], b[1], c[1]) + max(a[1], b[1], c[1])) / 2.0
-        ax = a[0] - ox
-        ay = a[1] - oy
-        bx = b[0] - ox
-        by = b[1] - oy
-        cx = c[0] - ox
-        cy = c[1] - oy
-        d = (ax * (by - cy) + bx * (cy - ay) + cx * (ay - by)) * 2.0
-        if d == 0.0:
-            return None
-        x = (
-            ox
-            + ((ax * ax + ay * ay) * (by - cy) + (bx * bx + by * by) * (cy - ay) + (cx * cx + cy * cy) * (ay - by)) / d
-        )
-        y = (
-            oy
-            + ((ax * ax + ay * ay) * (cx - bx) + (bx * bx + by * by) * (ax - cx) + (cx * cx + cy * cy) * (bx - ax)) / d
-        )
-        ra = np.math.hypot(x - a[0], y - a[1])
-        rb = np.math.hypot(x - b[0], y - b[1])
-        rc = np.math.hypot(x - c[0], y - c[1])
-        return x, y, max(ra, rb, rc)
-
-    @staticmethod
-    def is_in_circle(c, p):  # noqa: D102
-        """Return True if point p is in circle c.
-
-        :param c: circle
-        :param p: point
-        :return: True if point is in circle
-        """
-        multiplicative_epsilon = 1 + 1e-14
-        return c is not None and np.math.hypot(p[0] - c[0], p[1] - c[1]) <= c[2] * multiplicative_epsilon
-
-    @staticmethod
-    def _cross_product(x0, y0, x1, y1, x2, y2):  # noqa: D102
-        """Return twice the signed area of the triangle defined by (x0, y0), (x1, y1), (x2, y2).
-
-        :param x0: x coordinate of point 0
-        :param y0: y coordinate of point 0
-        :param x1: x coordinate of point 1
-        :param y1: y coordinate of point 1
-        :param x2: x coordinate of point 2
-        :param y2: y coordinate of point 2
-        :return: twice the signed area of the triangle defined by (x0, y0), (x1, y1), (x2, y2)
-        """
-        return (x1 - x0) * (y2 - y0) - (y1 - y0) * (x2 - x0)
+        points = [(float(x), float(y)) for (x, y) in self.points[:, 0:2]]
+        if len(points) < 2:
+            if len(points) == 1:
+                return points[0][0], points[0][1], 0.0
+            return None  # Maybe error if no points?
+        # OpenCV requires float32 input
+        (cx, cy), r = cv2.minEnclosingCircle(np.array(points).astype(np.float32))
+        return cx, cy, r
 
     # %% private utility methods
     def __update(self):

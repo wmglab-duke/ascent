@@ -7,7 +7,6 @@ import glob
 import json
 import os
 import warnings
-from typing import List
 
 import matplotlib.colorbar as cbar
 import matplotlib.colors as mplcolors
@@ -244,7 +243,10 @@ class _HeatmapPlotter:
                 warnings.warn(
                     'Missing fiber threshold, color will appear as missing color (defaults to red).', stacklevel=2
                 )
-                fiber_color_list.append(self.missing_color)
+                if self.mode in ['fibers', 'fibers_on_off']:
+                    fiber_color_list.append(self.missing_color)
+                else:
+                    fiber_color_list.append(None)
             elif self.mode == 'fibers':
                 fiber_color_list.append(_mapthresh(fiberthresh))
             elif self.mode == 'fibers_on_off':
@@ -316,11 +318,11 @@ class _HeatmapPlotter:
 
 def ap_loctime(  # noqa: C901
     query_object: Query,
-    n_sim_filter: List[int] = None,
+    n_sim_filter: list[int] = None,
     plot: bool = False,
     plot_distribution: bool = False,
     n_sim_label_override: str = None,
-    model_labels: List[str] = None,
+    model_labels: list[str] = None,
     save: bool = False,
     subplots=False,
     nodes_only=False,

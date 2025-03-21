@@ -13,7 +13,6 @@ import os
 import random
 import shutil
 import warnings
-from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -40,6 +39,7 @@ from src.utils import (
 )
 
 from .sample import Sample
+from .slide import Slide
 
 
 class FiberSet(Configurable, Saveable):
@@ -94,7 +94,7 @@ class FiberSet(Configurable, Saveable):
             self.z_mode: FiberZMode = [mode for mode in FiberZMode if str(mode).split('.')[-1] == fiber_z_mode_name][0]
         except KeyError:  # Backwards compatibility.
             # If fiber z mode doesn't exist in new position under Sim > fibers > z_parameters > mode,
-            # look for it where it use to be located (in model.json) in previous ascent versions
+            # look for it where it used to be located (in model.json) in previous ascent versions
             warnings.warn(
                 'No fiber_z mode specified in sim.json under "fibers" > "z_parameters" > "mode". '
                 'Proceeding with fiber_z mode from location in model.json.',
@@ -104,26 +104,47 @@ class FiberSet(Configurable, Saveable):
 
         # Generate fibers accordingly depending on fiber z mode.
         if self.z_mode == FiberZMode.EXTRUSION:
-            fibers_xy = self._generate_xy(sim_directory)
-            self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xy)
-            self.fibers = self._generate_longitudinal(fibers_xy, super_sample=super_sample)
-            self.plot_fibers_on_sample(sim_directory)
-
-        elif self.z_mode == FiberZMode.EXPLICIT:
-            fibers_xyz = self._generate_xyz(sim_directory)  # 3d fibers structure: (fiber #, z-index #, xyz-coordinates)
+            # 3d fibers structure: (fiber #, z-index #, xyz-coordinates)
             # Assigns fiber to fascicle mapping based on xy coordinates of first z-index.
             # We are able to do this because fibers must be contained within a single contiguous fascicle
             # (this is checked when loading fibers in load_explicit_coords function).
-            self.out_to_fib, self.out_to_in = self._generate_maps(fibers_xyz[:, 0, 0:2])
+            fibers_xy, (self.out_to_fib, self.out_to_in) = self._generate_xy(sim_directory)
+            self.fibers = self._generate_longitudinal(fibers_xy, super_sample=super_sample)
+
+        elif self.z_mode == FiberZMode.EXPLICIT:
+            # 3d fibers structure: (fiber #, z-index #, xyz-coordinates)
+            # Assigns fiber to fascicle mapping based on xy coordinates of first z-index.
+            # We are able to do this because fibers must be contained within a single contiguous fascicle
+            # (this is checked when loading fibers in load_explicit_coords function).
+            fibers_xyz, (self.out_to_fib, self.out_to_in) = self._generate_xyz(sim_directory)
             self.fibers = self._generate_3d_longitudinal(fibers_xyz, sim_directory, super_sample=super_sample)
-            # Save fibers_xy figure of first z-index (by default) to visually align with fiber-to-fascicle mapping.
-            self.plot_fibers_on_sample(sim_directory)
-            self.plot_3d_fibers_on_sample(self.fibers)  # Visualize 3D fibers
 
         else:
             raise NotImplementedError("That FiberZMode is not yet implemented.")
 
+        if self.xy_mode in [FiberXYMode.EXPLICIT_3D, FiberXYMode.EXPLICIT] and hasattr(self.sample, 'init_slides'):
+            # Validate fiber locations before transforming to final morphology if fibers were generated from
+            # untransformed morphology (FiberXYMode == EXPLICIT or EXPLICIT_3D) and Sample object has saved
+            # untransformed morphology (Sample.init_slides).
+            self.validate(self.sample.init_slides[0])
+            # Get fiber locations at each z position
+            fib_is_dict = isinstance(self.fibers[0], dict)
+            if fib_is_dict:
+                all_z_xy = [self.xy_points(z_index=zi) for zi in range(len(self.fibers[0]['fiber']))]
+            else:
+                all_z_xy = [self.xy_points(z_index=zi) for zi in range(len(self.fibers[0]))]
+            # Transform to final fiber locations and set new locations
+            tfm_z_xy = self.sample.point_transform(all_z_xy)[0]
+            for zi, z_xy in enumerate(tfm_z_xy):
+                self.set_xy_points(z_xy, z_index=zi)
+
         self.validate()
+
+        # Save fibers_xy figure of first z-index (by default) to visually align with fiber-to-fascicle mapping.
+        self.plot_fibers_on_sample(sim_directory)
+        if self.z_mode == FiberZMode.EXPLICIT:
+            self.plot_3d_fibers_on_sample(self.fibers)  # Visualize 3D fibers
+
         return self
 
     def write(self, mode: WriteMode, path: str):
@@ -174,30 +195,7 @@ class FiberSet(Configurable, Saveable):
 
         return self
 
-    def _generate_maps(self, fibers_xy) -> Tuple[List, List]:
-        """Generate the out-to-fascicle and out-to-inner maps.
-
-        :param fibers_xy: xy coordinates of the fibers
-        :return: mapping from fiber index to outer index and from outer index to inner index
-        """
-        out_to_fib = []
-        out_to_in = []
-
-        inner_ind = 0
-        for i, fascicle in enumerate(self.sample.slides[0].fascicles):
-            out_to_in.append([])
-            out_to_fib.append([])
-            for j, inner in enumerate(fascicle.inners):
-                out_to_in[i].append(inner_ind)
-                out_to_fib[i].append([])
-                inner_ind += 1
-                for q, fiber in enumerate(fibers_xy):
-                    if Point(fiber).within(inner.polygon()):
-                        out_to_fib[i][j].append(q)
-
-        return out_to_fib, out_to_in
-
-    def _generate_xy(self, sim_directory: str) -> np.ndarray:
+    def _generate_xy(self, sim_directory: str) -> tuple[np.ndarray, tuple[list, list]]:
         """Generate the xy coordinates of the fibers.
 
         :param sim_directory: The directory of the simulation.
@@ -213,10 +211,7 @@ class FiberSet(Configurable, Saveable):
 
         # perform implemented mode
         # error if an invalid mode is selected
-        if self.xy_mode not in FiberXYMode:
-            raise NotImplementedError("Invalid FiberXYMode in Sim.")
-
-        elif self.xy_mode == FiberXYMode.CENTROID:
+        if self.xy_mode == FiberXYMode.CENTROID:  # noqa: R505
             points = self.generate_centroid_points()
 
         elif self.xy_mode == FiberXYMode.UNIFORM_DENSITY:
@@ -231,29 +226,39 @@ class FiberSet(Configurable, Saveable):
         elif self.xy_mode == FiberXYMode.EXPLICIT:
             points = self.load_explicit_coords(sim_directory)
 
-        return points
+            # Map to untransformed morphology, else legacy map to transformed morphology
+            if hasattr(self.sample, 'init_slides'):
+                return points, self.sample.init_slides[0].map_points(points)
 
-    def _generate_xyz(self, sim_directory: str) -> np.ndarray:
+        else:
+            raise NotImplementedError("Invalid FiberXYMode in Sim.")
+
+        return points, self.sample.slides[0].map_points(points)
+
+    def _generate_xyz(self, sim_directory: str) -> tuple[np.ndarray, tuple[list, list]]:
         """Generate the xyz coordinates of the fibers.
 
         :param sim_directory: The directory of the simulation.
         :raises NotImplementedError: If a mode is not supported.
         :return: xy coordinates of the fibers
         """
-        if self.xy_mode == FiberXYMode.EXPLICIT_3D:
-            points = self.load_explicit_coords(sim_directory, is_3d=True)
-        else:
+        if self.xy_mode != FiberXYMode.EXPLICIT_3D:
             raise NotImplementedError(
                 "Invalid FiberXYMode in Sim. FiberXYMode must be 'EXPLICIT_3D' when FiberZMode is 'EXPLICIT'."
             )
-        return points
+        points = self.load_explicit_coords(sim_directory, is_3d=True)
+        # Map to untransformed morphology, else legacy map to transformed morphology
+        if hasattr(self.sample, 'init_slides'):
+            return points, self.sample.init_slides[0].map_points(points)
 
-    def generate_centroid_points(self):
+        return points, self.sample.slides[0].map_points(points)
+
+    def generate_centroid_points(self) -> list[tuple[float, float]]:
         """Create the xy coordinates of the fibers using the centroid of the fascicles.
 
         :return: xy coordinates of the fibers
         """
-        points: List[Tuple[float]] = []
+        points = []
         for fascicle in self.sample.slides[0].fascicles:
             for inner in fascicle.inners:
                 for _ in (0,):
@@ -272,7 +277,7 @@ class FiberSet(Configurable, Saveable):
         # case top_down is True: fetch target density and cap minimum axons if too low
         # case top_down is False: (i.e. bottom-up) find density from target number and smallest inner by area
         #   also cap the number at a maximum!
-        points: List[Tuple[float]] = []
+        points: list[tuple[float]] = []
         top_down: bool = self.search(Config.SIM, 'fibers', 'xy_parameters', 'top_down')
         if top_down:  # do top-down approach
             # get required parameters
@@ -314,7 +319,7 @@ class FiberSet(Configurable, Saveable):
         :param my_xy_seed: Seed for the random number generator.
         :return: The xy coordinates of the fibers.
         """
-        points: List[Tuple[float]] = []
+        points: list[tuple[float]] = []
         count: int = self.search(Config.SIM, 'fibers', 'xy_parameters', 'count')
         for fascicle in self.sample.slides[0].fascicles:
             for inner in fascicle.inners:
@@ -329,7 +334,7 @@ class FiberSet(Configurable, Saveable):
         :param buffer: Buffer required between the fibers and the fascicles.
         :return: The xy coordinates of the fibers.
         """
-        points: List[Tuple[float]] = []
+        points: list[tuple[float]] = []
         # get required parameters
         spoke_count: int = self.search(Config.SIM, 'fibers', 'xy_parameters', 'spoke_count')
         point_count: int = self.search(
@@ -382,7 +387,7 @@ class FiberSet(Configurable, Saveable):
                     )
 
                     # get scale vectors whose endpoints will be the desired points ([1:] to not include 0)
-                    scaled_vectors: List[LineString] = [
+                    scaled_vectors: list[LineString] = [
                         scale(trimmed_spoke_vector, *([factor] * 3), origin=trimmed_spoke_vector.coords[0])
                         for factor in np.linspace(0, 1, point_count + 2)[1:-1]
                     ]
@@ -398,7 +403,6 @@ class FiberSet(Configurable, Saveable):
         :param sim_directory: The directory of the simulation.
         :param is_3d: Boolean indicating if explicit file contains 3D xyz-coordinates. Optional. Default: False.
         :raises FileNotFoundError: If the coordinates file is not found.
-        :raises MorphologyError: If any of the coordinates fall outside of the fascicles.
         :return: The xy coordinates of the fibers.
         """
         explicit_index = self.search(Config.SIM, 'fibers', 'xy_parameters', 'explicit_fiberset_index')
@@ -427,28 +431,13 @@ class FiberSet(Configurable, Saveable):
         if is_3d:
             points = np.load(explicit_dest, allow_pickle=True)
             # Center 3D coordinates and extrude ends if provided coordinate lengths aren't long enough for model.
-            points = self.preprocess_3d_coords(points)
-        else:
-            with open(explicit_dest) as f:
-                # advance header
-                next(f)
-                reader = csv.reader(f, delimiter=" ")
-                points = [(float(row[0]), float(row[1])) for row in reader]
+            return self.preprocess_3d_coords(points)
 
-        # check that all fibers are within exactly one inner
-        for fiber in points:
-            shapely_obj = LineString if is_3d else Point
-            if not any(
-                shapely_obj(fiber).within(inner.polygon())
-                for fascicle in self.sample.slides[0].fascicles
-                for inner in fascicle.inners
-            ):
-                fiber_min = self.configs['sims']['fibers']['z_parameters']['min']
-                fiber_max = self.configs['sims']['fibers']['z_parameters']['max']
-                plotted_fiber = [fiber] if is_3d else [[fiber + (fiber_min,), fiber + (fiber_max,)]]
-                self.plot_3d_fibers_on_sample(plotted_fiber, title="Explicit fiber outside of nerve")
-                raise MorphologyError(f"Explicit fiber coordinate: {fiber} does not fall in an inner")
-        return points
+        with open(explicit_dest) as f:
+            # advance header
+            next(f)
+            reader = csv.reader(f, delimiter=" ")
+            return [(float(row[0]), float(row[1])) for row in reader]
 
     def preprocess_3d_coords(self, points):
         """Centers 3D coordinates in xy plane to align with nerve morphology and extrudes fibers if applicable.
@@ -473,7 +462,8 @@ class FiberSet(Configurable, Saveable):
                 'or the "fibers">"z_parameters">"min"/"max" variables in sim.json.)'
                 'Please extend your model length, or shorten your fibers.'
             )
-        elif np.any(provided_fiber_lengths < desired_fiber_length):
+
+        if np.any(provided_fiber_lengths < desired_fiber_length):
             warnings.warn(
                 'Extruding explicit 3d fiber lengths. At least one fiber is shorter than desired fiber length '
                 '(provided by either the proximal medium length by default, '
@@ -521,8 +511,7 @@ class FiberSet(Configurable, Saveable):
                 points[fib_idx][:, 2] = np.array(z_extruded)  # Update z points with extruded coordinates
 
         # Transform from list of arrays to 3D array now that all fibers are the same length
-        points = np.stack(points)
-        return points
+        return np.stack(points)
 
     def plot_fibers_on_sample(self, sim_directory, z_index=0):
         """Plot the xy coordinates of the fibers on the sample.
@@ -544,15 +533,18 @@ class FiberSet(Configurable, Saveable):
         else:
             plt.show()
 
-    def plot_3d_fibers_on_sample(self, fibers, title='3D Fibers on Nerve Sample'):
+    def plot_3d_fibers_on_sample(self, fibers, sample_slide=None, title='3D Fibers on Nerve Sample', color=None):
         """Plot the xyz coordinates of the fibers with inner outlines.
 
         :param fibers: The xyz coordinates of the fibers.
+        :param sample_slide: Sample on which to plot fibers.
         :param title: The plot title.
+        :param color: List or string of line color.
         """
+        if sample_slide is None:
+            sample_slide = self.sample.slides[0]
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
-        sample_slide = self.sample.slides[0]
         fascicles = sample_slide.fascicles
         # Plot all inner traces on 3D plot
         for fasc in fascicles:
@@ -566,12 +558,18 @@ class FiberSet(Configurable, Saveable):
             ax.plot(nerve_x, nerve_y, nerve_z, c='black', alpha=0.5)
 
         # Define fiber colormap and plot fibers
-        cmap = plt.cm.jet(np.linspace(0, 1, len(fibers)))
-        for i, fiber_data in enumerate(fibers):
+        n_fibers = len(fibers)
+        if color is not None:
+            if isinstance(color, list):
+                assert len(color) == n_fibers
+            else:
+                color = [color for _ in range(n_fibers)]
+        else:
+            color = plt.cm.jet(np.linspace(0, 1, len(fibers)))
+        for fiber_data, clr in zip(fibers, color):
             fiber = fiber_data['fiber'] if isinstance(fiber_data, dict) else fiber_data
-            fiber_color = cmap[i]  # Use the colormap to get the color
             x, y, z = zip(*fiber)
-            ax.plot(x, y, z, color=fiber_color)
+            ax.plot(x, y, z, color=clr)
 
         ax.set_xlabel('x (um)')
         ax.set_ylabel('y (um)')
@@ -640,7 +638,7 @@ class FiberSet(Configurable, Saveable):
             """
 
             def _build_z(inter_length, node_length, paranodal_length_1, paranodal_length_2, delta_z):
-                z_steps: List = []
+                z_steps: list = []
                 while (sum(z_steps) - model_length / 2) < 1:
                     z_steps += [
                         (node_length / 2) + (paranodal_length_1 / 2),
@@ -892,12 +890,10 @@ class FiberSet(Configurable, Saveable):
         )
 
         if myelinated and not super_sample:  # MYELINATED
-            fibers = generate_z_myelinated(diams)
+            return generate_z_myelinated(diams)
 
-        else:  # UNMYELINATED
-            fibers = generate_z_unmyel(diams)
-
-        return fibers
+        # else UNMYELINATED
+        return generate_z_unmyel(diams)
 
     def _generate_3d_longitudinal(  # noqa: C901
         self, fibers_xyz: np.ndarray, sim_directory: str, super_sample: bool = False
@@ -1101,28 +1097,46 @@ class FiberSet(Configurable, Saveable):
         assert model_length >= fiber_length, f'proximal length: ({model_length}) < fiber length: ({fiber_length})'
         return fiber_length, model_length
 
-    def validate(self):
+    def validate(self, slide: Slide = None):
         """Check to ensure fiberset is valid.
 
+        :param slide: slide to validate against. If None, Fiberset.sample.slides[0] will be used.
         :raises MorphologyError: if fiber points are too close to an inner boundary.
         """
+        if slide is None:
+            slide = self.sample.slides[0]
         # check that all fibers are inside inners, accounting for trace buffer
-        all_inners = [inner.deepcopy() for fascicle in self.sample.slides[0].fascicles for inner in fascicle.inners]
+        all_inners = [inner.deepcopy() for fascicle in slide.fascicles for inner in fascicle.inners]
+        if len(all_inners) == 0:
+            all_inners = [fascicle.outer.deepcopy() for fascicle in slide.fascicles]
         if self.xy_mode != FiberXYMode.CENTROID:
             buffer: float = self.search(Config.SIM, 'fibers', 'xy_trace_buffer')
-            [inner.offset(distance=-buffer) for inner in all_inners]
+            for inner in all_inners:
+                inner.offset(distance=-buffer)  # offset is a mutating function
         else:
             warnings.warn("Ignoring xy_trace_buffer since xy_mode is centroid", stacklevel=2)
+
+        # Check that fibers are within exactly one inner
         allpoly = unary_union([inner.polygon().buffer(0) for inner in all_inners])
-        # I would make this a list of boolean values True, if invalid, False if not, then np.any check after
         invalid_fibers = []
         for fiber in self.fibers:
             fib_data = fiber['fiber'] if isinstance(fiber, dict) else fiber
-            if not all(Point(p).within(allpoly) for p in fib_data):
-                invalid_fibers.append(fib_data)
+            if self.z_mode == FiberZMode.EXTRUSION:
+                if not Point(fib_data[0]).within(allpoly):
+                    invalid_fibers.append(fib_data)
+            else:
+                if not all(Point(p).within(allpoly) for p in fib_data):
+                    invalid_fibers.append(fib_data)
 
-        if np.any(invalid_fibers):
-            self.plot_3d_fibers_on_sample(invalid_fibers, title="Invalid fibers too close to inner boundaries")
+        if len(invalid_fibers) > 0:
+            fibs = self.fibers + invalid_fibers
+            clrs = ['blue' for _ in self.fibers] + ['red' for _ in invalid_fibers]
+            self.plot_3d_fibers_on_sample(
+                fibs,
+                sample_slide=slide,
+                title="Invalid fibers too close to or intersects with inner boundaries",
+                color=clrs,
+            )
             raise MorphologyError(
                 'Fiber points were detected too close to an inner boundary (as defined by xy_trace_buffer in SIM),'
             )
@@ -1141,5 +1155,22 @@ class FiberSet(Configurable, Saveable):
 
         if split_xy:
             return list(zip(*points))[0], list(zip(*points))[1]
+
+        return points
+
+    def set_xy_points(self, xy_points, z_index=0):
+        """Set the xy points of the fibers.
+
+        This function is only called when FiberXYMode is EXPLICIT or EXPLICIT_3D. Fiber locations will be placed
+        on the untransformed sample morphology, then transformed to follow the fascicle deformation, then set again
+        in this function.
+
+        :param xy_points: 2D array of xy points to set. First dimension must equal len(FiberSet.fibers)
+        :param z_index: Set xy points at this z index. Wouldn't affect extrusion models. Optional.
+        """
+        if isinstance(self.fibers[0], dict):
+            for f, (x, y) in zip(self.fibers, xy_points):
+                f['fiber'][z_index] = (x, y, f['fiber'][z_index][2])
         else:
-            return points
+            for f, (x, y) in zip(self.fibers, xy_points):
+                f[z_index] = (x, y, f[z_index][2])

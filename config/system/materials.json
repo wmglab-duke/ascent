@@ -1,203 +1,203 @@
 {
   "conductivities": {
-    "silicone": {
-      "value": "10^(-12)",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Callister WD, Rethwisch DG. Fundamentals Of Material Science and Engineering An Intergrated Approach. 2012. "
-      }
-    },
-    "platinum": {
-      "value": "9.43*10^6",
-      "unit": "[S/m]",
-      "references": {
-        "1": "de Podesta M, Laboratory NP, UK. Understanding the Properties of Matter. Understanding the Properties of Matter. 1996."
-      }
-    },
-    "endoneurium": {
-      "value": "anisotropic",
-      "sigma_x": "1/6",
-      "sigma_y": "1/6",
-      "sigma_z": "1/1.75",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Ranck JB, BeMent SL. The specific impedance of the dorsal columns of cat: An anisotropic medium. Exp Neurol. 1965",
-        "2": "Pelot NA, Behrend CE, Grill WM. On the parameters used in finite element modeling of compound peripheral nerves. J Neural Eng. 2019"
-      }
-    },
-    "epineurium": {
-      "value": "1/6.3",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Pelot NA, Behrend CE, Grill WM. Modeling the response of small myelinated axons in a compound nerve to kilohertz  frequency signals. J Neural Eng. 2017",
-        "2": "Grill WM, Mortimer TJ. Electrical properties of implant encapsulation tissue. Ann Biomed Eng. 1994",
-        "3": "Stolinski C. Structure and composition of the outer connective tissue sheaths of peripheral nerve. J Anat [Internet]. 1995"
-      }
-    },
-    "muscle": {
-      "value": "anisotropic",
-      "sigma_x": ".086",
-      "sigma_y": ".086",
-      "sigma_z": ".35",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Gielen FLH, Wallinga-de Jonge W, Boon KL. Electrical conductivity of skeletal muscle tissue: Experimental results from different muscles in vivo. Med Biol Eng Comput. 1984"
-      }
-    },
-    "fat": {
-      "value": "1/30",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Geddes LA, Baker LE. The specific resistance of biological material—A compendium of data for the biomedical engineer and physiologist. Med Biol Eng. 1967"
-      }
-    },
-    "encapsulation": {
-      "value": "1/6.3",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Grill WM, Mortimer TJ. Electrical properties of implant encapsulation tissue. Ann Biomed Eng. 1994"
-      }
-    },
-    "saline": {
-      "value": "1.76",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Horch K. Neuroprosthetics: Theory and practice: Second edition. 2017"
-      }
-    },
-    "weerasuriya_perineurium_DC": {
-      "value": "1/1149",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Pelot NA, Behrend CE, Grill WM. On the parameters used in finite element modeling of compound peripheral nerves. J Neural Eng. 2019",
-        "2": "Weerasuriya A, Spangler RA, Rapoport SI, Taylor RE. AC impedance of the perineurium of the frog sciatic nerve. Biophys J. 1984"
-      }
-    },
-    "bucksot_2019_endo": {
-      "value": "anisotropic",
-      "sigma_x": ".08",
-      "sigma_y": ".08",
-      "sigma_z": ".5",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Bucksot JE, Wells AJ, Rahebi KC, Sivaji V, Romero-Ortega M, Kilgard MP, et al. Flat electrode contacts for vagus nerve stimulation. PLoS One. 2019"
-      }
-    },
-    "bucksot_2019_perineurium_DC": {
-      "value": "0.00336",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Bucksot JE, Wells AJ, Rahebi KC, Sivaji V, Romero-Ortega M, Kilgard MP, et al. Flat electrode contacts for vagus nerve stimulation. PLoS One. 2019"
-      }
-    },
-    "bucksot_2019_epineurium": {
-      "value": "0.008",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Bucksot JE, Wells AJ, Rahebi KC, Sivaji V, Romero-Ortega M, Kilgard MP, et al. Flat electrode contacts for vagus nerve stimulation. PLoS One. 2019"
-      }
-    },
-    "bucksot_2019_saline": {
-      "value": "2",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Bucksot JE, Wells AJ, Rahebi KC, Sivaji V, Romero-Ortega M, Kilgard MP, et al. Flat electrode contacts for vagus nerve stimulation. PLoS One. 2019"
-      }
-    },
-    "bucksot_2019_fat": {
-      "value": "0.04",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Bucksot JE, Wells AJ, Rahebi KC, Sivaji V, Romero-Ortega M, Kilgard MP, et al. Flat electrode contacts for vagus nerve stimulation. PLoS One. 2019"
-      }
-    },
-    "arle_2016_scar": {
-      "value": "0.03",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Grill WM, Mortimer TJ. Electrical properties of implant encapsulation tissue. Ann Biomed Eng. 1994"
-      }
-    },
     "arle_2016_endoneurium": {
-      "value": "anisotropic",
+      "references": {
+        "1": "Arle JE, Carlson KW, Mei L. Investigation of mechanisms of vagus nerve stimulation for seizure using finite element modeling. Epilepsy Res. 2016"
+      },
       "sigma_x": "0.08",
       "sigma_y": "0.08",
       "sigma_z": "0.5",
       "unit": "[S/m]",
-      "references": {
-        "1": "Arle JE, Carlson KW, Mei L. Investigation of mechanisms of vagus nerve stimulation for seizure using finite element modeling. Epilepsy Res. 2016"
-      }
-    },
-    "arle_2016_platinum": {
-      "value": "107",
-      "unit": "[S/m]",
-      "references": {
-        "1": "Arle JE, Carlson KW, Mei L. Investigation of mechanisms of vagus nerve stimulation for seizure using finite element modeling. Epilepsy Res. 2016"
-      }
+      "value": "anisotropic"
     },
     "arle_2016_epineurium": {
-      "value": "0.054",
-      "unit": "[S/m]",
       "references": {
         "1": "Arle JE, Carlson KW, Mei L. Investigation of mechanisms of vagus nerve stimulation for seizure using finite element modeling. Epilepsy Res. 2016"
-      }
+      },
+      "unit": "[S/m]",
+      "value": "0.054"
     },
     "arle_2016_fat": {
-      "value": "0.04",
-      "unit": "[S/m]",
       "references": {
         "1": "Veltink PH, van Veen BK, Struijk JJ, Holsheimer J, Boom HB. A modeling study of nerve fascicle stimulation. IEEE Trans Biomed Eng. 1989"
-      }
-    },
-    "helmers_2012_perineurium": {
-      "value": "0.01",
+      },
       "unit": "[S/m]",
-      "note": "other source has 0.00336",
+      "value": "0.04"
+    },
+    "arle_2016_platinum": {
       "references": {
-        "1": "Veltink PH, van Veen BK, Struijk JJ, Holsheimer J, Boom HB. A modeling study of nerve fascicle stimulation. IEEE Trans Biomed Eng. 1989"
-      }
-    },
-    "helmers_2012_perineurium_2": {
-      "value": "0.00336",
+        "1": "Arle JE, Carlson KW, Mei L. Investigation of mechanisms of vagus nerve stimulation for seizure using finite element modeling. Epilepsy Res. 2016"
+      },
       "unit": "[S/m]",
-      "note": "other source has 0.01",
+      "value": "107"
+    },
+    "arle_2016_scar": {
       "references": {
-        "1": "Goodall E V, Kosterman LM, Holsheimer J, Struijk JJ. Modeling study of activation and propagation delays during stimulation of peripheral nerve fibers with a tripolar cuff electrode. IEEE Trans Rehabil Eng. 1995"
-      }
-    },
-    "helmers_2012_epineurium": {
-      "value": "0.1",
+        "1": "Grill WM, Mortimer TJ. Electrical properties of implant encapsulation tissue. Ann Biomed Eng. 1994"
+      },
       "unit": "[S/m]",
-      "note": "other source has 0.008",
+      "value": "0.03"
+    },
+    "bucksot_2019_endo": {
       "references": {
-        "1": "Veltink PH, van Veen BK, Struijk JJ, Holsheimer J, Boom HB. A modeling study of nerve fascicle stimulation. IEEE Trans Biomed Eng. 1989"
-      }
-    },
-    "helmers_2012_epineurium_2": {
-      "value": "0.008",
+        "1": "Bucksot JE, Wells AJ, Rahebi KC, Sivaji V, Romero-Ortega M, Kilgard MP, et al. Flat electrode contacts for vagus nerve stimulation. PLoS One. 2019"
+      },
+      "sigma_x": ".08",
+      "sigma_y": ".08",
+      "sigma_z": ".5",
       "unit": "[S/m]",
-      "note": "other source has 0.1",
+      "value": "anisotropic"
+    },
+    "bucksot_2019_epineurium": {
       "references": {
-        "1": "Goodall E V, Kosterman LM, Holsheimer J, Struijk JJ. Modeling study of activation and propagation delays during stimulation of peripheral nerve fibers with a tripolar cuff electrode. IEEE Trans Rehabil Eng. 1995"
-      }
-    },
-    "saline_test_high_conductivity": {
-      "value": "10",
+        "1": "Bucksot JE, Wells AJ, Rahebi KC, Sivaji V, Romero-Ortega M, Kilgard MP, et al. Flat electrode contacts for vagus nerve stimulation. PLoS One. 2019"
+      },
       "unit": "[S/m]",
-      "reference": "NONE"
+      "value": "0.008"
+    },
+    "bucksot_2019_fat": {
+      "references": {
+        "1": "Bucksot JE, Wells AJ, Rahebi KC, Sivaji V, Romero-Ortega M, Kilgard MP, et al. Flat electrode contacts for vagus nerve stimulation. PLoS One. 2019"
+      },
+      "unit": "[S/m]",
+      "value": "0.04"
+    },
+    "bucksot_2019_perineurium_DC": {
+      "references": {
+        "1": "Bucksot JE, Wells AJ, Rahebi KC, Sivaji V, Romero-Ortega M, Kilgard MP, et al. Flat electrode contacts for vagus nerve stimulation. PLoS One. 2019"
+      },
+      "unit": "[S/m]",
+      "value": "0.00336"
+    },
+    "bucksot_2019_saline": {
+      "references": {
+        "1": "Bucksot JE, Wells AJ, Rahebi KC, Sivaji V, Romero-Ortega M, Kilgard MP, et al. Flat electrode contacts for vagus nerve stimulation. PLoS One. 2019"
+      },
+      "unit": "[S/m]",
+      "value": "2"
+    },
+    "encapsulation": {
+      "references": {
+        "1": "Grill WM, Mortimer TJ. Electrical properties of implant encapsulation tissue. Ann Biomed Eng. 1994"
+      },
+      "unit": "[S/m]",
+      "value": "1/6.3"
+    },
+    "endoneurium": {
+      "references": {
+        "1": "Ranck JB, BeMent SL. The specific impedance of the dorsal columns of cat: An anisotropic medium. Exp Neurol. 1965",
+        "2": "Pelot NA, Behrend CE, Grill WM. On the parameters used in finite element modeling of compound peripheral nerves. J Neural Eng. 2019"
+      },
+      "sigma_x": "1/6",
+      "sigma_y": "1/6",
+      "sigma_z": "1/1.75",
+      "unit": "[S/m]",
+      "value": "anisotropic"
     },
     "endoneurium_test_high_conductivity": {
-      "value": "anisotropic",
+      "reference": "NONE",
       "sigma_x": "1/6",
       "sigma_y": "1/6",
       "sigma_z": "2",
       "unit": "[S/m]",
-      "reference": "NONE"
+      "value": "anisotropic"
+    },
+    "epineurium": {
+      "references": {
+        "1": "Pelot NA, Behrend CE, Grill WM. Modeling the response of small myelinated axons in a compound nerve to kilohertz  frequency signals. J Neural Eng. 2017",
+        "2": "Grill WM, Mortimer TJ. Electrical properties of implant encapsulation tissue. Ann Biomed Eng. 1994",
+        "3": "Stolinski C. Structure and composition of the outer connective tissue sheaths of peripheral nerve. J Anat [Internet]. 1995"
+      },
+      "unit": "[S/m]",
+      "value": "1/6.3"
+    },
+    "fat": {
+      "references": {
+        "1": "Geddes LA, Baker LE. The specific resistance of biological material\u2014A compendium of data for the biomedical engineer and physiologist. Med Biol Eng. 1967"
+      },
+      "unit": "[S/m]",
+      "value": "1/30"
+    },
+    "helmers_2012_epineurium": {
+      "note": "other source has 0.008",
+      "references": {
+        "1": "Veltink PH, van Veen BK, Struijk JJ, Holsheimer J, Boom HB. A modeling study of nerve fascicle stimulation. IEEE Trans Biomed Eng. 1989"
+      },
+      "unit": "[S/m]",
+      "value": "0.1"
+    },
+    "helmers_2012_epineurium_2": {
+      "note": "other source has 0.1",
+      "references": {
+        "1": "Goodall E V, Kosterman LM, Holsheimer J, Struijk JJ. Modeling study of activation and propagation delays during stimulation of peripheral nerve fibers with a tripolar cuff electrode. IEEE Trans Rehabil Eng. 1995"
+      },
+      "unit": "[S/m]",
+      "value": "0.008"
+    },
+    "helmers_2012_perineurium": {
+      "note": "other source has 0.00336",
+      "references": {
+        "1": "Veltink PH, van Veen BK, Struijk JJ, Holsheimer J, Boom HB. A modeling study of nerve fascicle stimulation. IEEE Trans Biomed Eng. 1989"
+      },
+      "unit": "[S/m]",
+      "value": "0.01"
+    },
+    "helmers_2012_perineurium_2": {
+      "note": "other source has 0.01",
+      "references": {
+        "1": "Goodall E V, Kosterman LM, Holsheimer J, Struijk JJ. Modeling study of activation and propagation delays during stimulation of peripheral nerve fibers with a tripolar cuff electrode. IEEE Trans Rehabil Eng. 1995"
+      },
+      "unit": "[S/m]",
+      "value": "0.00336"
+    },
+    "muscle": {
+      "references": {
+        "1": "Gielen FLH, Wallinga-de Jonge W, Boon KL. Electrical conductivity of skeletal muscle tissue: Experimental results from different muscles in vivo. Med Biol Eng Comput. 1984"
+      },
+      "sigma_x": ".086",
+      "sigma_y": ".086",
+      "sigma_z": ".35",
+      "unit": "[S/m]",
+      "value": "anisotropic"
+    },
+    "platinum": {
+      "references": {
+        "1": "de Podesta M, Laboratory NP, UK. Understanding the Properties of Matter. Understanding the Properties of Matter. 1996."
+      },
+      "unit": "[S/m]",
+      "value": "9.43*10^6"
     },
     "platinum_low_test": {
-      "value": "4.715*10^6",
+      "reference": "NONE",
       "unit": "[S/m]",
-      "reference": "NONE"
+      "value": "4.715*10^6"
+    },
+    "saline": {
+      "references": {
+        "1": "Horch K. Neuroprosthetics: Theory and practice: Second edition. 2017"
+      },
+      "unit": "[S/m]",
+      "value": "1.76"
+    },
+    "saline_test_high_conductivity": {
+      "reference": "NONE",
+      "unit": "[S/m]",
+      "value": "10"
+    },
+    "silicone": {
+      "references": {
+        "1": "Callister WD, Rethwisch DG. Fundamentals Of Material Science and Engineering An Intergrated Approach. 2012. "
+      },
+      "unit": "[S/m]",
+      "value": "10^(-12)"
+    },
+    "weerasuriya_perineurium_DC": {
+      "references": {
+        "1": "Pelot NA, Behrend CE, Grill WM. On the parameters used in finite element modeling of compound peripheral nerves. J Neural Eng. 2019",
+        "2": "Weerasuriya A, Spangler RA, Rapoport SI, Taylor RE. AC impedance of the perineurium of the frog sciatic nerve. Biophys J. 1984"
+      },
+      "unit": "[S/m]",
+      "value": "1/1149"
     }
   }
 }

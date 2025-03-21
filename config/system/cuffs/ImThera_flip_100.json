@@ -1,86 +1,88 @@
 {
+  "angle_to_contacts_deg": 180,
   "code": "ITI",
+  "expandable": true,
+  "fixed_point": "clockwise_end",
   "instances": [
     {
-      "type": "CuffFill_Primitive",
-      "label": "ImThera Cuff Fill",
       "def": {
+        "Center": "Center_IT",
+        "L": "L_IT+2*Thk_fill_IT",
         "Radius": "R_out_ITF+Thk_fill_IT",
         "Thk": "Thk_fill_IT",
-        "L": "L_IT+2*Thk_fill_IT",
-        "Center": "Center_IT",
         "x_shift": "0",
         "y_shift": "0"
       },
+      "label": "ImThera Cuff Fill",
       "materials": [
         {
           "info": "fill",
           "label_index": 0
         }
-      ]
+      ],
+      "type": "CuffFill_Primitive"
     },
     {
-      "type": "TubeCuff_Primitive",
-      "label": "ImThera Cuff",
       "def": {
-        "type": "TubeCuff_Primitive",
-        "label": "ImThera Cuff",
-        "N_holes": "N_holes_ITI",
-        "Tube_theta": "Theta_ITI",
+        "Buffer_hole": "Buffer_hole_ITI",
         "Center": "Center_IT",
+        "D_hole": "D_hole_ITI",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_ITI",
+        "N_holes": "N_holes_ITI",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_ITI",
         "R_in": "R_in_ITI",
         "R_out": "R_out_ITI",
-        "Tube_L": "L_IT",
         "Rot_def": "Rot_def_ITI",
-        "D_hole": "D_hole_ITI",
-        "Buffer_hole": "Buffer_hole_ITI",
-        "L_holecenter_cuffseam": "L_holecenter_cuffseam_ITI",
-        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_ITI"
+        "Tube_L": "L_IT",
+        "Tube_theta": "Theta_ITI",
+        "label": "ImThera Cuff",
+        "type": "TubeCuff_Primitive"
       },
+      "label": "ImThera Cuff",
       "materials": [
         {
           "info": "insulator",
           "label_index": 2
         }
-      ]
+      ],
+      "type": "TubeCuff_Primitive"
     },
     {
-      "type": "TubeCuff_Primitive",
-      "label": "ImThera Furl",
       "def": {
-        "N_holes": "N_holes_ITF",
-        "Tube_theta": "Theta_ITF",
+        "Buffer_hole": "Buffer_hole_ITF",
         "Center": "Center_IT",
+        "D_hole": "D_hole_ITF",
+        "L_holecenter_cuffseam": "L_holecenter_cuffseam_ITF",
+        "N_holes": "N_holes_ITF",
+        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_ITF",
         "R_in": "R_in_ITF",
         "R_out": "R_out_ITF",
-        "Tube_L": "L_IT",
         "Rot_def": "Rot_def_ITF",
-        "D_hole": "D_hole_ITF",
-        "Buffer_hole": "Buffer_hole_ITF",
-        "L_holecenter_cuffseam": "L_holecenter_cuffseam_ITF",
-        "Pitch_holecenter_holecenter": "Pitch_holecenter_holecenter_ITF"
+        "Tube_L": "L_IT",
+        "Tube_theta": "Theta_ITF"
       },
+      "label": "ImThera Furl",
       "materials": [
         {
           "info": "insulator",
           "label_index": 2
         }
-      ]
+      ],
+      "type": "TubeCuff_Primitive"
     },
     {
-      "type": "CircleContact_Primitive",
+      "def": {
+        "Center": "Center_IT+length_contactcenter_contactcenter_ITC",
+        "Circle_def": "Round_def_ITC",
+        "Circle_diam": "diam_contact_ITC",
+        "Circle_recess": "Recess_ITC",
+        "Circle_thk": "Contact_depth_ITC",
+        "L": "L_IT",
+        "Overshoot": "Overshoot_ITC",
+        "R_in": "R_in_ITI",
+        "Rotation_angle": "ang_cuffseam_contactcenter_ITC"
+      },
       "label": "ImThera Contact 1",
-      "def": {
-        "Circle_recess": "Recess_ITC",
-        "Rotation_angle": "ang_cuffseam_contactcenter_ITC",
-        "Center": "Center_IT+length_contactcenter_contactcenter_ITC",
-        "Circle_def": "Round_def_ITC",
-        "R_in": "R_in_ITI",
-        "Circle_thk": "Contact_depth_ITC",
-        "Overshoot": "Overshoot_ITC",
-        "Circle_diam": "diam_contact_ITC",
-        "L": "L_IT"
-      },
       "materials": [
         {
           "info": "conductor",
@@ -90,22 +92,22 @@
           "info": "recess",
           "label_index": 2
         }
-      ]
+      ],
+      "type": "CircleContact_Primitive"
     },
     {
-      "type": "CircleContact_Primitive",
+      "def": {
+        "Center": "Center_IT",
+        "Circle_def": "Round_def_ITC",
+        "Circle_diam": "diam_contact_ITC",
+        "Circle_recess": "Recess_ITC",
+        "Circle_thk": "Contact_depth_ITC",
+        "L": "L_IT",
+        "Overshoot": "Overshoot_ITC",
+        "R_in": "R_in_ITI",
+        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+ang_contactcenter_contactcenter_ITC [deg]"
+      },
       "label": "ImThera Contact 2",
-      "def": {
-        "Circle_recess": "Recess_ITC",
-        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+ang_contactcenter_contactcenter_ITC [deg]",
-        "Center": "Center_IT",
-        "Circle_def": "Round_def_ITC",
-        "R_in": "R_in_ITI",
-        "Circle_thk": "Contact_depth_ITC",
-        "Overshoot": "Overshoot_ITC",
-        "Circle_diam": "diam_contact_ITC",
-        "L": "L_IT"
-      },
       "materials": [
         {
           "info": "conductor",
@@ -115,22 +117,22 @@
           "info": "recess",
           "label_index": 2
         }
-      ]
+      ],
+      "type": "CircleContact_Primitive"
     },
     {
-      "type": "CircleContact_Primitive",
-      "label": "ImThera Contact 3",
       "def": {
-        "Circle_recess": "Recess_ITC",
-        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+2*ang_contactcenter_contactcenter_ITC [deg]",
         "Center": "Center_IT-length_contactcenter_contactcenter_ITC",
         "Circle_def": "Round_def_ITC",
-        "R_in": "R_in_ITI",
-        "Circle_thk": "Contact_depth_ITC",
-        "Overshoot": "Overshoot_ITC",
         "Circle_diam": "diam_contact_ITC",
-        "L": "L_IT"
+        "Circle_recess": "Recess_ITC",
+        "Circle_thk": "Contact_depth_ITC",
+        "L": "L_IT",
+        "Overshoot": "Overshoot_ITC",
+        "R_in": "R_in_ITI",
+        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+2*ang_contactcenter_contactcenter_ITC [deg]"
       },
+      "label": "ImThera Contact 3",
       "materials": [
         {
           "info": "conductor",
@@ -140,22 +142,22 @@
           "info": "recess",
           "label_index": 2
         }
-      ]
+      ],
+      "type": "CircleContact_Primitive"
     },
     {
-      "type": "CircleContact_Primitive",
-      "label": "ImThera Contact 4",
       "def": {
-        "Circle_recess": "Recess_ITC",
-        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+3*ang_contactcenter_contactcenter_ITC [deg]",
         "Center": "Center_IT+length_contactcenter_contactcenter_ITC",
         "Circle_def": "Round_def_ITC",
-        "R_in": "R_in_ITI",
-        "Circle_thk": "Contact_depth_ITC",
-        "Overshoot": "Overshoot_ITC",
         "Circle_diam": "diam_contact_ITC",
-        "L": "L_IT"
+        "Circle_recess": "Recess_ITC",
+        "Circle_thk": "Contact_depth_ITC",
+        "L": "L_IT",
+        "Overshoot": "Overshoot_ITC",
+        "R_in": "R_in_ITI",
+        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+3*ang_contactcenter_contactcenter_ITC [deg]"
       },
+      "label": "ImThera Contact 4",
       "materials": [
         {
           "info": "conductor",
@@ -165,22 +167,22 @@
           "info": "recess",
           "label_index": 2
         }
-      ]
+      ],
+      "type": "CircleContact_Primitive"
     },
     {
-      "type": "CircleContact_Primitive",
-      "label": "ImThera Contact 5",
       "def": {
-        "Circle_recess": "Recess_ITC",
-        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+4*ang_contactcenter_contactcenter_ITC [deg]",
         "Center": "Center_IT",
         "Circle_def": "Round_def_ITC",
-        "R_in": "R_in_ITI",
-        "Circle_thk": "Contact_depth_ITC",
-        "Overshoot": "Overshoot_ITC",
         "Circle_diam": "diam_contact_ITC",
-        "L": "L_IT"
+        "Circle_recess": "Recess_ITC",
+        "Circle_thk": "Contact_depth_ITC",
+        "L": "L_IT",
+        "Overshoot": "Overshoot_ITC",
+        "R_in": "R_in_ITI",
+        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+4*ang_contactcenter_contactcenter_ITC [deg]"
       },
+      "label": "ImThera Contact 5",
       "materials": [
         {
           "info": "conductor",
@@ -190,22 +192,22 @@
           "info": "recess",
           "label_index": 2
         }
-      ]
+      ],
+      "type": "CircleContact_Primitive"
     },
     {
-      "type": "CircleContact_Primitive",
-      "label": "ImThera Contact 6",
       "def": {
-        "Circle_recess": "Recess_ITC",
-        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+5*ang_contactcenter_contactcenter_ITC [deg]",
         "Center": "Center_IT-length_contactcenter_contactcenter_ITC",
         "Circle_def": "Round_def_ITC",
-        "R_in": "R_in_ITI",
-        "Circle_thk": "Contact_depth_ITC",
-        "Overshoot": "Overshoot_ITC",
         "Circle_diam": "diam_contact_ITC",
-        "L": "L_IT"
+        "Circle_recess": "Recess_ITC",
+        "Circle_thk": "Contact_depth_ITC",
+        "L": "L_IT",
+        "Overshoot": "Overshoot_ITC",
+        "R_in": "R_in_ITI",
+        "Rotation_angle": "ang_cuffseam_contactcenter_ITC+5*ang_contactcenter_contactcenter_ITC [deg]"
       },
+      "label": "ImThera Contact 6",
       "materials": [
         {
           "info": "conductor",
@@ -215,225 +217,221 @@
           "info": "recess",
           "label_index": 2
         }
-      ]
+      ],
+      "type": "CircleContact_Primitive"
     }
   ],
-
+  "offset": {},
   "params": [
     {
-      "name": "N_holes_ITI",
+      "description": "Either 0, 1, or 2. If 0, no holes are created. If 1, a single hole is created centered along length. If 2, two holes are created centered with midway point of cuff and separated by Pitch_holecenter_holecenter.",
       "expression": "1",
-      "description": "Either 0, 1, or 2. If 0, no holes are created. If 1, a single hole is created centered along length. If 2, two holes are created centered with midway point of cuff and separated by Pitch_holecenter_holecenter."
+      "name": "N_holes_ITI"
     },
     {
-      "name": "Theta_ITI",
+      "description": "Degrees of wrap around of the cuff. If 360, the cuff is a complete circle. If 180, the cuff is a half circle. E.g., if 90, the cuff is a quarter circle.",
       "expression": "theta_cuff_pre_ITI*(r_cuff_in_pre_ITI/R_in_ITI)",
-      "description": "Degrees of wrap around of the cuff. If 360, the cuff is a complete circle. If 180, the cuff is a half circle. E.g., if 90, the cuff is a quarter circle."
+      "name": "Theta_ITI"
     },
     {
-      "name": "Center_IT",
+      "description": "Center of the cuff along the length of the nerve (i.e., z-axis).",
       "expression": "z_nerve/2",
-      "description": "Center of the cuff along the length of the nerve (i.e., z-axis)."
+      "name": "Center_IT"
     },
     {
-      "name": "R_in_ITI",
+      "description": "Radius of the inner surface of the cuff.",
       "expression": "max(r_nerve+thk_medium_gap_internal_ITI,r_cuff_in_pre_ITI)",
-      "description": "Radius of the inner surface of the cuff."
+      "name": "R_in_ITI"
     },
     {
-      "name": "R_out_ITI",
+      "description": "Radius of the outer surface of the cuff.",
       "expression": "R_in_ITI+thk_cuff_ITI",
-      "description": "Radius of the outer surface of the cuff."
+      "name": "R_out_ITI"
     },
     {
-      "name": "L_IT",
+      "description": "Length of the cuff along the nerve (i.e., z-axis).",
       "expression": "0.354 [inch]",
-      "description": "Length of the cuff along the nerve (i.e., z-axis)."
+      "name": "L_IT"
     },
     {
-      "name": "Rot_def_ITI",
+      "description": "Rotation orientation of the cuff. E.g., If 0, the cuff is aligned with the x-axis. If 90, the CW surface cuff slit is aligned with the y-axis. If 180, the CW surface cuff slit is aligned with the negative x-axis.",
       "expression": "0",
-      "description": "Rotation orientation of the cuff. E.g., If 0, the cuff is aligned with the x-axis. If 90, the CW surface cuff slit is aligned with the y-axis. If 180, the CW surface cuff slit is aligned with the negative x-axis."
+      "name": "Rot_def_ITI"
     },
     {
-      "name": "D_hole_ITI",
+      "description": "Diameter of the cutout hole(s) in the inner cuff (i.e., not the furl)",
       "expression": "0.02 [inch]",
-      "description": "Diameter of the cutout hole(s) in the inner cuff (i.e., not the furl)"
+      "name": "D_hole_ITI"
     },
     {
-      "name": "Buffer_hole_ITI",
+      "description": "Manufacturing buffer around the hole(s) cut in the inner cuff (i.e., not the furl) for added radial length (half inside and half outside). Should not affect final dimensions.",
       "expression": "150 [um]",
-      "description": "Manufacturing buffer around the hole(s) cut in the inner cuff (i.e., not the furl) for added radial length (half inside and half outside). Should not affect final dimensions."
+      "name": "Buffer_hole_ITI"
     },
     {
-      "name": "L_holecenter_cuffseam_ITI",
+      "description": "Length from the cuff seam around the cuff circumference to the center of the hole(s) cut in the inner cuff (i.e., not the furl).",
       "expression": "(pi*2*R_in_ITI)*(Theta_ITI/(2*pi))-0.03 [inch]",
-      "description": "Length from the cuff seam around the cuff circumference to the center of the hole(s) cut in the inner cuff (i.e., not the furl)."
+      "name": "L_holecenter_cuffseam_ITI"
     },
     {
-      "name": "N_holes_ITF",
+      "description": "Number of holes in the furl. If 0, no holes are created. If 1, a single hole is created centered along length. If 2, two holes are created centered with midway point of cuff and separated by Pitch_holecenter_holecenter.",
       "expression": "2",
-      "description": "Number of holes in the furl. If 0, no holes are created. If 1, a single hole is created centered along length. If 2, two holes are created centered with midway point of cuff and separated by Pitch_holecenter_holecenter."
+      "name": "N_holes_ITF"
     },
     {
-      "name": "Theta_ITF",
+      "description": "Angle of wrap around of the furl. If 360, the furl is a complete circle. If 180, the furl is a half circle. E.g., if 90, the furl is a quarter circle.",
       "expression": "theta_cuff_pre_ITF*((r_cuff_in_pre_ITF+thk_cuff_ITI+thk_gap_cuff_furl_IT)/(R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT))",
-      "description": "Angle of wrap around of the furl. If 360, the furl is a complete circle. If 180, the furl is a half circle. E.g., if 90, the furl is a quarter circle."
+      "name": "Theta_ITF"
     },
     {
-      "name": "R_in_ITF",
+      "description": "Radius of the inner surface of the furl.",
       "expression": "R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT",
-      "description": "Radius of the inner surface of the furl."
+      "name": "R_in_ITF"
     },
     {
-      "name": "R_out_ITF",
+      "description": "Radius of the outer surface of the furl.",
       "expression": "R_in_ITI+thk_cuff_ITI+thk_gap_cuff_furl_IT+thk_furl_ITF",
-      "description": "Radius of the outer surface of the furl."
+      "name": "R_out_ITF"
     },
     {
-      "name": "Rot_def_ITF",
+      "description": "Rotation orientation of the furl. E.g., If 0, the furl is aligned with the x-axis. If 90, the CW surface furl slit is aligned with the y-axis. If 180, the CW surface furl slit is aligned with the negative x-axis.",
       "expression": "-((2*pi-Theta_ITI)/2)-(Theta_ITF/2)",
-      "description": "Rotation orientation of the furl. E.g., If 0, the furl is aligned with the x-axis. If 90, the CW surface furl slit is aligned with the y-axis. If 180, the CW surface furl slit is aligned with the negative x-axis."
+      "name": "Rot_def_ITF"
     },
     {
-      "name": "D_hole_ITF",
+      "description": "Diameter of the cutout hole(s) in the furl.",
       "expression": "0.02 [inch]",
-      "description": "Diameter of the cutout hole(s) in the furl."
+      "name": "D_hole_ITF"
     },
     {
-      "name": "Buffer_hole_ITF",
+      "description": "Manufacturing buffer around the hole(s) cut in the furl for added radial length (half inside and half outside). Should not affect final dimensions.",
       "expression": "Buffer_hole_ITI",
-      "description": "Manufacturing buffer around the hole(s) cut in the furl for added radial length (half inside and half outside). Should not affect final dimensions."
+      "name": "Buffer_hole_ITF"
     },
     {
-      "name": "L_holecenter_cuffseam_ITF",
+      "description": "Length from the cuff seam around the cuff circumference to the center of the hole(s) cut in the furl.",
       "expression": "0.03 [inch]",
-      "description": "Length from the cuff seam around the cuff circumference to the center of the hole(s) cut in the furl."
+      "name": "L_holecenter_cuffseam_ITF"
     },
     {
-      "name": "theta_cuff_pre_ITI",
+      "description": "Angle of the cuff before expansion to accommodate the nerve",
       "expression": "360 [deg]",
-      "description": "Angle of the cuff before expansion to accommodate the nerve"
+      "name": "theta_cuff_pre_ITI"
     },
     {
-      "name": "r_cuff_in_pre_ITI",
+      "description": "Radius of the cuff before expansion to accommodate the nerve",
       "expression": "0.059 [inch]",
-      "description": "Radius of the cuff before expansion to accommodate the nerve"
+      "name": "r_cuff_in_pre_ITI"
     },
     {
-      "name": "thk_medium_gap_internal_ITI",
+      "description": "Thickness of the medium gap between the nerve and the cuff for saline",
       "expression": "100 [um]",
-      "description": "Thickness of the medium gap between the nerve and the cuff for saline"
+      "name": "thk_medium_gap_internal_ITI"
     },
     {
-      "name": "thk_cuff_ITI",
+      "description": "Thickness of the cuff",
       "expression": "r_cuff_out_pre_ITI-r_cuff_in_pre_ITI",
-      "description": "Thickness of the cuff"
+      "name": "thk_cuff_ITI"
     },
     {
-      "name": "r_cuff_out_pre_ITI",
+      "description": "Radius of outer diameter of the cuff before expansion to accommodate the nerve",
       "expression": "(0.178/2) [inch]",
-      "description": "Radius of outer diameter of the cuff before expansion to accommodate the nerve"
+      "name": "r_cuff_out_pre_ITI"
     },
     {
-      "name": "Pitch_holecenter_holecenter_ITI",
+      "description": "Pitch between the centers of the holes in the cuff",
       "expression": "0",
-      "description": "Pitch between the centers of the holes in the cuff"
+      "name": "Pitch_holecenter_holecenter_ITI"
     },
     {
-      "name": "theta_cuff_pre_ITF",
+      "description": "Wrap angle of the furl before expansion to accommodate the nerve",
       "expression": "250 [deg]",
-      "description": "Wrap angle of the furl before expansion to accommodate the nerve"
+      "name": "theta_cuff_pre_ITF"
     },
     {
-      "name": "r_cuff_in_pre_ITF",
+      "description": "Radius of the furl before expansion to accommodate the nerve",
       "expression": "(0.178/2) [inch]",
-      "description": "Radius of the furl before expansion to accommodate the nerve"
+      "name": "r_cuff_in_pre_ITF"
     },
     {
-      "name": "thk_gap_cuff_furl_IT",
+      "description": "Thickness of the gap between the cuff and the furl",
       "expression": "0",
-      "description": "Thickness of the gap between the cuff and the furl"
+      "name": "thk_gap_cuff_furl_IT"
     },
     {
-      "name": "thk_furl_ITF",
+      "description": "Thickness (radial) of the furl",
       "expression": "r_furl_out_pre_ITF-r_furl_in_pre_ITF",
-      "description": "Thickness (radial) of the furl"
+      "name": "thk_furl_ITF"
     },
     {
-      "name": "r_furl_out_pre_ITF",
+      "description": "Outer radius of the furl before expansion to accommodate the nerve",
       "expression": "(0.218/2) [inch]",
-      "description": "Outer radius of the furl before expansion to accommodate the nerve"
+      "name": "r_furl_out_pre_ITF"
     },
     {
-      "name": "r_furl_in_pre_ITF",
+      "description": "Inner radius of the furl before expansion to accommodate the nerve",
       "expression": "(0.178/2) [inch]",
-      "description": "Inner radius of the furl before expansion to accommodate the nerve"
+      "name": "r_furl_in_pre_ITF"
     },
     {
-      "name": "Pitch_holecenter_holecenter_ITF",
+      "description": "Distance between the centers of the holes in the furl",
       "expression": "L_IT-2*0.077 [inch]",
-      "description": "Distance between the centers of the holes in the furl"
+      "name": "Pitch_holecenter_holecenter_ITF"
     },
     {
-      "name": "diam_contact_ITC",
+      "description": "Diameter of the contact",
       "expression": "2 [mm]",
-      "description": "Diameter of the contact"
+      "name": "diam_contact_ITC"
     },
     {
-      "name": "Recess_ITC",
+      "description": "How far the contact is recessed into the cuff",
       "expression": "0.05 [mm]",
-      "description": "How far the contact is recessed into the cuff"
+      "name": "Recess_ITC"
     },
     {
-      "name": "Round_def_ITC",
+      "description": "1 if contact surface is circle when flattened, 2 if contact is circle when looking head-on after deformation to cuff",
       "expression": "1",
-      "description": "1 if contact surface is circle when flattened, 2 if contact is circle when looking head-on after deformation to cuff"
+      "name": "Round_def_ITC"
     },
     {
-      "name": "Contact_depth_ITC",
+      "description": "Thickness of the contact",
       "expression": "0.05 [mm]",
-      "description": "Thickness of the contact"
+      "name": "Contact_depth_ITC"
     },
     {
-      "name": "Overshoot_ITC",
+      "description": "Manufacturing overshoot of the contact, should not affect final dimensions",
       "expression": "0.05 [mm]",
-      "description": "Manufacturing overshoot of the contact, should not affect final dimensions"
+      "name": "Overshoot_ITC"
     },
     {
-      "name": "length_contactcenter_contactcenter_ITC",
+      "description": "Separations of contacts along the length of the cuff, from contact center to contact center",
       "expression": "0.108 [inch]",
-      "description": "Separations of contacts along the length of the cuff, from contact center to contact center"
+      "name": "length_contactcenter_contactcenter_ITC"
     },
     {
-      "name": "ang_cuffseam_contactcenter_ITC",
+      "description": "Angle from the cuff seam to the first contact center after expansion to accommodate the nerve",
       "expression": "ang_cuffseam_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)",
-      "description": "Angle from the cuff seam to the first contact center after expansion to accommodate the nerve"
+      "name": "ang_cuffseam_contactcenter_ITC"
     },
     {
-      "name": "ang_cuffseam_contactcenter_pre_ITC",
+      "description": "Angle from the cuff seam to the first contact center before expansion to accommodate the nerve",
       "expression": "53 [deg]",
-      "description": "Angle from the cuff seam to the first contact center before expansion to accommodate the nerve"
+      "name": "ang_cuffseam_contactcenter_pre_ITC"
     },
     {
-      "name": "ang_contactcenter_contactcenter_ITC",
+      "description": "Angle between contact centers after expansion to accommodate the nerve",
       "expression": "ang_contactcenter_contactcenter_pre_ITC*(r_cuff_in_pre_ITI/R_in_ITI)",
-      "description": "Angle between contact centers after expansion to accommodate the nerve"
+      "name": "ang_contactcenter_contactcenter_ITC"
     },
     {
-      "name": "ang_contactcenter_contactcenter_pre_ITC",
+      "description": "Angle between contact centers before expansion to accommodate the nerve",
       "expression": "51 [deg]",
-      "description": "Angle between contact centers before expansion to accommodate the nerve"
+      "name": "ang_contactcenter_contactcenter_pre_ITC"
     },
     {
-      "name": "Thk_fill_IT",
+      "description": "Thickness of the fill material extending beyond the cuff",
       "expression": "100 [um]",
-      "description": "Thickness of the fill material extending beyond the cuff"
+      "name": "Thk_fill_IT"
     }
-  ],
-
-  "expandable": true,
-  "fixed_point": "clockwise_end",
-  "angle_to_contacts_deg": 180,
-  "offset": {}
+  ]
 }

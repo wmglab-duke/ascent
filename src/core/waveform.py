@@ -11,7 +11,6 @@ https://github.com/wmglab-duke/ascent
 import csv
 import math
 import os
-import sys
 import warnings
 
 import matplotlib.pyplot as plt
@@ -172,7 +171,7 @@ class Waveform(Configurable, Saveable):
             thk_weerasuriya = 0.00002175  # [m]
             rho = rs37 / thk_weerasuriya  # [ohm-m]
 
-        return rho  # [ohm-m]
+        return rho  # noqa: R504
 
     @staticmethod
     def pad(
@@ -282,8 +281,7 @@ class Waveform(Configurable, Saveable):
             amp2 = 1
             amp1 = (pw2 * amp2) / pw1
 
-        wave = amp1 * padded_positive + amp2 * padded_negative
-        return wave
+        return amp1 * padded_positive + amp2 * padded_negative
 
     def generate_monophasic(self):
         """Generate a monophasic pulse train.
@@ -299,9 +297,7 @@ class Waveform(Configurable, Saveable):
             raise ValueError("Pulse is longer than period (2x for biphasic).")
         wave = sg.square(2 * np.pi * self.frequency * self.t_signal, duty=(pw - self.dt) * self.frequency)
         clipped = np.clip(wave, 0, 1)
-        padded = self.pad(clipped, self.dt, self.on - self.start, self.stop - self.off)
-        wave = padded
-        return wave
+        return self.pad(clipped, self.dt, self.on - self.start, self.stop - self.off)
 
     def generate_sinusoid(self):
         """Generate a sinusoid.
@@ -314,9 +310,7 @@ class Waveform(Configurable, Saveable):
                 "Timestep self.dt is longer than SINUSOID period indicated in Sim by pulse_repetition_freq."
             )
         wave = np.sin(2 * np.pi * self.frequency * self.t_signal)
-        padded = self.pad(wave, self.dt, self.on - self.start, self.stop - self.off)
-        wave = padded
-        return wave
+        return self.pad(wave, self.dt, self.on - self.start, self.stop - self.off)
 
     def generate_biphasic_fullduty(self):
         """Generate a biphasic pulse train with full duty cycle.
@@ -329,9 +323,7 @@ class Waveform(Configurable, Saveable):
                 "Timestep self.dt is longer than BIPHASIC_FULL_DUTY period indicated in Sim by pulse_repetition_freq."
             )
         wave = sg.square(2 * np.pi * self.frequency * self.t_signal)
-        padded = self.pad(wave, self.dt, self.on - self.start, self.stop - self.off)
-        wave = padded
-        return wave
+        return self.pad(wave, self.dt, self.on - self.start, self.stop - self.off)
 
     def generate_biphasic_basic(self):
         """Generate a biphasic pulse train with basic parameters.
@@ -369,8 +361,7 @@ class Waveform(Configurable, Saveable):
         padded_negative = self.pad(
             negative_wave, self.dt, self.on - self.start + pw + inter_phase - self.dt, self.stop - self.off + self.dt
         )
-        wave = padded_positive + padded_negative
-        return wave
+        return padded_positive + padded_negative
 
     def generate_explicit(self):
         """Generate an explicit waveform.
@@ -421,7 +412,7 @@ class Waveform(Configurable, Saveable):
             signal = explicit_wave
         # repeats?
         repeats = self.search(Config.SIM, 'waveform', WaveformMode.EXPLICIT.name, 'period_repeats')
-        if type(repeats) is not int:
+        if isinstance(repeats, int):
             raise TypeError("Number of repeats for explicit wave must be an integer value")
         if repeats > 1:
             signal = np.tile(signal, repeats)
@@ -429,14 +420,12 @@ class Waveform(Configurable, Saveable):
         if self.dt * len(signal) > (self.off - self.on):
             raise ValueError("Number of repeats for explicit wave does not fit in global.off - global.on in Sim config")
         # pad with zeros for: time before on, time after off
-        padded = self.pad(
+        return self.pad(
             signal,
             self.dt,
             self.on - self.start,
             self.stop - (self.on + self.dt * len(signal)),
         )
-        wave = padded
-        return wave
 
     def plot(self, ax: plt.Axes = None, final: bool = False, path: str = None, plt_kwargs: dict = None):
         """Plot the waveform.
@@ -474,8 +463,8 @@ class Waveform(Configurable, Saveable):
         """
         digits = self.search(Config.SIM, 'waveform', self.mode_str, 'digits')
 
-        dt_all, dt_post = precision_and_scale(self.dt)
-        stop_all, stop_post = precision_and_scale(self.stop)
+        dt_all, dt_post = num_digits_precision(self.dt)
+        stop_all, stop_post = num_digits_precision(self.stop)
 
         with open(path + WriteMode.file_endings.value[mode.value], "ab") as f:
             np.savetxt(f, [self.dt], fmt=f'%{dt_all - dt_post}.{dt_post}f')
@@ -491,23 +480,27 @@ class Waveform(Configurable, Saveable):
         return self
 
 
-def precision_and_scale(x):
+def num_digits_precision(x):
     """Return the number of digits and the scale of the number.
-
-    # https://stackoverflow.com/questions/3018758/determine-precision-and-scale-of-particular-number-in-python
 
     :param x: number
     :return: number of digits, scale
     """
-    max_digits = sys.float_info.dig
-    int_part = int(abs(x))
-    magnitude = 1 if int_part == 0 else int(math.log10(int_part)) + 1
-    if magnitude >= max_digits:
-        return magnitude, 0
-    frac_part = abs(x) - int_part
-    multiplier = 10 ** (max_digits - magnitude)
-    frac_digits = multiplier + int(multiplier * frac_part + 0.5)
-    while frac_digits % 10 == 0:
-        frac_digits /= 10
-    scale = int(math.log10(frac_digits))
-    return magnitude + scale, scale
+    # integral component
+    intx = math.floor(abs(x))
+    if intx == 0:
+        n_int = 0
+    else:
+        n_int = math.floor(math.log10(intx)) + 1
+
+    # fractional component
+    fracx = abs(x) - intx
+    if fracx == 0:
+        n_prec = 0
+    else:
+        n_prec = 1
+        while ((10**n_prec) * fracx) % 1 > 0:
+            n_prec += 1
+    n_digits = n_int + n_prec
+
+    return n_digits, n_prec
