@@ -94,6 +94,17 @@ the following syntax:
   "mesh": {
   "quality_measure": String,
   "shape_order": String,
+    "nerve": {
+      "type": {
+        "im": String,
+        "name": String
+      },
+      "hmax": Double,
+      "hmin": Double,
+      "hgrad": Double,
+      "hcurve": Double,
+      "hnarrow": Double
+    },
     "proximal": {
       "type": {
         "im": String,
@@ -126,7 +137,8 @@ the following syntax:
       "volume": Double
       "mesh_times": {
         "distal": Double,
-        "proximal": Double
+        "proximal": Double,
+        "nerve": Double
       },
 
     }
@@ -329,8 +341,36 @@ meshing statistics (automatically calculated).
 
 <!-- end list -->
 
+- `“nerve”`: Meshing parameters for the nerve domains
+  (epi-, peri-, and endoneurium). Optional, will use proximal ).
+
+  - `“type”`: JSON Object containing parameters/definitions specific
+    to meshing discretization method (e.g., free tetrahedral
+    “ftet”). We recommend free tetrahedral meshes. Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve-and-cuff-electrode)).
+
+    - `“im”`: COMSOL indexing prefix (String) (e.g., free
+      tetrahedral “ftet” or swept "swe"). Required.
+
+    - `“name”`: COMSOL system name (String) for the created mesh
+      (e.g., “FreeTet” or "Sweep"). Required.
+
+    - `"facemethod"`: Required "tri" (String) if using swept mesh.
+
+  - `“hmax”`: Maximum element size (Double, units: micrometer). We
+    recommend between 50-150 for swept meshes, otherwise same as proximal. 100 um is optimal for swept mesh to reducing COMSOL time >~50% and minimizing threshold error from tetrahedral mesh <~3% based on cursory testing. Required.
+
+  - `“hmin”`: Minimum element size (Double, units: micrometer). We
+    recommend 1. Required.
+
+  - `“hgrad”`: Maximum element growth (Double). We recommend between
+    1.8-2.5. Required.
+
+  - `“hcurve”`: Curvature factor (Double). We recommend 0.2. Required.
+
+  - `“hnarrow”`: Resolution of narrow regions (Double). We recommend 1. Required.
+
 - `“proximal”`: Meshing parameters for the proximal cylindrical domain
-  (as defined in “medium”). Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve-and-cuff-electrode)).
+  (as defined in “medium”) and cuff. Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve-and-cuff-electrode)).
 
   - `“type”`: JSON Object containing parameters/definitions specific
     to meshing discretization method (e.g., free tetrahedral

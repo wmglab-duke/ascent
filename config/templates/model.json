@@ -55,6 +55,18 @@
         "name": "FreeTet"
       }
     },
+    "nerve": {
+      "hcurve": 0.2,
+      "hgrad": 2.2,
+      "hmax": 100,
+      "hmin": 10,
+      "hnarrow": 1,
+      "type": {
+        "facemethod": "tri",
+        "im": "swe",
+        "name": "Sweep"
+      }
+    },
     "proximal": {
       "hcurve": 0.2,
       "hgrad": 2.2,

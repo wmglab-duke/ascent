@@ -1247,6 +1247,8 @@ public class ModelWrapper {
                         nerveParams = model.param().group().create(nerveParamsLabal);
                         nerveParams.label(nerveParamsLabal);
 
+                        String proxFacesLabel = "ProximalNerveFaces";
+                        String distFacesLabel = "DistalNerveFaces";
                         if (!cuff_only) {
                             addNerveParams(
                                 projectPath,
@@ -1264,6 +1266,26 @@ public class ModelWrapper {
                                 .label("Contact Impedances");
                             // there are no primitives/instances for nerve parts, just build them
                             mw.addNerve(sample, nerveParams, modelData);
+
+                            // Set source and destination face selection for swept meshing
+                            GeomFeature proxFaces = model
+                                .component("comp1")
+                                .geom("geom1")
+                                .create(mw.im.next("cylsel", proxFacesLabel), "CylinderSelection");
+                            proxFaces.set("r", "r_nerve+1");
+                            proxFaces.set("top", 1);
+                            proxFaces.set("bottom", -1);
+                            proxFaces.label(proxFacesLabel);
+                            proxFaces.set("entitydim", 2);
+                            proxFaces.set("condition", "inside");
+                            GeomFeature distFaces = model
+                                .component("comp1")
+                                .geom("geom1")
+                                .feature()
+                                .duplicate(mw.im.next("cylsel", distFacesLabel), mw.im.get(proxFacesLabel));
+                            distFaces.label(distFacesLabel);
+                            distFaces.set("pos", new String[]{"0", "0", "z_nerve"});
+
                         } else {
                             nerveParams.set("a_nerve", "NaN");
                             nerveParams.set(
@@ -1310,8 +1332,33 @@ public class ModelWrapper {
                             }
                         }
 
-                        // create UNIONS
+                        // create UNIONS selection
                         mw.createUnions();
+
+                        // DIFFERENCE selection for proximal medium and cuff domains
+                        String diffProxLabel = "diffProx";
+                        SelectionFeature diffProx = model
+                            .component("comp1")
+                            .selection()
+                            .create(mw.im.next("dif", diffProxLabel), "Difference");
+                        diffProx.label(diffProxLabel);
+                        assert partPrimitiveIM != null;
+                        // Add proximal medium domain, which includes all enclosed domains (nerve and cuff)
+                        diffProx
+                            .set("add",
+                                "geom1_" +
+                                mediumProximal_instanceID +
+                                "_" +
+                                partPrimitiveIM.get("MEDIUM") +
+                                "_dom"
+                            );
+                        // Subtract nerve domains
+                        diffProx
+                            .set("subtract",
+                                "geom1_" +
+                                mw.im.get(ModelWrapper.ALL_NERVE_PARTS_UNION + "Csel") +
+                                "_dom"
+                            );
 
                         // Saved model pre-run geometry for debugging
                         try {
@@ -1379,6 +1426,143 @@ public class ModelWrapper {
                             boolean success = ppimPathFile.mkdirs();
                             assert success;
                         }
+                        // define MESH for NERVE
+                        // swept: name (Sweep) and im (swe), facemethod (tri)
+                        // free triangular: name (FreeTet) and im (ftet)
+                        JSONObject nerveMeshParams = modelData
+                            .getJSONObject("mesh")
+                            .getJSONObject("nerve");
+                        String meshNerveLabel = "Mesh Nerve";
+                        String meshNerveKey = nerveMeshParams
+                            .getJSONObject("type")
+                            .getString("im");
+                        String meshNerveName = nerveMeshParams
+                            .getJSONObject("type")
+                            .getString("name");
+                        MeshFeature meshNerve = model
+                            .component("comp1")
+                            .mesh("mesh1")
+                            .create(
+                                mw.im.next(meshNerveKey, meshNerveLabel),
+                                meshNerveName
+                            );
+                        meshNerve.selection().geom("geom1", 3);
+
+                        meshNerve
+                            .selection()
+                            .named("geom1_" + mw.im.get(ModelWrapper.ALL_NERVE_PARTS_UNION + "Csel") + "_dom");
+
+                        // if using a swept mesh, you need to define the face method
+                        if (meshNerveKey.equals("swe")) {
+                            assert proxFacesLabel != null;
+                            String meshNerveFace = nerveMeshParams
+                                .getJSONObject("type")
+                                .getString("facemethod"); // (tri)
+                            meshNerve.set("facemethod", meshNerveFace);
+                            meshNerve.selection("targetface").named("geom1_" + mw.im.get(proxFacesLabel));
+                            meshNerve.selection("sourceface").named("geom1_" + mw.im.get(distFacesLabel));
+                        }
+                        meshNerve.label(meshNerveLabel);
+
+                        String meshNerveSizeInfoLabel = "Mesh Nerve Size Info";
+                        MeshFeature meshNerveSizeInfo = meshNerve.create(
+                            mw.im.next("size", meshNerveSizeInfoLabel),
+                            "Size"
+                        );
+                        meshNerveSizeInfo.label(meshNerveSizeInfoLabel);
+                        meshNerveSizeInfo.set("custom", true);
+                        meshNerveSizeInfo.set("hmaxactive", true);
+                        meshNerveSizeInfo.set("hmax", nerveMeshParams.getDouble("hmax"));
+                        meshNerveSizeInfo.set("hminactive", true);
+                        meshNerveSizeInfo.set("hmin", nerveMeshParams.getDouble("hmin"));
+                        meshNerveSizeInfo.set("hgradactive", true);
+                        meshNerveSizeInfo.set("hgrad", nerveMeshParams.getDouble("hgrad"));
+                        meshNerveSizeInfo.set("hcurveactive", true);
+                        meshNerveSizeInfo.set("hcurve", nerveMeshParams.getDouble("hcurve"));
+                        meshNerveSizeInfo.set("hnarrowactive", true);
+                        meshNerveSizeInfo.set(
+                            "hnarrow",
+                            nerveMeshParams.getDouble("hnarrow")
+                        );
+
+                        // Saved model pre-mesh for debugging
+                        try {
+                            System.out.println(
+                                "\tSaving MPH (pre-nerve mesh) file to: " + meshFile
+                            );
+                            model.save(meshFile);
+                        } catch (IOException e) {
+                            System.out.println(
+                                "\tFailed to save geometry for Model Index " +
+                                modelStr +
+                                ", continuing " +
+                                "to any remaining Models"
+                            );
+                            e.printStackTrace();
+                            continue;
+                        }
+
+                        // break point "pre_mesh_nerve"
+                        if ("pre_mesh_nerve".equals(break_point)) {
+                            models_exit_status[model_index] = false;
+                            System.out.println(
+                                "\tpre_mesh_nerve is the first break point encountered, moving on with next model index"
+                            );
+                            continue;
+                        }
+
+                        System.out.println("\tMeshing nerve parts... will take a while");
+
+                        long nerveMeshStartTime = System.nanoTime();
+                        try {
+                            model
+                                .component("comp1")
+                                .mesh("mesh1")
+                                .run(mw.im.get(meshNerveLabel));
+                        } catch (Exception e) {
+                            System.out.println(
+                                "\tFailed to mesh nerve geometry for Model Index " +
+                                modelStr +
+                                ", continuing to any remaining Models"
+                            );
+                            e.printStackTrace();
+                            continue;
+                        }
+
+                        if (meshNerveKey.equals("swe")) {
+                            String sweptConversionLabel = "meshNerveConversion";
+                            MeshFeature sweptConversion = model
+                                .component("comp1")
+                                .mesh("mesh1")
+                                .create(mw.im.next("conv", sweptConversionLabel), "Convert");
+                            sweptConversion.label(sweptConversionLabel);
+                            sweptConversion.selection().geom("geom1", 3);
+                            sweptConversion
+                                .selection()
+                                .named("geom1_" + mw.im.get(ModelWrapper.ALL_NERVE_PARTS_UNION + "Csel") + "_dom");
+                            model
+                                .component("comp1")
+                                .mesh("mesh1")
+                                .run(mw.im.get(sweptConversionLabel));
+                        }
+
+                        long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
+                        meshTimes.put("nerve", estimatedNerveMeshTime / Math.pow(10, 6)); // convert nanos to millis
+
+                        TimeUnit.SECONDS.sleep(1);
+
+                        // Saved model post-nerve-mesh for debugging
+                        model.save(meshFile);
+                        TimeUnit.SECONDS.sleep(5);
+
+                        // break point "post_mesh_nerve"
+                        if ("post_mesh_nerve".equals(break_point)) {
+                            models_exit_status[model_index] = false;
+                            System.out.println(
+                                "\tpost_mesh_nerve is the first break point encountered, moving on with next model index"
+                            );
+                            continue;
+                        }
 
                         // define MESH for PROXIMAL
                         // swept: name (Sweep) and im (swe), facemethod (tri)
@@ -1401,17 +1585,9 @@ public class ModelWrapper {
                                 meshProximalName
                             );
                         meshProximal.selection().geom("geom1", 3);
-                        assert partPrimitiveIM != null;
                         meshProximal
                             .selection()
-                            .named(
-                                "geom1" +
-                                "_" +
-                                mediumProximal_instanceID +
-                                "_" +
-                                partPrimitiveIM.get("MEDIUM") +
-                                "_dom"
-                            );
+                            .named(mw.im.get(diffProxLabel));
 
                         // if using a swept mesh, you need to define the face method
                         if (meshProximalKey.equals("swe")) {

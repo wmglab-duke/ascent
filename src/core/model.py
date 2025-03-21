@@ -526,6 +526,28 @@ class Model(Configurable, Saveable):
 
         return self
 
+    def compute_mesh_parameters(self):
+        """Compute mesh parameters for a given model.
+
+        :raises NotImplementedError: An invalid mode is specified
+        :return: self
+        """
+        if "nerve" not in self.configs[Config.MODEL.value]["mesh"]:
+            # If nerve mesh params do not exist, copy proximal mesh params
+            self.configs[Config.MODEL.value]["mesh"]["nerve"] = self.configs[Config.MODEL.value]["mesh"]["proximal"]
+
+        if "ftet" != self.configs[Config.MODEL.value]["mesh"]["proximal"]["type"]["im"]:
+            raise NotImplementedError(
+                "mesh/proximal/type/im must be ftet; Only free tetrahedral mesh supported for proximal domain"
+            )
+
+        if "ftet" != self.configs[Config.MODEL.value]["mesh"]["distal"]["type"]["im"]:
+            raise NotImplementedError(
+                "mesh/distal/type/im must be ftet; Only free tetrahedral mesh supported for distal domain"
+            )
+
+        return self
+
     def validate(self):
         """Check model parameters for validity.
 
