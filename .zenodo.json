@@ -54,7 +54,7 @@
 
   "notes": "Research supported by the National Institutes of Health SPARC Program (OT2 OD025340) (75N98022C00018)",
 
-  "license": "GNU General Public License v2.0 only",
+  "license": "GPL-2.0-only",
 
   "title": "ASCENT V1.4.0",
 
@@ -62,10 +62,6 @@
 
   "keywords": ["Peripheral Nerve Stimulation", "Finite Element Model"],
 
-  "communities": [{ "identifier": "The Grill Lab" }],
+  "communities": [{ "identifier": "The Grill Lab" }]
 
-  "grants": [
-    { "id": "National Institutes of Health SPARC Program (OT2 OD025340)" },
-    { "id": "National Institutes of Health SPARC Program (75N98022C00018)" }
-  ]
 }
