@@ -500,6 +500,7 @@ class Query(Configurable, Saveable):
         nsim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
         (
             active_src_index,
+            *active_rec_index,
             fiberset_index,
         ) = sim_object.potentials_product[potentials_product_index]
         # fetch additional sample, model, and sim values
@@ -576,7 +577,7 @@ class Query(Configurable, Saveable):
         self,
         data_types: list[str],
         sim_indices: list[int] = None,
-        fiber_indices: list[int] | str = 'all',
+        q_fiber_indices: list[int] | str = 'all',
         ignore_missing: bool = False,
         amp_indices: int | str = 'all',
     ) -> list[dict]:
@@ -598,7 +599,7 @@ class Query(Configurable, Saveable):
             - 'aploctime': AP location time data
             - 'apendtimes': AP end times data
 
-        :param fiber_indices: A list of fiber indices to include. ('all' for all fibers)
+        :param q_fiber_indices: A list of fiber indices to include. ('all' for all fibers)
         :param sim_indices: A list of simulation indices to include.
         :param ignore_missing: If True, missing data will not cause an error.
         :param data_types: A list of strings representing the data types to extract.
@@ -663,8 +664,10 @@ class Query(Configurable, Saveable):
                         for inner in range(n_inners):
                             outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
                             available_fiber_ind = out_in_fib[outer][out_in[outer].index(inner)]
-                            if fiber_indices == 'all':
+                            if q_fiber_indices == 'all':
                                 fiber_indices = available_fiber_ind
+                            else:
+                                fiber_indices = q_fiber_indices
                             for local_fiber_index, _ in enumerate(available_fiber_ind):
                                 master_index = sim_object.indices_n_to_fib(fiberset_index, inner, local_fiber_index)
 
