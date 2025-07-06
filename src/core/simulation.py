@@ -612,7 +612,7 @@ class Simulation(Configurable, Saveable):
                                     fiberset_directory,
                                     file,
                                 )
-        print()
+
         return self
 
     def srcs_mapping(self, sim_dir):

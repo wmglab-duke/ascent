@@ -47,15 +47,15 @@ This documentation is an adaptation and update of the supplements associated wit
 
   .. tab:: APA
 
-    Placeholder
+    PyFibers paper citation will be available soon: See <https://wmglab-duke.github.io/pyfibers/> for most recent updates
 
   .. tab:: MLA
 
-    Placeholder
+    PyFibers paper citation will be available soon: See <https://wmglab-duke.github.io/pyfibers/> for most recent updates
 
   .. tab:: BibTeX
 
-    Placeholder
+    PyFibers paper citation will be available soon: See <https://wmglab-duke.github.io/pyfibers/> for most recent updates
 
 * **Cite the neural recording paper:**
 
@@ -90,11 +90,11 @@ This documentation is an adaptation and update of the supplements associated wit
 
   .. tab:: APA
 
-     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2023). wmglab-duke/ascent: ASCENT v1.3.2 (v1.3.2) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.10608262.
+     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2025). wmglab-duke/ascent: ASCENT v1.5.0 (v1.5.0) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.10608262.
 
   .. tab:: MLA
 
-      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.3.2, Zenodo, 2023, doi:10.5281/ZENODO.10608262.
+      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.5.0, Zenodo, 2025, doi:10.5281/ZENODO.10608262.
 
 
   .. tab:: BibTeX
@@ -105,9 +105,9 @@ This documentation is an adaptation and update of the supplements associated wit
           doi = {10.5281/ZENODO.10608262},
           url = {https://zenodo.org/record/10608262},
           author = {Musselman,  Eric D and Cariello,  Jake E and Grill,  Warren M and Pelot,  Nicole A},
-          title = {wmglab-duke/ascent: ASCENT v1.3.2},
+          title = {wmglab-duke/ascent: ASCENT v1.5.0},
           publisher = {Zenodo},
-          year = {2023},
+          year = {2025},
           copyright = {MIT License}
         }
 

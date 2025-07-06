@@ -77,8 +77,7 @@ the sample, model, and sim files, use the file names from the subfolders. For ex
 `/input/runs/run_tutorial.json` can have the value "sample_tutorial.json", which will specify the file
 `/input/<input_name>/samples/sample_tutorial.json` as the sample configuration json for this run. Unique integers will
 be created for these configuration files in the appropriate ASCENT configuration directories, and a new rungroup called
-<input_name> will be created for the runs.
-Run this script from your `"ASCENT_PROJECT_PATH"`. Files to remove are specified within the python script.
+<input_name> will be created for the runs. Also see -i argument in `pipeline.py`.
 
 `python run build_from_input <input_name>`
 
@@ -141,8 +140,19 @@ of the pipeline searching for configurations (i.e., **_Sample_**,
 `run()` has been called, the results can be fetched using the `summary()`
 accessor method. In addition, the user may pass in a file path to
 `excel_output()` to generate an Excel sheet summarizing the Query
-results. Finally, use the `threshold_data()` method to return a DataFrame
-of thresholds with identifying information.
+results. Finally, use the `common_data_extraction(data_types=['threshold'])`
+method to return a DataFrame of thresholds with identifying information.
+Other data_types are available with appropriate sim `saving` configurations:
+ * `sfap`
+ * `threshold`
+ * `runtime`
+ * `activation`
+ * `istim`
+ * `time_gating`
+ * `time_vm`
+ * `space_gating`
+ * `space_vm`
+ * `aploctime`
 
 Query also has methods for accessing configurations and Python objects
 within the `samples/` directory based on a list of **_Sample_**,

@@ -47,6 +47,7 @@ Users may also download a text editor or integrated development environment (IDE
    - For advanced users using their own (non-conda) Python distribution:
      - From the ascent root directory execute `python run install --no-conda`
      - From the ascent root directory execute `pip install -r requirements.txt`
+     - Compile PyFibers NEURON files `pyfibers_compile` see [PyFibers documentation](https://wmglab-duke.github.io/pyfibers/).
      - This method is highly discouraged as newer versions of packages/Python could potentially break ASCENT or introduce unexpected bugs
 
 After confirming that you are in the correct directory, the script will install the required Python packages.
@@ -200,7 +201,7 @@ The below example directory structure may be helpful.
 8. After the NEURON simulations have completed, move the outputs back to the ASCENT directory structure by running the command `python run import_n_sims <run_index>`.
 
     ```{admonition} Check
-    Threshold for inner0_fiber0 (`samples/<sample_index>/models/<model_index>/sims/<sim_index>/n_sims/data/outputs/thresh_inner0_fiber0.dat`) should be -0.027402 mA (or -0.027281 mA if COMSOL 6.1 is installed).
+    Threshold for inner0_fiber0 (`samples/<sample_index>/models/<model_index>/sims/<sim_index>/n_sims/data/outputs/thresh_inner0_fiber0.dat`) should be -0.027402 mA (or -0.027281 mA if COMSOL 6.2 is installed).
     ```
 
 9. To generate a heatmap of activation thresholds, open the script `examples/analysis/threshold_heatmap.py` and edit the sample, model, and sim indices to match the ones you chose above. Run the script from the repository root with the command `python examples/analysis/threshold_heatmap.py`, and a heatmap plot will be generated in `output/analysis/`. Your heatmap should look like the one below.

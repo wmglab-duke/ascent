@@ -708,7 +708,7 @@ waveform parameters among the lists (i.e., the Cartesian product).
 `"intrinsic_activity"`: The value (JSON Object) contains key-value pairs
 to define intrinsic activity for the fiber ([NEURON Scripts](../../Code_Hierarchy/NEURON)).
 Optional, though required if searching for block thresholds.
-The key-value pairs are passed to [PyFibers: Fiber.add_intrinsic_activity()](<<link>>).
+The key-value pairs are passed to [PyFibers: Fiber.add_intrinsic_activity()](https://wmglab-duke.github.io/pyfibers/autodoc/fiber.html#pyfibers.fiber.Fiber.add_intrinsic_activity).
 
 `“saving”`: The value (JSON Object) contains key-value pairs to define
 which state variables NEURON will save during its simulations and at
@@ -796,7 +796,7 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
 
 - `"run_sim_kws"`: Additional keyword arguments to pass to PyFibers `ScaledStim.run_sim()` method. Optional.
   Only used if protocol is `“FINITE_AMPLITUDES”`. For threshold search protocols, these should be included in `"find_threshold_kws"`.
-  See [PyFibers ScaledStim.run_sim()](<<link>>) for more information.
+  See [PyFibers ScaledStim.run_sim()](https://wmglab-duke.github.io/pyfibers/autodoc/stimulation.html#pyfibers.stimulation.ScaledStim.run_sim) for more information.
   Note: you should not include in this json object any keyword arguments already set by other parameters within sim.json, or parameters set by ASCENT. This includes:
   - `"stimamp"`
   - `"ap_detect_location"`
@@ -805,7 +805,7 @@ which times/locations ([NEURON Scripts](../../Code_Hierarchy/NEURON)). Required.
 - `"find_threshold_kws"`: Additional keyword arguments to pass to PyFibers `ScaledStim.find_threshold()` method. Optional.
   Only used if protocol is `“ACTIVATION_THRESHOLDS”` or `“BLOCK_THRESHOLDS”`.
   Since `find_threshold()` passes extra arguments to `run_sim()`, you may also include keyword arguments for `run_sim()` here.
-  See [PyFibers ScaledStim.find_threshold()](<<link>>) and [PyFibers ScaledStim.run_sim()](<<link>>) for more information.
+  See [PyFibers ScaledStim.find_threshold()](https://wmglab-duke.github.io/pyfibers/autodoc/stimulation.html#pyfibers.stimulation.Stimulation.find_threshold) and [PyFibers ScaledStim.run_sim()](https://wmglab-duke.github.io/pyfibers/autodoc/stimulation.html#pyfibers.stimulation.ScaledStim.run_sim) for more information.
   Note: you should not include in this json object any keyword arguments already set by other parameters within sim.json, or parameters set by ASCENT. This includes:
     - `"condition"`
     - `"bounds_search_mode"`
