@@ -1,0 +1,4 @@
+ASCENT==1.4.0
+python==3.11.8
+COMSOL==6.1.0.282
+NEURON==8.2.3+
