@@ -66,6 +66,23 @@ and \_.bat or \_.sh scripts. Run this script from your `"ASCENT_PROJECT_PATH"`. 
 
 `python run tidy_samples <list of sample indices>`
 
+### `scripts/compare.py`
+
+This script will compare two folders in the `/samples` directory and
+saves a line-by-line difference to the `/diff` directory. This comparison
+may be helpful if you would like to verify that multiple runs differ by
+only the intended parameters.
+
+The script iterates through the file tree and compares the files with
+Python's filecmp module. Each folder with differing contents will have
+an analogous folder and file_compare.txt that summarizes the differences.
+The script then uses difflib to make line-by line comparisons for differing
+files, which are saved as `<filename>_diff.txt`. Finally, the
+script will load numerical values and compute the percent difference. These
+values are saved as `<filename>_diff.dat` in the `/diff` folder.
+
+`python run compare <sample_index> <sample_index>`
+
 ## Data analysis tools
 
 ### Python Query class

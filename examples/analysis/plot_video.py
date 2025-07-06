@@ -50,7 +50,7 @@ os.makedirs(outpath, exist_ok=True)
 
 
 if shutil.which('ffmpeg') is None:
-    sys.exit('Please install ffmpeg and add to your PATH before continuing.')
+    raise Exception('Please install ffmpeg and add to your PATH before continuing.')
 
 for sample in samples:  # Should be updated to use common_data_extraction in the future
     for model in models:

@@ -1,0 +1,124 @@
+{
+  "full_test": {
+    "ignore": [
+      "plots",
+      "masks",
+      "debug_geom.mph",
+      "bases",
+      "start_scripts",
+      "mesh.mph",
+      "logs",
+      "mock.json",
+      "explicit_fibersets"
+    ],
+    "model.json": {
+      "keys": [
+        "solution",
+        "mesh/stats"
+      ]
+    },
+    "sample_ignore": [],
+    "test_ignore": [
+      "n.tif",
+      "c.tif",
+      "o.tif",
+      "i.tif",
+      "sim.json",
+      "model.json"
+    ]
+  },
+  "java_test": {
+    "ignore": [
+      "plots",
+      "masks",
+      "debug_geom.mph",
+      "bases",
+      "start_scripts",
+      "mesh.mph",
+      "logs",
+      "outputs",
+      "mock.json",
+      "explicit_fibersets"
+    ],
+    "model.json": {
+      "keys": [
+        "solution",
+        "mesh/stats"
+      ]
+    },
+    "sample_ignore": [],
+    "test_ignore": [
+      "n.tif",
+      "c.tif",
+      "o.tif",
+      "i.tif",
+      "s.tif",
+      "sim.json",
+      "model.json",
+      "blank.hoc",
+      "out_err_key.csv",
+      "inner_fiber_diam_key.obj",
+      "waveform.dat"
+    ]
+  },
+  "neuron_test": {
+    "ignore": [
+      "plots",
+      "masks",
+      "debug_geom.mph",
+      "bases",
+      "start_scripts",
+      "mesh.mph",
+      "logs",
+      "mock.json",
+      "explicit_fibersets"
+    ],
+    "model.json": {
+      "keys": [
+        "solution",
+        "mesh/stats"
+      ]
+    },
+    "sample_ignore": [],
+    "test_ignore": [
+      "n.tif",
+      "c.tif",
+      "o.tif",
+      "i.tif",
+      "s.tif",
+      "sim.json",
+      "model.json"
+    ]
+  },
+  "pre_java_test": {
+    "ignore": [
+      "plots",
+      "masks",
+      "debug_geom.mph",
+      "bases",
+      "start_scripts",
+      "mesh.mph",
+      "logs",
+      "mock.json",
+      "explicit_fibersets"
+    ],
+    "model.json": {
+      "keys": [
+        "solution",
+        "mesh/stats"
+      ]
+    },
+    "sample_ignore": [],
+    "test_ignore": [
+      "n.tif",
+      "c.tif",
+      "o.tif",
+      "i.tif",
+      "sim.json",
+      "model.json",
+      "mesh",
+      "fibersets_bases",
+      "n_sims"
+    ]
+  }
+}

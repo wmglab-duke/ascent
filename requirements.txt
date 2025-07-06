@@ -8,7 +8,7 @@ pandas
 pillow
 pip
 pyclipper
-# pyfibers # Uncomment when available on PyPI.
+pyfibers
 pygame
 pymunk
 quantiphy

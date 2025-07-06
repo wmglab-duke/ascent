@@ -342,7 +342,7 @@ meshing statistics (automatically calculated).
 <!-- end list -->
 
 - `“nerve”`: Meshing parameters for the nerve domains
-  (epi-, peri-, and endoneurium). Optional, will use proximal ).
+  (epi-, peri-, and endoneurium). Optional, defaults to proximal parameters.
 
   - `“type”`: JSON Object containing parameters/definitions specific
     to meshing discretization method (e.g., free tetrahedral

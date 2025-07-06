@@ -554,6 +554,7 @@ class Model(Configurable, Saveable):
         :raises IncompatibleParametersError: if distal medium exists and proximal is set as ground
         :return: self
         """
+        self.compute_mesh_parameters()
         if self.search(Config.MODEL, 'medium', 'distal', 'exist') and self.search(
             Config.MODEL, 'medium', 'proximal', 'distant_ground'
         ):

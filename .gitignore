@@ -137,7 +137,7 @@ samples/
 submit/
 data/tmp/
 data/*.pickle
-data/
+diff/
 input/
 output/
 */user/*
@@ -155,9 +155,11 @@ out/
 # not for distribution
 config/user/private/
 scripts/private/
-data/
 tmp
 bin/
 projects/
 schema/
 user_input_gui.py
+
+#Include all test data
+!tests/

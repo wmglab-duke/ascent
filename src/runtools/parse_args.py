@@ -88,6 +88,8 @@ pipeline_parser.add_argument(
     action='store_true',
     help="Automatically submit fibers after each run",
 )
+# Hidden argument used by integration tests
+pipeline_parser.add_argument('--test', action='store_true', help=argparse.SUPPRESS)
 prog_group = pipeline_parser.add_mutually_exclusive_group()
 prog_group.add_argument(
     '-c',
@@ -169,6 +171,15 @@ bd_subcommands = bd_parser.add_subparsers(help='build_dataset stage', dest='stag
 bd_query_parser = bd_subcommands.add_parser('query', help='Use query criteria to build excel output')
 bd_generate_parser = bd_subcommands.add_parser('generate', help='Generate dataset (keeps files) from excel output')
 bd_generate_parser.add_argument('-f', '--force', action='store_true', help='Overwrite existing dataset')
+
+# add parser for pipeline
+compare_parser = subparsers.add_parser('compare', help='compare sample directories')
+compare_parser.add_argument(
+    'sample_indices',
+    type=int,
+    nargs=2,
+    help='Space separated sample indices to run the comparison over',
+)
 
 
 def parse():

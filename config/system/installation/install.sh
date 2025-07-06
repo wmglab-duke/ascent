@@ -11,6 +11,7 @@ conda install python=3.11
 $CONDA_ENVPY -m pip install --upgrade pip setuptools wheel
 $CONDA_ENVPY -m pip install -r requirements.txt
 conda install -c conda-forge ffmpeg
+pyfibers_compile
 
 echo
 # create shortcut

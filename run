@@ -19,7 +19,7 @@ args = parse_args.parse()
 
 if args.script != 'install':
     env = os.environ.get('CONDA_PREFIX')
-    if env is not None and os.path.split(env)[-1] != 'ascent':
+    if env is not None and 'ascent' not in os.path.split(env)[-1]:
         sys.exit(
             '''
             ASCENT must be run in the "ascent" environment.
