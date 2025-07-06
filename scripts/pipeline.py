@@ -8,11 +8,16 @@ source code can be found on the following GitHub repository:
 https://github.com/wmglab-duke/ascent
 """
 
+
+import importlib
+import json
 import os
 import subprocess
 import sys
 import time
+from datetime import datetime
 
+import neuron
 from config.system import _version
 from src.runner import Runner
 from src.utils.enums import Config, Env, SetupMode
@@ -20,14 +25,11 @@ from src.utils.enums import Config, Env, SetupMode
 from .env_setup import run as env_setup
 
 
-def export_env(sample_path: str, runner: Runner):
+def export_env(runner: Runner):
     """Export the system configuration to files.
 
-    :param sample_path: directory in which to save files
     :param runner: runner object
     """
-    import neuron
-
     ascent_version = 'ASCENT==' + _version.__version__
     python_version = sys.version_info
     python_version = 'python==' + '.'.join([str(v) for v in python_version[:3]])
@@ -36,6 +38,7 @@ def export_env(sample_path: str, runner: Runner):
     with open(os.path.join(comsol_path, 'readme.txt')) as f:
         comsol_version = f.readline().strip('\n')
     comsol_version = 'COMSOL==' + comsol_version.split(' ')[1]
+    sample_path = 'samples/' + str(runner.search(Config.RUN, 'sample'))
     with open(sample_path + '/software_info.txt', 'w') as f:
         for sv in (ascent_version, python_version, comsol_version, neuron_version):
             f.write(sv + '\n')
@@ -44,7 +47,7 @@ def export_env(sample_path: str, runner: Runner):
         subprocess.run(['pip', 'freeze'], stdout=f)
 
 
-def run(args):
+def run(args):  # noqa C901
     """Run the pipeline.
 
     :param args: The command line arguments.
@@ -61,8 +64,35 @@ def run(args):
     if not (os.path.exists('bin')):
         os.mkdir('bin')
 
-    if not args.run_indices:
+    # Check that some form of runs were provided
+    if args.run_group is None and args.input_name is None and not args.run_indices:
         raise ValueError('No run indices provided.')
+
+    # Add input runs to run list
+    if args.input_name is not None:
+        input_name_inds = importlib.import_module('scripts.' + 'build_from_input').build(args.input_name)
+        args.run_indices.extend(input_name_inds)
+
+    # Add run groups to run list
+    if args.run_group is not None:
+        grouppath = os.path.join('config', 'user', 'rungroups.json')
+
+        if not os.path.exists(grouppath):
+            raise FileNotFoundError(f'Run group file not found: {grouppath}')
+        with open(grouppath) as f:
+            rungroups = json.load(f)
+
+        if args.run_group not in rungroups:
+            raise ValueError(f'Run group not found: {args.run_group}')
+
+        args.run_indices.extend(rungroups[args.run_group])
+
+    run_tracker_json = 'run_tracking.json'
+    if os.path.exists(run_tracker_json):
+        with open(run_tracker_json) as f:
+            run_tracker = json.load(f)
+    else:
+        run_tracker = {}
 
     for argument in args.run_indices:
         # START timer
@@ -75,7 +105,6 @@ def run(args):
 
         if int(argument) < 0:
             raise ValueError(f'Invalid sign for argument: {argument}\nAll arguments must be positive integers.')
-
         if int(argument) > 2147482999 and not args.test:
             raise ValueError(f'Invalid value for argument: {argument}\nArguments greater than 2147482999 are reserved.')
 
@@ -101,18 +130,13 @@ def run(args):
 
         if (
             runner.search(Config.RUN, 'sample') > 2147482999
-            or any(m > 2147482999 for m in runner.search(Config.RUN, 'models'))
-            or any(m > 2147482999 for m in runner.search(Config.RUN, 'sims'))
+            or any(int(m) > 2147482999 for m in runner.search(Config.RUN, 'models'))
+            or any(int(m) > 2147482999 for m in runner.search(Config.RUN, 'sims'))
         ) and not args.test:
             raise ValueError(
                 f'Invalid value for argument: {argument}\nAll indices (sample, model, sim) greater than 2147482999 are '
                 f'reserved for testing.'
             )
-
-        samples_path = f'samples/{argument}'
-        if not os.path.exists(samples_path):
-            raise ValueError(f'Sample index {argument} does not exist in /samples folder.')
-        export_env(samples_path, runner)
 
         # ready, set, GO!
         runner.run()
@@ -120,6 +144,7 @@ def run(args):
         # END timer
         end = time.time()
         elapsed = end - start
+        export_env(runner)
 
         if args.auto_submit or runner.search(Config.RUN, 'auto_submit_fibers', optional=True) is True:
             print(f'Auto submitting fibers for run {argument}')
@@ -139,6 +164,33 @@ def run(args):
             os.chdir(reset_dir)
 
         print(f"\nRun {argument} runtime: {time.strftime('%H:%M:%S', time.gmtime(elapsed))} (hh:mm:ss)")
+
+        with open(run_path) as f:
+            run_dict = json.load(f)
+
+        sample_int = run_dict['sample']
+        sample_path = f'samples/{sample_int}/sample.json'
+        models_dict = {
+            model_int: f'samples/{sample_int}/models/{model_int}/model.json' for model_int in run_dict['models']
+        }
+        sims_dict = {sim_int: f'config/user/sims/{sim_int}.json' for sim_int in run_dict['sims']}
+        run_tracker.update(
+            {
+                str(argument): {
+                    'run_time': datetime.now().strftime("%Y-%m-%d_%H-%M-%S-%f"),
+                    'run_json': run_path,
+                    'run_name': run_dict['pseudonym'],
+                    'sample_json': sample_path,
+                    'sample_int': sample_int,
+                    'models': models_dict,
+                    'sims': sims_dict,
+                }
+            }
+        )
+
+    run_tracker = dict(sorted(run_tracker.items(), key=lambda x: int(x[0])))
+    with open(run_tracker_json, 'w') as f:
+        json.dump(run_tracker, f, indent=2)
 
     # cleanup for console viewing/inspecting
     del start, end

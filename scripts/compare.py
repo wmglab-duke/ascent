@@ -241,6 +241,7 @@ def compare_directories(dir_left: str, dir_right: str, ignore_dict: dict):
     filecmp.clear_cache()
     dir_cmp = filecmp.dircmp(dir_left, dir_right, ignore=ignore)
     print(f'Comparing {dir_left} to {dir_right}')
+    filecmp.clear_cache()
     is_diff = recurse_compare(dir_cmp, cmp_dir, ignore_dict)
     if is_diff:
         print(f'\tDifferences between {dir_left} and {dir_right}')
