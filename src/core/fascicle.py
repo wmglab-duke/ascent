@@ -62,7 +62,8 @@ class Fascicle:
         """
         # check that inners are valid
         if not self.outer.polygon().is_valid:
-            self.outer.make_valid()
+            raise MorphologyError("Fascicle trace is not valid")
+            # Note create outer.make_valid in the future
 
         # ensure all inner Traces are actually inside outer Trace
         if any(not inner.within(self.outer) for inner in self.inners):

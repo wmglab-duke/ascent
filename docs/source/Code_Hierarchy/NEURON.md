@@ -1,6 +1,6 @@
 # NEURON Files
 ## NEURON simulations
-All NEURON simulations are handled using the `PyFibers` Python package ([PyPi](<<link>>), [GitHub](<<link>>)).
+All NEURON simulations are handled using the `PyFibers` Python package ([PyPi](https://pypi.org/project/pyfibers/), [GitHub](https://github.com/wmglab-duke/pyfibers)).
 
 ### Create fiber model
 
@@ -81,4 +81,4 @@ bisection search, and threshold resolution for the bisection search from
 and an exception configuration. The file automatically loads the `fiber_z.json` configuration
 file which contains all associated flags, parameters, and rules for
 defining a fiber’s geometry and channel mechanisms in NEURON, all of which is handled in the
-`PyFibers` package.
+[PyFibers](https://wmglab-duke.github.io/pyfibers/index.html) package.

@@ -66,6 +66,7 @@ class Sample(Configurable, Saveable):
         self.reshape_nerve_mode = None
         self.nerve_mode = None
         self.mask_input_mode = None
+        self.mask_space_mode = None
         self.slides: list[Slide] = []
         self._init_slides: list[Slide] = []
 

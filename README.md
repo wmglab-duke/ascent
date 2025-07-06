@@ -18,7 +18,8 @@
 
 - **Cite the PyFibers paper:**
 
-  > Placeholder
+  > PyFibers paper citation will be available soon: See <https://wmglab-duke.github.io/pyfibers/> for most recent updates
+
 
 - **If you use the neural recording feature or SMALL_MRG_INTERPOLATION model, also cite the nerve recording modeling paper:**
 
@@ -26,7 +27,7 @@
 
 - **Cite the code (use the DOI for the version of code used):**
 
-  > **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2023). wmglab-duke/ascent: ASCENT v1.3.2 (v1.3.2) [Computer software]. Zenodo. <https://doi.org/10.5281/ZENODO.TBD.>
+  > **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2025). wmglab-duke/ascent: ASCENT v1.5.0 (v1.5.0) [Computer software]. Zenodo. <https://doi.org/10.5281/ZENODO.TBD.>
 
 ---
 

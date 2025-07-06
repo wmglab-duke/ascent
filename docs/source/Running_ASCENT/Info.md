@@ -236,7 +236,7 @@ time-varying signal in NEURON. The stimulation waveform, saved in a
 `n_sim’s data/inputs/` directory as `waveform.dat`, is unscaled (i.e., the
 maximum current magnitude at any timestep is +/-1), and is then scaled
 by the current amplitude in the NEURON simulation using
-`PyFibers` (available on [PyPi](<<link>>) or [GitHub](<<link>>)) to either simulate fiber thresholds of
+`PyFibers` (available on [PyPi](https://pypi.org/project/pyfibers/) or [GitHub](https://github.com/wmglab-duke/pyfibers)) to either simulate fiber thresholds of
 activation or block with a binary search algorithm, or response to set
 amplitudes.
 
@@ -320,7 +320,7 @@ of amplitudes that the user would like to simulate ([Sim Parameters](../JSON/JSO
 
 ### Myelinated fiber models
 
-The `Fiber.create_myelinated_fiber()` method in `fiber.py` is called by `Fiber.generate()` if the user
+The `Fiber.create_myelinated_fiber()` method in [`fiber.py`](https://wmglab-duke.github.io/pyfibers/autodoc/fiber.html) is called by `Fiber.generate()` if the user
 chooses either `"MRG_DISCRETE"`, `"MRG_INTERPOLATION"`, or `"SMALL_MRG_INTERPOLATION"`. The length of each section in NEURON varies depending on both the diameter and the "FiberGeometry" mode chosen in **_Sim_**.
 
 #### MRG discrete diameter (as previously published)

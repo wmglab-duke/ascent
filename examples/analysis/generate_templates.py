@@ -60,7 +60,7 @@ else:
 # using myelinated types in ASCENT, if not myelinated then assume unmyelinated
 fiber_type, common_time_bounds_ms, n_compartments_per_repeatable_uit = (
     ('myelinated', [-2.4, 36], 11)
-    if fiber_type in ['MRG_DISCRETE', 'MRG_INTERPOLATION', 'SMALL_MRG_INTERPOLATION_V1']
+    if fiber_type in ['MRG_DISCRETE', 'MRG_INTERPOLATION', 'SMALL_MRG_INTERPOLATION']
     else ('unmyelinated', [-2, 60], 1)
 )
 
