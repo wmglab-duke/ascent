@@ -242,14 +242,15 @@ class Sample(Configurable, Saveable):
             if not os.path.exists(source_dir) or len(os.listdir(source_dir)) == 0:
                 raise FileNotFoundError("Could not find the input defined in the 'sample' field of sample.json.")
             # convert any TIFF to TIF
-            [os.rename(x, os.path.splitext(x)[0] + '.tif') for x in os.listdir(source_dir) if x.endswith('.tiff')]
             source_files = os.listdir(source_dir)
-            mask_fnames = [f.value for f in MaskFileNames if f.value in source_files]
-            for mask_fname in mask_fnames:
-                shutil.move(
-                    os.path.join(source_dir, mask_fname),
-                    os.path.join(source_dir, f'{sample}_0_0_{mask_fname}'),
-                )
+            mask_fnames = [f.value for f in MaskFileNames]
+            for fn in source_files:
+                new_fn = fn
+                if fn.endswith('.tiff'):
+                    new_fn = os.path.splitext(fn)[0] + '.tif'
+                    os.rename(os.path.join(source_dir, fn), os.path.join(source_dir, new_fn))
+                if new_fn in mask_fnames:
+                    shutil.copy(os.path.join(source_dir, new_fn), os.path.join(source_dir, f'{sample}_0_0_{new_fn}'))
         else:
             raise ValueError("More than one slide provided")
 

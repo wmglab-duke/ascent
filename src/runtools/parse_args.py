@@ -35,6 +35,12 @@ pipeline_parser.add_argument(
     help='Space separated indices to run the pipeline over',
 )
 pipeline_parser.add_argument(
+    '-i',
+    '--input_name',
+    type=str,
+    help='Sort config files from /input/<input_name>/runs, /samples, /sims, and /models and run these new configs',
+)
+pipeline_parser.add_argument(
     '-b',
     '--break-point',
     choices=[
@@ -57,6 +63,13 @@ pipeline_parser.add_argument(
     '--wait-for-license',
     type=float,
     help="Wait the specified number of hours for a comsol license to become available.",
+)
+pipeline_parser.add_argument(
+    '-R',
+    '--run-group',
+    type=str,
+    help="Use a list of runs from /config/user/rungroups.json. See /examples/tutorial/rungroups.json for an example. "
+    "Any additional run indices passed will be appended.",
 )
 pipeline_parser.add_argument(
     '-P',
@@ -147,6 +160,25 @@ cs_parser.add_argument(
     help='Space separated sample indices to clean',
 )
 
+# add build from input parser
+bfi_parser = subparsers.add_parser(
+    'build_from_input', help='Convert all .json files in input/{arg} to valid runs and create a new rungroup'
+)
+bfi_parser.add_argument(
+    'input_name',
+    type=str,
+    help='Space separated sample names to convert',
+)
+
+# add parser for compare
+compare_parser = subparsers.add_parser('compare', help='compare sample directories')
+compare_parser.add_argument(
+    'sample_indices',
+    type=int,
+    nargs=2,
+    help='Space separated sample indices to run the comparison over',
+)
+
 # add mock sample parser
 mmg_parser = subparsers.add_parser('mock_morphology_generator', help='Generate mock morpology for an ASCENT run')
 mmg_parser.add_argument('mock_sample_index', type=int, help='Mock Sample Index to generate')
@@ -171,15 +203,6 @@ bd_subcommands = bd_parser.add_subparsers(help='build_dataset stage', dest='stag
 bd_query_parser = bd_subcommands.add_parser('query', help='Use query criteria to build excel output')
 bd_generate_parser = bd_subcommands.add_parser('generate', help='Generate dataset (keeps files) from excel output')
 bd_generate_parser.add_argument('-f', '--force', action='store_true', help='Overwrite existing dataset')
-
-# add parser for pipeline
-compare_parser = subparsers.add_parser('compare', help='compare sample directories')
-compare_parser.add_argument(
-    'sample_indices',
-    type=int,
-    nargs=2,
-    help='Space separated sample indices to run the comparison over',
-)
 
 
 def parse():

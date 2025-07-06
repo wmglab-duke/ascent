@@ -66,6 +66,22 @@ and \_.bat or \_.sh scripts. Run this script from your `"ASCENT_PROJECT_PATH"`. 
 
 `python run tidy_samples <list of sample indices>`
 
+### `scripts/build_from_input.py`
+
+You can organize your configuration files within the input directory. This will ensure repeatability for your
+runs by separating the input and output files for ASCENT. To use this configuration, create a directory
+`/input/<input_name>`, such as `/input/tutorial`. Place your image files in this directory as normal. Then create
+subfolders called `/runs`, `/samples`, `/models`, and `/sims`. Place your configuration JSON files in these folders
+respective to the configuration file type. In your `/runs` JSON files, instead of specifying integer indices for
+the sample, model, and sim files, use the file names from the subfolders. For example, the "sample" key in
+`/input/runs/run_tutorial.json` can have the value "sample_tutorial.json", which will specify the file
+`/input/<input_name>/samples/sample_tutorial.json` as the sample configuration json for this run. Unique integers will
+be created for these configuration files in the appropriate ASCENT configuration directories, and a new rungroup called
+<input_name> will be created for the runs.
+Run this script from your `"ASCENT_PROJECT_PATH"`. Files to remove are specified within the python script.
+
+`python run build_from_input <input_name>`
+
 ### `scripts/compare.py`
 
 This script will compare two folders in the `/samples` directory and
