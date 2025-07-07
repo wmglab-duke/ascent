@@ -12,7 +12,6 @@ import os
 import sys
 
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
-os.chdir('../..')
 
 import matplotlib.pyplot as plt
 
