@@ -29,7 +29,8 @@ q = Query(
 
 # Build heatmap
 data = q.common_data_extraction(data_types=['threshold'])
-heatmaps(data=data)
+data['threshold'] = data['threshold'].abs()
+heatmaps(data=data, cuff_orientation=True)
 plt.title('Activation threshold heatmap')
 
 save_directory = os.path.join('output', 'analysis')
