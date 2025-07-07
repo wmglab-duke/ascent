@@ -310,11 +310,13 @@ class _HeatmapPlotter:
             r = self.sample.slides[0].fascicles[0].outer.mean_radius()
         # get orientation angle from slide
         theta = self.sample.slides[0].orientation_angle
+        if theta is None:
+            theta = 0
         # load add_ang from model.json cofiguration file
         with open(Query.build_path(Config.MODEL, [self.sample_index, self.model_index])) as f:
             model_config = json.load(f)
         # add any cuff rotation
-        theta += np.deg2rad(model_config.get('cuff').get('rotate').get('add_ang'))
+        theta += np.deg2rad(model_config.get('cuff')[0].get('rotate').get('add_ang'))
         ax.scatter(r * 1.2 * np.cos(theta), r * 1.2 * np.sin(theta), 300, 'red', 'o')
 
 
