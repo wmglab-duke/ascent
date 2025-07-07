@@ -21,21 +21,10 @@
     "xy_trace_buffer": 5.0,
     "z_parameters": {
       "diameter": 8.7,
-      "max": 12500,
-      "min": 0,
+      "full_nerve_length": true,
       "mode": "EXTRUSION",
       "offset": 0,
       "seed": 123
-    }
-  },
-  "intracellular_stim": {
-    "amp": 0,
-    "ind": 2,
-    "pulse_repetition_freq": 0,
-    "times": {
-      "IntraStim_PulseTrain_delay": 0,
-      "IntraStim_PulseTrain_dur": 0,
-      "pw": 0
     }
   },
   "n_dimensions": 0,

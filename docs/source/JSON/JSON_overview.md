@@ -137,7 +137,7 @@ which defines the process by which the nerve morphology is defined in
 the MockSample Python class. Each `"PopulateMode"` requires a certain set
 of parameters to define the nerve and to define and place the fascicles;
 the set of parameters for each `"PopulateMode"` are defined in
-`config/templates/mock_sample_params_all_modes.json`.
+`config/templates/advanced/mock_sample_params_all_modes.json`.
 
 Probabilistic "PopulateModes" (i.e., TRUNCNORM, UNIFORM) populate an
 elliptical nerve with elliptical fascicles of diameter and eccentricity

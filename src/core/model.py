@@ -14,7 +14,7 @@ import numpy as np
 from quantiphy import Quantity
 from shapely.geometry import Point
 
-from src.core import Sample, Slide, Waveform
+from src.core import Slide, Waveform
 from src.utils import (
     Config,
     Configurable,
@@ -37,20 +37,19 @@ class Model(Configurable, Saveable):
         # Initializes superclass
         Configurable.__init__(self)
 
-    def compute_cuff_shift(self, sample: Sample, sample_config: dict):
+    def compute_cuff_shift(self, slide: Slide, sample_config: dict, addl_cuff_buffer=0, ignore_uncentered=False):
         """Compute the Cuff Shift for single or multiple cuffs in a given model.
 
-        :param sample: Sample, sample object
+        :param slide: the slide to compute cuff shift around
         :param sample_config: dict, sample config
+        :param addl_cuff_buffer: additional amount of distance between cuff and nerve (in um)
+        :param ignore_uncentered: if False, error if slide is not centered on origin
         :raises ValueError: if deform_ratio is not between 0 and 1 (inclusive)
         :return: self
         """
         # NOTE: ASSUMES SINGLE SLIDE
         # add temporary model configuration
         self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
-
-        # fetch slide
-        slide = sample.slides[0]
 
         # fetch nerve mode
         nerve_mode: NerveMode = self.search_mode(NerveMode, Config.SAMPLE)
@@ -79,7 +78,9 @@ class Model(Configurable, Saveable):
         cuff_dicts = []
 
         for cuff_dict in cuff_data:
-            cuff_dict = self.cuff_shift_calc(cuff_dict, slide, deform_ratio, nerve_mode, sample_config)
+            cuff_dict = self.cuff_shift_calc(
+                cuff_dict, slide, deform_ratio, nerve_mode, sample_config, addl_cuff_buffer, ignore_uncentered
+            )
             cuff_dicts.append(cuff_dict)
 
         self.configs[Config.MODEL.value]['cuff'] = cuff_dicts
@@ -87,7 +88,14 @@ class Model(Configurable, Saveable):
         return self
 
     def cuff_shift_calc(
-        self, cuff_dict: dict, slide: Slide, deform_ratio: float, nerve_mode: NerveMode, sample_config: dict
+        self,
+        cuff_dict: dict,
+        slide: Slide,
+        deform_ratio: float,
+        nerve_mode: NerveMode,
+        sample_config: dict,
+        addl_cuff_buffer,
+        ignore_uncentered,
     ):
         """Compute the cuff shift for a single cuff.
 
@@ -96,6 +104,8 @@ class Model(Configurable, Saveable):
         :param deform_ratio: deformation ratio
         :param nerve_mode: whether the nerve is present. Flag from sample config file.
         :param sample_config: sample configuration variables
+        :param ignore_uncentered: if False, error if slide is not centered on origin
+        :param addl_cuff_buffer: additional amount of distance between cuff and nerve (in um)
         :raises ValueError: if deform_ratio is not between 0 and 1 (inclusive)
         :return: updated cuff dictionary
         """
@@ -116,7 +126,12 @@ class Model(Configurable, Saveable):
             theta_i,
             x,
             y,
-        ) = self.get_cuff_shift_parameters(cuff_config, deform_ratio, nerve_copy, sample_config, slide)
+        ) = self.get_cuff_shift_parameters(
+            cuff_config, deform_ratio, nerve_copy, sample_config, slide, ignore_uncentered
+        )
+
+        if addl_cuff_buffer != 0:
+            cuff_r_buffer += addl_cuff_buffer
 
         r_i, theta_f = self.check_cuff_expansion_radius(cuff_code, cuff_config, expandable, r_f, theta_i)
 
@@ -201,7 +216,7 @@ class Model(Configurable, Saveable):
         cuff_dict['shift']['y'] = y_shift
         return cuff_dict
 
-    def get_cuff_shift_parameters(self, cuff_config, deform_ratio, nerve_copy, sample_config, slide):
+    def get_cuff_shift_parameters(self, cuff_config, deform_ratio, nerve_copy, sample_config, slide, ignore_uncentered):
         """Calculate parameters for cuff shift.
 
         :param cuff_config: cuff configuration
@@ -209,6 +224,7 @@ class Model(Configurable, Saveable):
         :param nerve_copy: copied nerve object
         :param sample_config: sample configuration
         :param slide: slide object to shift cuff around
+        :param ignore_uncentered: whether to ignore uncentered slide
         :raises MorphologyError: if slide is not centered at origin
         :return: (cuff code, cuff r buffer, expandable, offset, r_bound, r_f, theta_c, theta_i, x, y)
         """
@@ -239,13 +255,22 @@ class Model(Configurable, Saveable):
         # if poly fasc, use centroid of all fascicle as reference, not 0, 0
         # angle of centroid of nerve to center of minimum bounding circle
         reference_x = reference_y = 0.0
-        if not slide.monofasc() and not (round(slide.nerve.centroid()[0]) == round(slide.nerve.centroid()[1]) == 0):
+        if (
+            not ignore_uncentered
+            and not slide.monofasc()
+            and not (round(slide.nerve.centroid()[0]) == round(slide.nerve.centroid()[1]) == 0)
+        ):
             raise MorphologyError(
                 "Slide is not centered at [0,0]"
             )  # if the slide has nerve and is not centered at the nerve throw error
         if not slide.monofasc():
-            reference_x, reference_y = slide.fascicle_centroid()
-        theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
+            try:
+                reference_x, reference_y = slide.fascicle_centroid()
+                theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
+            except ZeroDivisionError:
+                theta_c = 0
+        else:
+            theta_c = (np.arctan2(reference_y - y, reference_x - x) * (360 / (2 * np.pi))) % 360
         # calculate final necessary radius by adding buffer
         r_f = r_bound + cuff_r_buffer
         # fetch initial cuff rotation (convert to rads)
@@ -501,12 +526,35 @@ class Model(Configurable, Saveable):
 
         return self
 
+    def compute_mesh_parameters(self):
+        """Compute mesh parameters for a given model.
+
+        :raises NotImplementedError: An invalid mode is specified
+        :return: self
+        """
+        if "nerve" not in self.configs[Config.MODEL.value]["mesh"]:
+            # If nerve mesh params do not exist, copy proximal mesh params
+            self.configs[Config.MODEL.value]["mesh"]["nerve"] = self.configs[Config.MODEL.value]["mesh"]["proximal"]
+
+        if "ftet" != self.configs[Config.MODEL.value]["mesh"]["proximal"]["type"]["im"]:
+            raise NotImplementedError(
+                "mesh/proximal/type/im must be ftet; Only free tetrahedral mesh supported for proximal domain"
+            )
+
+        if "ftet" != self.configs[Config.MODEL.value]["mesh"]["distal"]["type"]["im"]:
+            raise NotImplementedError(
+                "mesh/distal/type/im must be ftet; Only free tetrahedral mesh supported for distal domain"
+            )
+
+        return self
+
     def validate(self):
         """Check model parameters for validity.
 
         :raises IncompatibleParametersError: if distal medium exists and proximal is set as ground
         :return: self
         """
+        self.compute_mesh_parameters()
         if self.search(Config.MODEL, 'medium', 'distal', 'exist') and self.search(
             Config.MODEL, 'medium', 'proximal', 'distant_ground'
         ):

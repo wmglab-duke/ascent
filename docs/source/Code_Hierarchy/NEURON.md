@@ -1,52 +1,37 @@
 # NEURON Files
-
-## NEURON Wrapper.hoc
-
-The `Wrapper.hoc` file coordinates all program operations to create a
-biophysically realistic discrete cable fiber model, simulate the fiber’s
-response to extracellular and intracellular stimulation, and record the
-response of the fiber. For each fiber simulated in NEURON, outputs are
-saved to `<n_sim_index>/data/outputs/`. For simulations running an
-activation or block threshold protocol, data outputs include threshold
-current amplitudes. For simulation of fiber response to set amplitudes,
-the user may save state variables at each compartment in NEURON to file
-at discrete times and/or locations.
+## NEURON simulations
+All NEURON simulations are handled using the `PyFibers` Python package ([PyPi](https://pypi.org/project/pyfibers/), [GitHub](https://github.com/wmglab-duke/pyfibers)).
 
 ### Create fiber model
 
-Based on the flag for "fiber_type" set in `launch.hoc` (associated by a
-fiber type parameter in `fiber_z.json` and `FiberGeometryMode` ([Sim Parameters](../JSON/JSON_parameters/sim))),
-`Wrapper.hoc` loads the corresponding template for defining fiber geometry
-discretization, i.e., `"GeometryBuilder.hoc"` for myelinated fibers and
-`"cFiberBuilder.hoc"` for unmyelinated fibers. For all fiber types, the
-segments created and connected in NEURON have lengths that correspond to
+Based on the "fiber_model" (associated by the "fiber/modes" type parameter
+ in `<sim_index>.json` ([Sim Parameters](../JSON/JSON_parameters/sim))),
+`run_controls.py` builds an instance of the fiber model using `PyFibers`.
+For all fiber types, the segments created and connected in NEURON have lengths that correspond to
 the coordinates of the input potentials.
-
-### Intracellular stimulus
-
-For simulations of block threshold, an intracellular test pulse is
-delivered at one end of the fiber to test if the cuff electrode (i.e.,
-placed between the intracellular stimulus and the site of detecting
-action potentials) is blocking action potentials ([Simulation Protocols](../Running_ASCENT/Info.md#simulation-protocols)). The intracellular
-stimulation parameters are defined in **_Sim_** and are defined as
-parameters in NEURON within the `launch.hoc` file. The parameters in
-**_Sim_** control the pulse delay, pulse width, pulse repetition
-frequency, pulse amplitude, and node/section index of the intracellular
-stimulus ([Sim Parameters](../JSON/JSON_parameters/sim)). For simulating activation thresholds, the intracellular
-stimulation amplitude should be set to zero.
 
 ### Extracellular stimulus
 
 To simulate response of individual fibers to electrical stimulation, we
-use NEURON’s extracellular mechanisms to apply the electric potential
-from COMSOL at each segment of the cable model as a time-varying signal.
-We load in the stimulation waveform from a `n_sim’s` `data/inputs/`
-directory using the `VeTime_read()` procedure within
-`ExtracellularStim_Time.hoc`. The saved stimulation waveform is unscaled,
+use NEURON’s extracellular mechanisms in the `PyFibers` package
+to apply the electric potential from COMSOL at each segment of the
+cable model as a time-varying signal.
+`run_controls.py` loads in the stimulation waveform from a `n_sim’s` `data/inputs/`.
+The saved stimulation waveform is unscaled,
 meaning the maximum current magnitude at any timestep is +/-1.
-Analogously, we read in the potentials for the fiber being simulated
-from `data/inputs/` using the `VeSpace_read()` procedure within
-`ExtracellularStim_Space.hoc`.
+Analogously, `run_control.py` reads in the potentials for the fiber being simulated
+from `data/inputs/`. ASCENT can run simulation to test for activation threshold, block threshold, or test responses to specific amplitudes (See [Simulation Protocols](../Running_ASCENT/Info.md#simulation-protocols)).
+
+### Intracellular stimulus
+
+For simulations of block threshold, an intracellular test pulse is delivered via a synapse  at one end of the fiber to test if the cuff electrode (i.e.,
+placed between the synapse and the site of detecting
+action potentials) is blocking action potentials ([Simulation Protocols](../Running_ASCENT/Info.md#simulation-protocols)). The intracellular stimulation parameters are defined in **_Sim_** and are defined as
+parameters in NEURON within the `run_controls.py` file. The parameters in
+**_Sim_** control the pulse delay, pulse width, pulse repetition
+frequency, pulse amplitude, and node/section index of the intracellular
+stimulus ([Sim Parameters](../JSON/JSON_parameters/sim)). For simulating activation thresholds, the intracellular
+stimulation amplitude should be set to zero.
 
 ### Recording
 
@@ -56,47 +41,28 @@ for all times and/or at discrete times for all spatial locations (i.e.,
 nodes of Ranvier for myelinated fibers or sections for unmyelinated
 fibers) for applied extracellular potential, intracellular stimulation
 amplitude, transmembrane potential, and gating parameters using
-`Recording.hoc`. The recording tools are particularly useful for
+the `PyFibers` package. The recording tools are particularly useful for
 generating data to troubleshoot and visualize simulations.
-
-### RunSim
-
-Our procedure `RunSim` is responsible for simulating the response of the
-model fiber to intracellular and extracellular stimulation. Before the
-simulation starts, the procedure adds action potential counters to look
-for a rise above a threshold transmembrane potential.
-
-So that each fiber reaches a steady-state before the simulation starts,
-the `RunSim` procedure initializes the fiber by stepping through large
-time steps with no extracellular potential applied to each compartment.
-`RunSim` then loops over each time step, and, while updating the value of
-extracellular potential at each fiber segment, records the values of
-flagged state variables as necessary.
-
-At the end of `RunSim’s` loop over all time steps, if the user is
-searching for threshold current amplitudes, the method evaluates if the
-extracellular stimulation amplitude was above or below threshold, as
-indicated by the presence or absence of an action potential for
-activation and block thresholds, respectively.
-
-### FindThresh
-
-The procedure `FindThresh` performs a bisection search for activation and
-block thresholds ([Simulation Protocols](../Running_ASCENT/Info.md#simulation-protocols)).
 
 ### Save outputs to file
 
 At the end of the NEURON simulation, the program saves state variables
-as indicated with saveflags, CPU time, and threshold values. Output
-files are saved to the `data/outputs/` directory within its `n_sim` folder.
+as indicated in `"saving"` in [sim.json](../JSON/JSON_parameters/sim.md), CPU time, and threshold values (If running a threshold search) or fiber action potential counts (if running a finite amplitudes protocol).
+Output files are saved to the `data/outputs/` directory within its `n_sim` folder.
 
-## NEURON launch.hoc
+## Simulation hierarchy & run_controls.py
 
-The `launch.hoc` file defines the parameters and simulation protocol for
+The hierarchy of the NEURON simulations can be described as follows:
+1. For each run, the `submit.py` file is responsible for creating each of the jobs that need to be executed.
+2. For each job, the `submit.py` file generates and runs shell scripts that handle the submission of the respective
+jobs.
+3. Finally, the shell scripts call the `run_controls.py` script, which performs the actual simulation tasks.
+
+The `run_controls.py` file controls the parameters and simulation protocol for
 modeling fiber response to electrical stimulation in NEURON and is
 automatically populated based on parameters in **_Model_** and
-**_Sim_**. The `launch.hoc` file is created by the `HocWriter` class.
-Parameters defined in `launch.hoc` span the categories of: environment
+**_Sim_**.
+Parameters defined in `<sim_index>.py` and `<model_index>.json` span the categories of: environment
 (i.e., temperature from **_Model_**), simulation time (i.e., time step,
 duration of simulation from **_Sim_**), fiber parameters (i.e., flags
 for fiber geometry and channels, number of fiber nodes from **_Model_**,
@@ -111,10 +77,8 @@ Ranvier for myelinated axons from **_Sim_**), and parameters for the
 bisection search for thresholds (i.e., activation or block protocol,
 initial upper and lower bounds on the stimulation amplitude for the
 bisection search, and threshold resolution for the bisection search from
-**_Sim_**). The `launch.hoc` file loads `Wrapper.hoc` which calls all NEURON
-procedures. The `launch.hoc` file is created by the Python `HocWriter`
-class, which takes inputs of the **_Sim_** directory, `n_sim/` directory,
-and an exception configuration. When the `HocWriter` class is
-instantiated, it automatically loads the `fiber_z.json` configuration
+**_Sim_**). The `run_controls.py` file takes inputs of the **_Sim_** directory, `n_sim/` directory,
+and an exception configuration. The file automatically loads the `fiber_z.json` configuration
 file which contains all associated flags, parameters, and rules for
-defining a fiber’s geometry and channel mechanisms in NEURON.
+defining a fiber’s geometry and channel mechanisms in NEURON, all of which is handled in the
+[PyFibers](https://wmglab-duke.github.io/pyfibers/index.html) package.

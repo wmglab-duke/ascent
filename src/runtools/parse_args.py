@@ -31,8 +31,14 @@ pipeline_parser = subparsers.add_parser('pipeline', help='main ASCENT pipeline')
 pipeline_parser.add_argument(
     'run_indices',
     type=int,
-    nargs='+',
+    nargs='*',
     help='Space separated indices to run the pipeline over',
+)
+pipeline_parser.add_argument(
+    '-i',
+    '--input_name',
+    type=str,
+    help='Sort config files from /input/<input_name>/runs, /samples, /sims, and /models and run these new configs',
 )
 pipeline_parser.add_argument(
     '-b',
@@ -48,6 +54,7 @@ pipeline_parser.add_argument(
         "pre_mesh_proximal",
         "post_mesh_proximal",
         "pre_solve",
+        "post_java",
     ],
     help='Point in pipeline to exit and continue to next run',
 )
@@ -56,6 +63,13 @@ pipeline_parser.add_argument(
     '--wait-for-license',
     type=float,
     help="Wait the specified number of hours for a comsol license to become available.",
+)
+pipeline_parser.add_argument(
+    '-R',
+    '--run-group',
+    type=str,
+    help="Use a list of runs from /config/user/rungroups.json. See /examples/tutorial/rungroups.json for an example. "
+    "Any additional run indices passed will be appended.",
 )
 pipeline_parser.add_argument(
     '-P',
@@ -87,6 +101,8 @@ pipeline_parser.add_argument(
     action='store_true',
     help="Automatically submit fibers after each run",
 )
+# Hidden argument used by integration tests
+pipeline_parser.add_argument('--test', action='store_true', help=argparse.SUPPRESS)
 prog_group = pipeline_parser.add_mutually_exclusive_group()
 prog_group.add_argument(
     '-c',
@@ -102,12 +118,19 @@ prog_group.add_argument(
 )
 # add parser for tidy samples
 ts_parser = subparsers.add_parser('tidy_samples', help='Remove specified files from Sample directories')
-ts_parser.add_argument('sample_indices', nargs='+', type=int, help='Space separated sample indices to tidy')
+ts_parser.add_argument('sample_indices', nargs='*', type=int, help='Space separated sample indices to tidy')
 ts_parser.add_argument('-f', '--filename', type=str, help='Filename to clear')
+ts_parser.add_argument('-A', '--all', action='store_true', help='Run on all samples')
 
 # add parser for import n sims
 nsims_parser = subparsers.add_parser('import_n_sims', help='Move NEURON outputs into ASCENT directories for analysis')
 nsims_parser.add_argument('run_indices', nargs='+', type=int, help='Space separated run indices to import')
+nsims_parser.add_argument(
+    '-v',
+    '--verbose',
+    action='store_true',
+    help='Print specific files which are missing',
+)
 nsims_group = nsims_parser.add_mutually_exclusive_group()
 nsims_group.add_argument(
     '-f',
@@ -135,6 +158,25 @@ cs_parser.add_argument(
     nargs='+',
     type=int,
     help='Space separated sample indices to clean',
+)
+
+# add build from input parser
+bfi_parser = subparsers.add_parser(
+    'build_from_input', help='Convert all .json files in input/{arg} to valid runs and create a new rungroup'
+)
+bfi_parser.add_argument(
+    'input_name',
+    type=str,
+    help='Space separated sample names to convert',
+)
+
+# add parser for compare
+compare_parser = subparsers.add_parser('compare', help='compare sample directories')
+compare_parser.add_argument(
+    'sample_indices',
+    type=int,
+    nargs=2,
+    help='Space separated sample indices to run the comparison over',
 )
 
 # add mock sample parser

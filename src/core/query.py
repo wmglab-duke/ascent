@@ -10,12 +10,10 @@ repository: https://github.com/wmglab-duke/ascent
 
 import os
 import pickle
-import struct
 import warnings
 
 import numpy as np
 import pandas as pd
-from scipy import stats as stats
 
 from src.core import Sample, Simulation, Slide
 from src.utils import Config, Configurable, Object, Saveable, SetupMode
@@ -303,140 +301,317 @@ class Query(Configurable, Saveable):
 
         return True
 
-    def sfap_data(
+    def excel_output(
         self,
-        fiber_indices: list[int] = None,
-        all_fibers: bool = False,
-        ignore_missing: bool = False,
-        amplitude_indices: tuple[int] = (0,),
+        filepath: str,
+        sample_keys=None,
+        model_keys=None,
+        sim_keys=None,
+        individual_indices: bool = True,
+        config_paths: bool = True,
+        column_width: int = None,
+        console_output: bool = True,
+        optional_keys=False,
     ):
-        """Obtain SFAP data as a pandas DataFrame for user-defined fiber indices or all fibers.
+        """Output summary of query.
 
-        :param fiber_indices: list of fiber indexes to pull SFAP data for. Default: single fiber 0.
-        :param all_fibers: If True, all fiber's SFAP data will be pulled. If False, only fiber_indices will be pulled.
-        :param ignore_missing: if True, missing threshold data will not cause an error.
-        :param amplitude_indices: list of amplitude indices to pull SFAP data for. Default: single amplitude 0.
-        :raises LookupError: If no results (called before Query.run())
-        :return: pandas DataFrame of SFAP data.
+        NOTE: for all key lists, the values themselves are lists, functioning as a JSON pointer.
+
+        :param: filepath: output filepath
+        :param: sample_keys: Sample keys to output. Defaults to [].
+        :param: model_keys: Model keys to output. Defaults to [].
+        :param: sim_keys: Sim keys to output. Defaults to [].
+        :param: individual_indices: Include column for each index. Defaults tp True.
+        :param: config_paths: Include column for each config path. Defaults to True.
+        :param: column_width: Column width for Excel document. Defaults to None (system default).
+        :param: console_output: Print progress to console. Defaults to True.
+        :param optional_keys: If True, check parameter presence in config files as optional. Defaults to False.
         """
-        if self._result is None:
-            raise LookupError("No query results, Query.run() must be called before calling analysis methods.")
-        if fiber_indices is None:
-            fiber_indices = [0]
-        [samples, models, sims] = list(self.configs['criteria']['indices'].values())
+        sims: dict = {}
+        sample_keys: list[list] = sample_keys if sample_keys else []
+        model_keys: list[list] = model_keys if model_keys else []
+        sim_keys: list[list] = sim_keys if sim_keys else []
 
-        # Note: simplify/clean this function. Inspired by threshold_data for first quick approach.
+        # SAMPLE
         sample_results: dict
         for sample_results in self._result.get('samples', []):
-            sample_index = sample_results['index']
-            sample_object: Sample = self.get_object(Object.SAMPLE, [sample_index])
-            slide: Slide = sample_object.slides[0]
-            n_inners = sum(len(fasc.inners) for fasc in slide.fascicles)
+            sample_index: int = sample_results['index']
+            sample_config_path: str = self.build_path(Config.SAMPLE, [sample_index])
+            sample_config: dict = self.load(sample_config_path)
+            self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
 
-            # loop models
+            if console_output:
+                print(f'sample: {sample_index}')
+
+            # MODEL
+            model_results: dict
             for model_results in sample_results.get('models', []):
                 model_index = model_results['index']
+                model_config_path: str = self.build_path(Config.MODEL, [sample_index, model_index])
+                model_config: dict = self.load(model_config_path)
+                self.add(SetupMode.OLD, Config.MODEL, model_config)
 
-                for sim_index in sims:
-                    sim_object = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+                if console_output:
+                    print(f'\tmodel: {model_index}')
 
-                    # whether the comparison key is for 'fiber' or 'wave', the nsims will always be in order!
-                    # this realization allows us to simply loop through the factors in sim.factors[key] and treat the
-                    # indices as if they were the nsim indices
-                    #   Better optimized method: loop over master_indices to only obtain data for desired fibers.
-                    #       Need to find another way to obtain nsim_index...
-                    master_indices = []
-                    for i in sim_object.master_product_indices:
-                        if i[0] in fiber_indices:
-                            master_indices.append(i)
+                # SIM
+                for sim_index in model_results.get('sims', []):
+                    sim_config_path, sim_dir, sim_object = self.handle_sim(
+                        sim_index,
+                        sample_index,
+                        model_index,
+                        console_output,
+                        sims,
+                        config_paths,
+                        sample_keys,
+                        model_keys,
+                        sim_keys,
+                        individual_indices,
+                    )
 
-                    # init SFAP container for this model, sim, nsim
-                    sfap_data: list[dict] = []
+                    # NSIM
                     for nsim_index, (
                         potentials_product_index,
                         waveform_index,
                     ) in enumerate(sim_object.master_product_indices):
-                        (
-                            active_src_index,
-                            active_rec_index,
-                            fiberset_index,
-                        ) = sim_object.potentials_product[potentials_product_index]
-                        # fetch outer->inner->fiber and out->inner maps
-                        out_in_fib, out_in = sim_object.fiberset_map_pairs[fiberset_index]
-
-                        # build base dirs for fetching SFAPs
-                        sim_dir = self.build_path(
-                            Object.SIMULATION,
-                            [sample_index, model_index, sim_index],
-                            just_directory=True,
+                        self.handle_nsim(
+                            sim_dir,
+                            nsim_index,
+                            sim_object,
+                            potentials_product_index,
+                            sample_keys,
+                            model_keys,
+                            sim_keys,
+                            sample_index,
+                            model_index,
+                            sim_index,
+                            individual_indices,
+                            waveform_index,
+                            config_paths,
+                            sims,
+                            sample_config_path,
+                            model_config_path,
+                            sim_config_path,
+                            optional_keys,
                         )
-                        n_sim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
 
-                        # fetch all SFAPs
-                        for inner in range(n_inners):
-                            outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
+                    # "prune" old configs
+                    self.remove(Config.SIM)
+                self.remove(Config.MODEL)
+            self.remove(Config.SAMPLE)
 
-                            for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
-                                master_index = sim_object.indices_n_to_fib(fiberset_index, inner, local_fiber_index)
+        # build Excel file, with one sim per sheet
+        writer = pd.ExcelWriter(filepath)
+        for sim_index, sheet_data in sims.items():
+            sheet_name = f'Sim {sim_index}'
+            pd.DataFrame(sheet_data).to_excel(writer, sheet_name=sheet_name, header=False, index=False)
+            if column_width is not None:
+                writer.sheets[sheet_name].set_column(0, 256, column_width)
+            else:
+                writer.sheets[sheet_name].set_column(0, 256)
 
-                                sfap = []
-                                # Get all amplitudes
-                                for amp in amplitude_indices:
-                                    sfap_path = os.path.join(
-                                        n_sim_dir,
-                                        'data',
-                                        'outputs',
-                                        f'SFAP_time_inner{inner}_fiber{local_fiber_index}_amp{amp}.dat',
-                                    )
-                                    if ignore_missing:
-                                        try:
-                                            sfap_amp = np.loadtxt(sfap_path, skiprows=1)
-                                        except OSError:
-                                            sfap_amp = np.array([[np.nan, np.nan]])
-                                            warnings.warn('Missing SFAP, but continuing.', stacklevel=2)
-                                    else:
-                                        sfap_amp = np.loadtxt(sfap_path, skiprows=1)
-                                    sfap.append(sfap_amp)
+        writer.save()
 
-                                for i, row in enumerate(sfap[0]):
-                                    base = {
-                                        'sample': sample_results['index'],
-                                        'model': model_results['index'],
-                                        'sim': sim_index,
-                                        'nsim': nsim_index,
-                                        'inner': inner,
-                                        'fiber': local_fiber_index,
-                                        'index': master_index,
-                                        'fiberset_index': fiberset_index,
-                                        'waveform_index': waveform_index,
-                                        'active_src_index': active_src_index,
-                                        'active_rec_index': active_rec_index,
-                                        'SFAP_times': row[0] - 1.2,
-                                    }
-                                    for j, sfap_amp in enumerate(sfap):
-                                        base[f'SFAP{j}'] = sfap_amp[i][1]
-                                    sfap_data.append(base)
-
-        sfap_data = pd.DataFrame(sfap_data)
-        return sfap_data.loc[sfap_data['index'].isin(fiber_indices)] if not all_fibers else sfap_data
-
-    def threshold_data(
+    def handle_sim(  # noqa: D102
         self,
-        sim_indices: list[int] = None,
-        ignore_missing=False,
-        meanify=False,
+        sim_index: int,
+        sample_index: int,
+        model_index: int,
+        console_output: bool,
+        sims: dict,
+        config_paths: str,
+        sample_keys: list[int] = None,
+        model_keys: list[int] = None,
+        sim_keys: list[int] = None,
+        individual_indices: bool = True,
     ):
-        """Obtain threshold data as a pandas DataFrame.
+        sim_config_path = self.build_path(Config.SIM, indices=[sim_index])
+        sim_config = self.load(sim_config_path)
+        self.add(SetupMode.OLD, Config.SIM, sim_config)
+        sim_object: Simulation = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
+        sim_dir = self.build_path(
+            Object.SIMULATION,
+            [sample_index, model_index, sim_index],
+            just_directory=True,
+        )
+        if console_output:
+            print(f'\t\tsim: {sim_index}')
+        # init sheet if necessary
+        if str(sim_index) not in sims.keys():
+            # base header
+            sample_parts = [
+                'Sample Index',
+                *['->'.join(['sample'] + key) for key in sample_keys],
+            ]
+            model_parts = [
+                'Model Index',
+                *['->'.join(['model'] + key) for key in model_keys],
+            ]
+            sim_parts = [
+                'Sim Index',
+                *['->'.join(['sim'] + key) for key in sim_keys],
+            ]
+            header = [
+                'Indices',
+                *(sample_parts if individual_indices else sample_parts[1:]),
+                *(model_parts if individual_indices else model_parts[1:]),
+                *(sim_parts if individual_indices else sim_parts[1:]),
+            ]
+            if individual_indices:
+                header += ['Nsim Index']
+            # populate with nsim factors
+            for fib_key_name in sim_object.fiberset_key:
+                header.append(fib_key_name)
+            for wave_key_name in sim_object.wave_key:
+                header.append(wave_key_name)
+            # add paths
+            if config_paths:
+                header += [
+                    'Sample Config Path',
+                    'Model Config Path',
+                    'Sim Config Path',
+                    'NSim Path',
+                ]
+            # set header as first row
+            sims[str(sim_index)] = [header]
+        return sim_config_path, sim_dir, sim_object
 
-        Waveform, fiberset, and active_src indices are per your sim configuration file.
+    def handle_nsim(  # noqa: D102
+        self,
+        sim_dir: str,
+        nsim_index: int,
+        sim_object: Simulation,
+        potentials_product_index: int,
+        sample_keys: list,
+        model_keys: list,
+        sim_keys: list,
+        sample_index: int,
+        model_index: int,
+        sim_index: int,
+        individual_indices: bool,
+        waveform_index: int,
+        config_paths: bool,
+        sims: list[str],
+        sample_config_path: str,
+        model_config_path: str,
+        sim_config_path: str,
+        optional_keys,
+    ):
+        nsim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
+        (
+            active_src_index,
+            *active_rec_index,
+            fiberset_index,
+        ) = sim_object.potentials_product[potentials_product_index]
+        # fetch additional sample, model, and sim values
+        # that's one juicy list comprehension right there
+        values = [
+            [self.search(config, *key, optional=optional_keys) for key in category]
+            for category, config in zip(
+                [sample_keys, model_keys, sim_keys],
+                [Config.SAMPLE, Config.MODEL, Config.SIM],
+            )
+        ]
+        # base row data
+        sample_parts = [sample_index, *values[0]]
+        model_parts = [model_index, *values[1]]
+        sim_parts = [sim_index, *values[2]]
+        row = [
+            f'{sample_index}_{model_index}_{sim_index}_{nsim_index}',
+            *(sample_parts if individual_indices else sample_parts[1:]),
+            *(model_parts if individual_indices else model_parts[1:]),
+            *(sim_parts if individual_indices else sim_parts[1:]),
+        ]
+        if individual_indices:
+            row += [nsim_index]
+        # populate factors (same order as header)
+        for fib_key_value in sim_object.fiberset_product[fiberset_index]:
+            row.append(fib_key_value)
+        for wave_key_value in sim_object.wave_product[waveform_index]:
+            row.append(wave_key_value)
+        # add paths
+        if config_paths:
+            row += [
+                sample_config_path,
+                model_config_path,
+                sim_config_path,
+                nsim_dir,
+            ]
+        # add to sim sheet
+        sims[str(sim_index)].append(row)
 
-        :param sim_indices: list of simulation indices to include in the threshold data.
-        :param ignore_missing: if True, missing threshold data will not cause an error.
-        :param meanify: if True, the threshold data will be returned as a mean of each nsim.
-        :raises LookupError: If no results (called before Query.run())
-        :return: pandas DataFrame of thresholds.
+    def import_tm_current_matrix(
+        self, nsim
+    ):  # This should move to common data extraction and allow for any amps/fibers/inners/so on
+        """Extract current amplitude, number of axons, time vector, and transmembrane current matrix from a binary file.
+
+        :param nsim: nsim index to pull data from
+        :return: time_vector: time points correlating with transmembrane currents
+        :return: current_matrix: transmembrane current matrix
         """
-        # quick helper class for storing data values
+        sample_results = self._result.get('samples', [])[0]
+        model_results = sample_results.get('models', [])[0]
+        sim = model_results.get('sims', [])[0]
+        # Pulls data from first fiber in each nsim.
+        imembrane_file_name = os.path.join(
+            os.getcwd(),
+            f"samples/{sample_results['index']}/models/{model_results['index']}/sims/{sim}/n_sims/"
+            f"{nsim}/data/outputs/adjusted_imembrane_inner0_fiber0_amp0.npy",
+        )
+        current_matrix = np.load(imembrane_file_name)  # should be columns=section and rows = time step
+        waveform_file = os.path.join(
+            os.getcwd(),
+            f"samples/{sample_results['index']}/models/{model_results['index']}/sims/{sim}/n_sims/"
+            f"{nsim}/data/inputs/waveform.dat",
+        )
+        wfdata = np.loadtxt(waveform_file)
+        sfap_file = os.path.join(
+            os.getcwd(),
+            f"samples/{sample_results['index']}/models/{model_results['index']}/sims/{sim}/n_sims/"
+            f"{nsim}/data/outputs/SFAP_time_inner0_fiber0_amp0.dat",
+        )
+        sfapdata = np.loadtxt(sfap_file, skiprows=1)
+        return wfdata[1], sfapdata[:, 0], current_matrix
+
+    def common_data_extraction(  # noqa C901
+        self,
+        data_types: list[str],
+        sim_indices: list[int] = None,
+        q_fiber_indices: list[int] | str = 'all',
+        ignore_missing: bool = False,
+        amp_indices: int | str = 'all',
+    ) -> list[dict]:
+        """Extract data from a simulation for specified data types.
+
+        This method extracts common data from a simulation for each specified data type and returns
+        a list of dictionaries containing the extracted data.
+
+        Options for data types include:
+            - 'sfap': SFAP data
+            - 'threshold': Threshold data
+            - 'runtime': Runtime data
+            - 'activation': Activation data
+            - 'istim': Istim data
+            - 'time_gating': Time gating data
+            - 'time_vm': Time voltage data
+            - 'space_gating': Space gating data
+            - 'space_vm': Space voltage data
+            - 'aploctime': AP location time data
+            - 'apendtimes': AP end times data
+
+        :param q_fiber_indices: A list of fiber indices to include. ('all' for all fibers)
+        :param sim_indices: A list of simulation indices to include.
+        :param ignore_missing: If True, missing data will not cause an error.
+        :param data_types: A list of strings representing the data types to extract.
+        :param amp_indices: A list of amplitude indices to include. ('all' for all amplitudes)
+        :raises LookupError: If no results (i.e. Query.run() has not been called)
+        :raises TypeError: If data_types is not a list
+        :raises ValueError: If an invalid data type is provided
+        :return: A list of dictionaries containing the extracted data.
+        """
+        # assert that data_types is a list
+        if not isinstance(data_types, list):
+            raise TypeError('data_types must be a list of strings.')
 
         # validation
         if self._result is None:
@@ -485,288 +660,196 @@ class Query(Configurable, Saveable):
                         )
                         n_sim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
 
-                        # init thresholds container for this model, sim, nsim
-                        thresholds: list[float] = []
-
-                        # fetch all thresholds
+                        # fetch all data
                         for inner in range(n_inners):
                             outer = [index for index, inners in enumerate(out_in) if inner in inners][0]
-
-                            for local_fiber_index, _ in enumerate(out_in_fib[outer][out_in[outer].index(inner)]):
+                            available_fiber_ind = out_in_fib[outer][out_in[outer].index(inner)]
+                            if q_fiber_indices == 'all':
+                                fiber_indices = available_fiber_ind
+                            else:
+                                fiber_indices = q_fiber_indices
+                            for local_fiber_index, _ in enumerate(available_fiber_ind):
                                 master_index = sim_object.indices_n_to_fib(fiberset_index, inner, local_fiber_index)
 
-                                thresh_path = os.path.join(
-                                    n_sim_dir,
-                                    'data',
-                                    'outputs',
-                                    f'thresh_inner{inner}_fiber{local_fiber_index}.dat',
-                                )
-                                if ignore_missing:
-                                    try:
-                                        threshold = np.loadtxt(thresh_path)
-                                    except OSError:
-                                        threshold = np.array(np.nan)
-                                        warnings.warn('Missing threshold, but continuing.', stacklevel=2)
-                                else:
-                                    threshold = np.loadtxt(thresh_path)
+                                if master_index in fiber_indices:
+                                    # set index for finite amps
+                                    if sim_object.configs[Config.SIM.value]['protocol']['mode'] == 'FINITE_AMPLITUDES':
+                                        amp_indices = (
+                                            amp_indices
+                                            if amp_indices != 'all'
+                                            else range(
+                                                len(sim_object.configs[Config.SIM.value]['protocol']['amplitudes'])
+                                            )
+                                        )
+                                    else:
+                                        amp_indices = [0]
 
-                                if threshold.size > 1:
-                                    threshold = threshold[-1]
-                                if meanify is True:
-                                    thresholds.append(abs(threshold))
-                                else:
-                                    alldat.append(
-                                        {
+                                    for amp_ind in amp_indices:
+                                        data = {
                                             'sample': sample_results['index'],
                                             'model': model_results['index'],
                                             'sim': sim_index,
                                             'nsim': nsim_index,
                                             'inner': inner,
                                             'fiber': local_fiber_index,
-                                            'index': master_index,
+                                            'master_fiber_index': master_index,
                                             'fiberset_index': fiberset_index,
                                             'waveform_index': waveform_index,
-                                            'active_src_index': active_src_index,  # Note: only report src or rec
-                                            'active_rec_index': active_rec_index,  # Doesn't make sense to do both
-                                            'threshold': abs(threshold),
+                                            'active_src_index': active_src_index,
+                                            'active_rec_index': active_rec_index,
+                                            'amp_ind': amp_ind,
                                         }
-                                    )
-
-                        if meanify is True:
-                            if len(thresholds) == 0:
-                                alldat.append(
-                                    {
-                                        'sample': sample_results['index'],
-                                        'model': model_results['index'],
-                                        'sim': sim_index,
-                                        'nsim': nsim_index,
-                                        'fiberset_index': fiberset_index,
-                                        'waveform_index': waveform_index,
-                                        'active_src_index': active_src_index,
-                                        'active_rec_index': active_rec_index,
-                                        'mean': np.nan,
-                                    }
-                                )
-                            else:
-                                thresholds: np.ndarray = np.array(thresholds)
-
-                                alldat.append(
-                                    {
-                                        'sample': sample_results['index'],
-                                        'model': model_results['index'],
-                                        'sim': sim_index,
-                                        'nsim': nsim_index,
-                                        'fiberset_index': fiberset_index,
-                                        'waveform_index': waveform_index,
-                                        'active_src_index': active_src_index,
-                                        'active_rec_index': active_rec_index,
-                                        'mean': np.mean(thresholds),
-                                        'std': np.std(thresholds, ddof=1),
-                                        'sem': stats.sem(thresholds),
-                                    }
-                                )
-
+                                        for data_type in data_types:
+                                            if data_type == 'sfap':
+                                                self.retrieve_sfap_data(data, n_sim_dir, ignore_missing, alldat)
+                                            elif data_type == 'threshold':
+                                                self.retrieve_threshold_data(data, n_sim_dir, ignore_missing, alldat)
+                                            elif data_type == 'runtime':
+                                                self.retrieve_runtime_data(data, n_sim_dir, alldat)
+                                            elif data_type == 'activation':
+                                                self.retrieve_activation_data(data, n_sim_dir, alldat)
+                                            elif data_type == 'istim':
+                                                self.retrieve_istim_data(data, n_sim_dir, alldat)
+                                            elif data_type == 'time_gating':
+                                                self.retrieve_time_gating_data(data, n_sim_dir, alldat)
+                                            elif data_type == 'time_vm':
+                                                self.retrieve_time_vm_data(data, n_sim_dir, alldat)
+                                            elif data_type == 'space_gating':
+                                                self.retrieve_space_gating_data(data, n_sim_dir, alldat)
+                                            elif data_type == 'space_vm':
+                                                self.retrieve_space_vm_data(data, n_sim_dir, alldat)
+                                            elif data_type == 'aploctime':
+                                                self.retrieve_aploctime_data(data, n_sim_dir, alldat)
+                                            else:
+                                                raise ValueError(f'Invalid data type: {data_type}')
+                                        # add the data to list
+                                        alldat.append(data.copy())
         return pd.DataFrame(alldat)
 
-    def excel_output(  # noqa: C901
-        self,
-        filepath: str,
-        sample_keys=None,
-        model_keys=None,
-        sim_keys=None,
-        individual_indices: bool = True,
-        config_paths: bool = True,
-        column_width: int = None,
-        console_output: bool = True,
-    ):
-        """Output summary of query.
-
-        NOTE: for all key lists, the values themselves are lists, functioning as a JSON pointer.
-
-        :param: filepath: output filepath
-        :param: sample_keys: Sample keys to output. Defaults to [].
-        :param: model_keys: Model keys to output. Defaults to [].
-        :param: sim_keys: Sim keys to output. Defaults to [].
-        :param: individual_indices: Include column for each index. Defaults tp True.
-        :param: config_paths: Include column for each config path. Defaults to True.
-        :param: column_width: Column width for Excel document. Defaults to None (system default).
-        :param: console_output: Print progress to console. Defaults to False.
-        """
-        sims: dict = {}
-        sample_keys: list[list] = sample_keys if sample_keys else []
-        model_keys: list[list] = model_keys if model_keys else []
-        sim_keys: list[list] = sim_keys if sim_keys else []
-
-        # SAMPLE
-        sample_results: dict
-        for sample_results in self._result.get('samples', []):
-            sample_index: int = sample_results['index']
-            sample_config_path: str = self.build_path(Config.SAMPLE, [sample_index])
-            sample_config: dict = self.load(sample_config_path)
-            self.add(SetupMode.OLD, Config.SAMPLE, sample_config)
-
-            if console_output:
-                print(f'sample: {sample_index}')
-
-            # MODEL
-            model_results: dict
-            for model_results in sample_results.get('models', []):
-                model_index = model_results['index']
-                model_config_path: str = self.build_path(Config.MODEL, [sample_index, model_index])
-                model_config: dict = self.load(model_config_path)
-                self.add(SetupMode.OLD, Config.MODEL, model_config)
-
-                if console_output:
-                    print(f'\tmodel: {model_index}')
-
-                # SIM
-                for sim_index in model_results.get('sims', []):
-                    sim_config_path = self.build_path(Config.SIM, indices=[sim_index])
-                    sim_config = self.load(sim_config_path)
-                    self.add(SetupMode.OLD, Config.SIM, sim_config)
-                    sim_object: Simulation = self.get_object(Object.SIMULATION, [sample_index, model_index, sim_index])
-                    sim_dir = self.build_path(
-                        Object.SIMULATION,
-                        [sample_index, model_index, sim_index],
-                        just_directory=True,
-                    )
-
-                    if console_output:
-                        print(f'\t\tsim: {sim_index}')
-
-                    # init sheet if necessary
-                    if str(sim_index) not in sims.keys():
-                        # base header
-                        sample_parts = [
-                            'Sample Index',
-                            *['->'.join(['sample'] + key) for key in sample_keys],
-                        ]
-                        model_parts = [
-                            'Model Index',
-                            *['->'.join(['model'] + key) for key in model_keys],
-                        ]
-                        sim_parts = [
-                            'Sim Index',
-                            *['->'.join(['sim'] + key) for key in sim_keys],
-                        ]
-                        header = [
-                            'Indices',
-                            *(sample_parts if individual_indices else sample_parts[1:]),
-                            *(model_parts if individual_indices else model_parts[1:]),
-                            *(sim_parts if individual_indices else sim_parts[1:]),
-                        ]
-                        if individual_indices:
-                            header += ['Nsim Index']
-                        # populate with nsim factors
-                        for fib_key_name in sim_object.fiberset_key:
-                            header.append(fib_key_name)
-                        for wave_key_name in sim_object.wave_key:
-                            header.append(wave_key_name)
-                        # add paths
-                        if config_paths:
-                            header += [
-                                'Sample Config Path',
-                                'Model Config Path',
-                                'Sim Config Path',
-                                'NSim Path',
-                            ]
-                        # set header as first row
-                        sims[str(sim_index)] = [header]
-
-                    # NSIM
-                    for nsim_index, (
-                        potentials_product_index,
-                        waveform_index,
-                    ) in enumerate(sim_object.master_product_indices):
-                        nsim_dir = os.path.join(sim_dir, 'n_sims', str(nsim_index))
-                        (
-                            active_src_index,
-                            fiberset_index,
-                        ) = sim_object.potentials_product[potentials_product_index]
-                        # fetch additional sample, model, and sim values
-                        # that's one juicy list comprehension right there
-                        values = [
-                            [self.search(config, *key) for key in category]
-                            for category, config in zip(
-                                [sample_keys, model_keys, sim_keys],
-                                [Config.SAMPLE, Config.MODEL, Config.SIM],
-                            )
-                        ]
-                        # base row data
-                        sample_parts = [sample_index, *values[0]]
-                        model_parts = [model_index, *values[1]]
-                        sim_parts = [sim_index, *values[2]]
-                        row = [
-                            f'{sample_index}_{model_index}_{sim_index}_{nsim_index}',
-                            *(sample_parts if individual_indices else sample_parts[1:]),
-                            *(model_parts if individual_indices else model_parts[1:]),
-                            *(sim_parts if individual_indices else sim_parts[1:]),
-                        ]
-                        if individual_indices:
-                            row += [nsim_index]
-                        # populate factors (same order as header)
-                        for fib_key_value in sim_object.fiberset_product[fiberset_index]:
-                            row.append(fib_key_value)
-                        for wave_key_value in sim_object.wave_product[waveform_index]:
-                            row.append(wave_key_value)
-                        # add paths
-                        if config_paths:
-                            row += [
-                                sample_config_path,
-                                model_config_path,
-                                sim_config_path,
-                                nsim_dir,
-                            ]
-                        # add to sim sheet
-                        sims[str(sim_index)].append(row)
-
-                    # "prune" old configs
-                    self.remove(Config.SIM)
-                self.remove(Config.MODEL)
-            self.remove(Config.SAMPLE)
-
-        # build Excel file, with one sim per sheet
-        writer = pd.ExcelWriter(filepath)
-        for sim_index, sheet_data in sims.items():
-            sheet_name = f'Sim {sim_index}'
-            pd.DataFrame(sheet_data).to_excel(writer, sheet_name=sheet_name, header=False, index=False)
-            if column_width is not None:
-                writer.sheets[sheet_name].set_column(0, 256, column_width)
-            else:
-                writer.sheets[sheet_name].set_column(0, 256)
-
-        writer.save()
-
-    def import_tm_current_matrix(self, nsim):
-        """Extract current amplitude, number of axons, time vector, and transmembrane current matrix from a binary file.
-
-        :param nsim: nsim index to pull data from
-        :return: time_vector: time points correlating with transmembrane currents
-        :return: current_matrix: transmembrane current matrix
-        """
-        sample_results = self._result.get('samples', [])[0]
-        model_results = sample_results.get('models', [])[0]
-        sim = model_results.get('sims', [])[0]
-        # Pulls data from first fiber in each nsim.
-        imembrane_file_name = os.path.join(
-            os.getcwd(),
-            f"samples/{sample_results['index']}/models/{model_results['index']}/sims/{sim}/n_sims/"
-            f"{nsim}/data/outputs/Imembrane_inner0_fiber0_amp0.dat",
+    def retrieve_sfap_data(self, data: dict, n_sim_dir: str, ignore_missing: bool, alldat: list[dict]):  # noqa: D
+        sfap_path = os.path.join(
+            n_sim_dir,
+            'data',
+            'outputs',
+            f'SFAP_time_inner{data["inner"]}_fiber{data["fiber"]}_amp0.dat',
         )
+        if ignore_missing:
+            try:
+                sfap = np.loadtxt(sfap_path, skiprows=1)
+            except OSError:
+                sfap = np.array([[np.nan, np.nan]])
+                warnings.warn('Missing SFAP, but continuing.', stacklevel=2)
+        else:
+            sfap = np.loadtxt(sfap_path, skiprows=1)
 
-        with open(imembrane_file_name, 'rb') as file:
-            alldata = file.read()
-            # Currently it is in native format, might need to be in standard format.
-            _, _, tstop, _, _, dt, _, _, axon_num, vector_size, _ = struct.unpack(
-                "@iidiidiidii", alldata[:56]  # 56 is the total number of bytes correlating with the format
+        data['SFAP_times'] = sfap[:, 0]
+        data['SFAP'] = sfap[:, 1]
+
+    def retrieve_threshold_data(self, data: dict, n_sim_dir: str, ignore_missing: bool, alldat: list[dict]):  # noqa: D
+        thresh_path = os.path.join(
+            n_sim_dir,
+            'data',
+            'outputs',
+            f'thresh_inner{data["inner"]}_fiber{data["fiber"]}.dat',
+        )
+        if ignore_missing:
+            try:
+                threshold = np.loadtxt(thresh_path)
+            except OSError:
+                threshold = np.array(np.nan)
+                warnings.warn('Missing threshold, but continuing.', stacklevel=2)
+        else:
+            threshold = np.loadtxt(thresh_path)
+
+        if threshold.size > 1:
+            threshold = threshold[-1]
+
+        data['threshold'] = threshold
+
+    def retrieve_runtime_data(self, data: dict, n_sim_dir: str, alldat: list[dict]):  # noqa: D
+        runtime_path = os.path.join(
+            n_sim_dir,
+            'data',
+            'outputs',
+            f'runtime_inner{data["inner"]}_fiber{data["fiber"]}_amp{data["amp_ind"]}.dat',
+        )
+        with open(runtime_path) as runtime_file:
+            runtime = float(runtime_file.read().replace('s', ''))
+        data['runtime'] = runtime
+
+    def retrieve_activation_data(self, data: dict, n_sim_dir: str, alldat: list[dict]):  # noqa: D
+        activation_path = os.path.join(
+            n_sim_dir,
+            'data',
+            'outputs',
+            f'activation_inner{data["inner"]}_fiber{data["fiber"]}_amp{data["amp_ind"]}.dat',
+        )
+        with open(activation_path) as activation_file:
+            n_aps = int(activation_file.read())
+        data['n_aps'] = n_aps
+
+    def retrieve_aploctime_data(self, data: dict, n_sim_dir: str, alldat: list[dict]):  # noqa: D
+        aploctime_path = os.path.join(
+            n_sim_dir,
+            'data',
+            'outputs',
+            f'ap_loctime_inner{data["inner"]}_fiber{data["fiber"]}_amp{data["amp_ind"]}.dat',
+        )
+        ap_loctime = np.loadtxt(aploctime_path)
+        data['ap_loctime'] = ap_loctime
+
+    def retrieve_istim_data(self, data: dict, n_sim_dir: str, alldat: list[dict]):  # noqa: D
+        istim_path = os.path.join(
+            n_sim_dir,
+            'data',
+            'outputs',
+            f'Istim_inner{data["inner"]}_fiber{data["fiber"]}_amp{data["amp_ind"]}.dat',
+        )
+        istim_data = pd.read_csv(istim_path, sep='\t')
+        data['istim_data'] = istim_data
+
+    def retrieve_time_gating_data(self, data: dict, n_sim_dir: str, alldat: list[dict]):  # noqa: D
+        gating_params = ['h', 'm', 'mp', 's']
+        data['gating_time_data'] = {}
+        for gating_param in gating_params:
+            gating_time_path = os.path.join(
+                n_sim_dir,
+                'data',
+                'outputs',
+                f'gating_{gating_param}_time_inner{data["inner"]}_fiber{data["fiber"]}_amp{data["amp_ind"]}.dat',
             )
-            current_matrix = np.array(struct.unpack_from(f"{vector_size}d", alldata[56:]))
-        file.close()
+            gating_time_data = pd.read_csv(gating_time_path, sep=' ')
+            data['gating_time_data'][gating_param] = gating_time_data
 
-        # Build current matrix and time vectors from file data
-        current_matrix = current_matrix.reshape(
-            ((int)(vector_size / axon_num), -1), order='F'
-        )  # Matlab and Fortran ('F order') both use column-major layout as the default
-        time_vector = np.arange(0, dt * (vector_size / axon_num), dt)
+    def retrieve_time_vm_data(self, data: dict, n_sim_dir: str, alldat: list[dict]):  # noqa: D
+        vm_time_path = os.path.join(
+            n_sim_dir,
+            'data',
+            'outputs',
+            f'Vm_time_inner{data["inner"]}_fiber{data["fiber"]}_amp{data["amp_ind"]}.dat',
+        )
+        vm_time_data = pd.read_csv(vm_time_path, sep=' ')
+        data['vm_time_data'] = vm_time_data
 
-        return tstop, time_vector, current_matrix
+    def retrieve_space_gating_data(self, data: dict, n_sim_dir: str, alldat: list[dict]):  # noqa: D
+        gating_params = ['h', 'm', 'mp', 's']
+        data['gating_space_data'] = {}
+        for gating_param in gating_params:
+            gating_space_path = os.path.join(
+                n_sim_dir,
+                'data',
+                'outputs',
+                f'gating_{gating_param}_space_inner{data["inner"]}_fiber{data["fiber"]}_amp{data["amp_ind"]}.dat',
+            )
+            gating_space_data = pd.read_csv(gating_space_path, sep=' ')
+            data['gating_space_data'][gating_param] = gating_space_data
+
+    def retrieve_space_vm_data(self, data: dict, n_sim_dir: str, alldat: list[dict]):  # noqa: D
+        vm_space_path = os.path.join(
+            n_sim_dir,
+            'data',
+            'outputs',
+            f'Vm_space_inner{data["inner"]}_fiber{data["fiber"]}_amp{data["amp_ind"]}.dat',
+        )
+        vm_space_data = pd.read_csv(vm_space_path, sep=' ')
+        data['vm_space_data'] = vm_space_data

@@ -70,6 +70,6 @@ You can have BOTH lists of desired **_Sample_**, **_Model_**, and
 ## Example
 
 ```{eval-rst}
-.. include:: ../../../../config/templates/query_criteria.json
+.. include:: ../../../../config/templates/advanced/query_criteria.json
    :code: javascript
 ```

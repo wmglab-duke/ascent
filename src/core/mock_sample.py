@@ -151,25 +151,13 @@ class MockSample(Configurable):
         #            and the corresponding semi-axis
         p = (0.0, 0.0)
 
-        if 'a_nerve' not in list(self.configs['mock_sample']['nerve'].keys()):
-            # a is the major diameter of the ellipse
-            a: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'a') / 2
-        else:
-            # backwards compatible: a_nerve is the major radius
-            a: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'a_nerve')
+        # a is the major diameter of the ellipse
+        a: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'a') / 2
 
-        if 'b_nerve' not in list(self.configs['mock_sample']['nerve'].keys()):
-            # b is the minor diameter of the ellipse
-            b: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'b') / 2
-        else:
-            # backwards compatible: b_nerve is the minor radius
-            b: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'b_nerve')
+        # b is the minor diameter of the ellipse
+        b: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'b') / 2
 
-        if 'rot_nerve' not in list(self.configs['mock_sample']['nerve'].keys()):
-            rot: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'rot')
-        else:
-            # backwards compatible
-            rot: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'rot_nerve')
+        rot: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'rot')
 
         ellipse = (p, (a, b), rot)
         self.nerve = self.gen_ellipse(ellipse)
@@ -399,7 +387,7 @@ class MockSample(Configurable):
                     '(i.e., analogous to circle diameter rather than radii). Make sure your values are set \n'
                     'appropriately. This change is new in v1.1.0 to be consistent with the ellipse parameters \n'
                     '(a,b) in Sample which are full width ellipse major/minor axes lengths.\n\n'
-                    'See config/templates/mock_sample.json for new template and avoid this message.\n'
+                    'See config/templates/advanced/mock_sample.json for new template and avoid this message.\n'
                     'Would you like to proceed with the values currently set for (a,b) as diameter? [y/N] '
                 )
                 .lower()
@@ -463,19 +451,9 @@ class MockSample(Configurable):
         with open(os.path.join(sample_dir, 'mock.json'), "w") as handle:
             handle.write(json.dumps(self.configs['mock_sample'], indent=2))
 
-        if 'a_nerve' not in list(self.configs['mock_sample']['nerve'].keys()):
-            # a is the major diameter of the ellipse
-            a: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'a') / 2
-        else:
-            # backwards compatible: a_nerve is the major radius
-            a: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'a_nerve')
+        a: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'a') / 2
 
-        if 'b_nerve' not in list(self.configs['mock_sample']['nerve'].keys()):
-            # b is the minor diameter of the ellipse
-            b: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'b') / 2
-        else:
-            # backwards compatible: b_nerve is the minor radius
-            b: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'b_nerve')
+        b: float = self.search(Config.MOCK_SAMPLE, 'nerve', 'b') / 2
 
         scalebar_length: int = self.search(Config.MOCK_SAMPLE, 'scalebar_length')
         max_diam = max(scalebar_length, 2 * max(a, b))

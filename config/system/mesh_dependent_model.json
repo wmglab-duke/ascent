@@ -46,6 +46,19 @@
       }
     },
     "name": true,
+    "nerve": {
+      "hcurve": true,
+      "hgrad": true,
+      "hmax": true,
+      "hmin": true,
+      "hnarrow": true,
+      "mesh_time": false,
+      "type": {
+        "facemethod": true,
+        "im": true,
+        "name": true
+      }
+    },
     "proximal": {
       "hcurve": true,
       "hgrad": true,

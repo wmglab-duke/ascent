@@ -8,7 +8,7 @@ This documentation is an adaptation and update of the supplements associated wit
 
 **Please check out the associated** `publication <https://doi.org/10.1371/journal.pcbi.1009285>`_ **in PLOS Computational Biology!**
 
-**Cite both the ASCENT paper and the DOI for the release of the repository used for your work. If you use the neural recording feature, also cite the neural recording paper. We encourage you to clone the most recent commit of the repository.**
+**Cite the ASCENT paper, PyFibers paper, and the DOI for the release of the repository used for your work. If you use the neural recording feature or SMALL_MRG_INTERPOLATION model, also cite the neural recording paper. We encourage you to clone the most recent commit of the repository.**
 
 * **Cite the ASCENT paper:**
 
@@ -39,6 +39,20 @@ This documentation is an adaptation and update of the supplements associated wit
           journal = {{PLOS} Computational Biology}
         }
 
+* **Cite the PyFibers paper:**
+
+  .. tab:: APA
+
+    PyFibers paper citation will be available soon: See <https://wmglab-duke.github.io/pyfibers/> for most recent updates
+
+  .. tab:: MLA
+
+    PyFibers paper citation will be available soon: See <https://wmglab-duke.github.io/pyfibers/> for most recent updates
+
+  .. tab:: BibTeX
+
+    PyFibers paper citation will be available soon: See <https://wmglab-duke.github.io/pyfibers/> for most recent updates
+
 * **Cite the neural recording paper:**
 
   .. tab:: APA
@@ -47,7 +61,7 @@ This documentation is an adaptation and update of the supplements associated wit
 
   .. tab:: MLA
 
-      Peña, Edgar, Nicole A. Pelot, and Warren M. Grill. "Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters." PLoS computational biology 20.3 (2024): e1011833. https://doi.org/10.1371/journal.pcbi.1011833.
+     Peña, Edgar, Nicole A. Pelot, and Warren M. Grill. "Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters." PLoS computational biology 20.3 (2024): e1011833. https://doi.org/10.1371/journal.pcbi.1011833.
 
   .. tab:: BibTeX
 

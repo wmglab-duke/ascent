@@ -27,7 +27,7 @@
     ]
   },
   "fibers": {
-    "mode": "SMALL_MRG_INTERPOLATION_V1",
+    "mode": "SMALL_MRG_INTERPOLATION",
     "plot": false,
     "xy_parameters": {
       "mode": "CENTROID"
@@ -50,21 +50,10 @@
         9.029676,
         9.809012
       ],
-      "max": 30000,
-      "min": 0,
+      "full_nerve_length": true,
       "mode": "EXTRUSION",
       "offset": 0,
       "seed": 123
-    }
-  },
-  "intracellular_stim": {
-    "amp": 0,
-    "ind": 2,
-    "pulse_repetition_freq": 0,
-    "times": {
-      "IntraStim_PulseTrain_delay": 0,
-      "IntraStim_PulseTrain_dur": 0,
-      "pw": 0
     }
   },
   "n_dimensions": 1,
@@ -96,7 +85,8 @@
   "saving": {
     "aploctime": false,
     "cap_recording": {
-      "Imembrane_matrix": true
+      "downsample": 1,
+      "save_adjusted_im": true
     },
     "end_ap_times": {
       "loc_max": 0.9,

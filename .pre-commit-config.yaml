@@ -4,7 +4,7 @@ default_language_version:
   python: python3 # or python3
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.6.0
+  rev: v5.0.0
   hooks:
       # checking for syntax
   - id: check-yaml
@@ -19,10 +19,9 @@ repos:
   - id: check-merge-conflict
   - id: pretty-format-json
     args: [--autofix]
-    exclude: .zenodo.json
   # sort python imports
 - repo: https://github.com/pycqa/isort
-  rev: 5.13.2
+  rev: 6.0.0
   hooks:
   - id: isort
   # format f strings
@@ -32,19 +31,19 @@ repos:
   - id: flynt
   # pyupgrade (migrate code to newer syntax)
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.17.0
+  rev: v3.19.1
   hooks:
   - id: pyupgrade
     args: [--py310-plus]
   # format python code
 - repo: https://github.com/psf/black
-  rev: 24.8.0
+  rev: 25.1.0
   hooks:
   - id: black
     language_version: python3
   # format docstrings
 - repo: https://github.com/PyCQA/docformatter
-  rev: v1.7.5
+  rev: master #update to proper version once fix to work with precommit v5 is released
   hooks:
   - id: docformatter
     additional_dependencies:
@@ -58,8 +57,6 @@ repos:
     args: [--autofix]
   - id: pretty-format-yaml
     args: [--autofix]
-  # - id: pretty-format-java #TODO get working, or another formatter
-  #   args: [--autofix]
   # lint python code
 - repo: https://github.com/pycqa/flake8
   rev: 7.1.1
@@ -81,18 +78,18 @@ repos:
     - darglint
     - flake8-warnings
     - flake8-pie
-    # - flake8-annotations #TODO enable
-    # - flake8-annotations-complexity #TODO enable
+    # - flake8-annotations
+    # - flake8-annotations-complexity
     - flake8-return
   # format and lint markdown
 - repo: https://github.com/igorshubovych/markdownlint-cli
-  rev: v0.41.0
+  rev: v0.44.0
   hooks:
   - id: markdownlint-fix
     args: [--disable, 'md013,md034,md033,md036']
   # check config files
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.29.1
+  rev: 0.31.1
   hooks:
   - id: check-gitlab-ci
   - id: check-readthedocs
@@ -104,3 +101,4 @@ repos:
     additional_dependencies:
     - rstcheck[sphinx]
     - rstcheck[toml]
+exclude: tests/integration_tests/|.zenodo.json

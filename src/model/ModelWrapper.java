@@ -1247,6 +1247,8 @@ public class ModelWrapper {
                         nerveParams = model.param().group().create(nerveParamsLabal);
                         nerveParams.label(nerveParamsLabal);
 
+                        String proxFacesLabel = "ProximalNerveFaces";
+                        String distFacesLabel = "DistalNerveFaces";
                         if (!cuff_only) {
                             addNerveParams(
                                 projectPath,
@@ -1264,6 +1266,26 @@ public class ModelWrapper {
                                 .label("Contact Impedances");
                             // there are no primitives/instances for nerve parts, just build them
                             mw.addNerve(sample, nerveParams, modelData);
+
+                            // Set source and destination face selection for swept meshing
+                            GeomFeature proxFaces = model
+                                .component("comp1")
+                                .geom("geom1")
+                                .create(mw.im.next("cylsel", proxFacesLabel), "CylinderSelection");
+                            proxFaces.set("r", "r_nerve+1");
+                            proxFaces.set("top", 1);
+                            proxFaces.set("bottom", -1);
+                            proxFaces.label(proxFacesLabel);
+                            proxFaces.set("entitydim", 2);
+                            proxFaces.set("condition", "inside");
+                            GeomFeature distFaces = model
+                                .component("comp1")
+                                .geom("geom1")
+                                .feature()
+                                .duplicate(mw.im.next("cylsel", distFacesLabel), mw.im.get(proxFacesLabel));
+                            distFaces.label(distFacesLabel);
+                            distFaces.set("pos", new String[]{"0", "0", "z_nerve"});
+
                         } else {
                             nerveParams.set("a_nerve", "NaN");
                             nerveParams.set(
@@ -1310,8 +1332,33 @@ public class ModelWrapper {
                             }
                         }
 
-                        // create UNIONS
+                        // create UNIONS selection
                         mw.createUnions();
+
+                        // DIFFERENCE selection for proximal medium and cuff domains
+                        String diffProxLabel = "diffProx";
+                        SelectionFeature diffProx = model
+                            .component("comp1")
+                            .selection()
+                            .create(mw.im.next("dif", diffProxLabel), "Difference");
+                        diffProx.label(diffProxLabel);
+                        assert partPrimitiveIM != null;
+                        // Add proximal medium domain, which includes all enclosed domains (nerve and cuff)
+                        diffProx
+                            .set("add",
+                                "geom1_" +
+                                mediumProximal_instanceID +
+                                "_" +
+                                partPrimitiveIM.get("MEDIUM") +
+                                "_dom"
+                            );
+                        // Subtract nerve domains
+                        diffProx
+                            .set("subtract",
+                                "geom1_" +
+                                mw.im.get(ModelWrapper.ALL_NERVE_PARTS_UNION + "Csel") +
+                                "_dom"
+                            );
 
                         // Saved model pre-run geometry for debugging
                         try {
@@ -1379,6 +1426,143 @@ public class ModelWrapper {
                             boolean success = ppimPathFile.mkdirs();
                             assert success;
                         }
+                        // define MESH for NERVE
+                        // swept: name (Sweep) and im (swe), facemethod (tri)
+                        // free triangular: name (FreeTet) and im (ftet)
+                        JSONObject nerveMeshParams = modelData
+                            .getJSONObject("mesh")
+                            .getJSONObject("nerve");
+                        String meshNerveLabel = "Mesh Nerve";
+                        String meshNerveKey = nerveMeshParams
+                            .getJSONObject("type")
+                            .getString("im");
+                        String meshNerveName = nerveMeshParams
+                            .getJSONObject("type")
+                            .getString("name");
+                        MeshFeature meshNerve = model
+                            .component("comp1")
+                            .mesh("mesh1")
+                            .create(
+                                mw.im.next(meshNerveKey, meshNerveLabel),
+                                meshNerveName
+                            );
+                        meshNerve.selection().geom("geom1", 3);
+
+                        meshNerve
+                            .selection()
+                            .named("geom1_" + mw.im.get(ModelWrapper.ALL_NERVE_PARTS_UNION + "Csel") + "_dom");
+
+                        // if using a swept mesh, you need to define the face method
+                        if (meshNerveKey.equals("swe")) {
+                            assert proxFacesLabel != null;
+                            String meshNerveFace = nerveMeshParams
+                                .getJSONObject("type")
+                                .getString("facemethod"); // (tri)
+                            meshNerve.set("facemethod", meshNerveFace);
+                            meshNerve.selection("targetface").named("geom1_" + mw.im.get(proxFacesLabel));
+                            meshNerve.selection("sourceface").named("geom1_" + mw.im.get(distFacesLabel));
+                        }
+                        meshNerve.label(meshNerveLabel);
+
+                        String meshNerveSizeInfoLabel = "Mesh Nerve Size Info";
+                        MeshFeature meshNerveSizeInfo = meshNerve.create(
+                            mw.im.next("size", meshNerveSizeInfoLabel),
+                            "Size"
+                        );
+                        meshNerveSizeInfo.label(meshNerveSizeInfoLabel);
+                        meshNerveSizeInfo.set("custom", true);
+                        meshNerveSizeInfo.set("hmaxactive", true);
+                        meshNerveSizeInfo.set("hmax", nerveMeshParams.getDouble("hmax"));
+                        meshNerveSizeInfo.set("hminactive", true);
+                        meshNerveSizeInfo.set("hmin", nerveMeshParams.getDouble("hmin"));
+                        meshNerveSizeInfo.set("hgradactive", true);
+                        meshNerveSizeInfo.set("hgrad", nerveMeshParams.getDouble("hgrad"));
+                        meshNerveSizeInfo.set("hcurveactive", true);
+                        meshNerveSizeInfo.set("hcurve", nerveMeshParams.getDouble("hcurve"));
+                        meshNerveSizeInfo.set("hnarrowactive", true);
+                        meshNerveSizeInfo.set(
+                            "hnarrow",
+                            nerveMeshParams.getDouble("hnarrow")
+                        );
+
+                        // Saved model pre-mesh for debugging
+                        try {
+                            System.out.println(
+                                "\tSaving MPH (pre-nerve mesh) file to: " + meshFile
+                            );
+                            model.save(meshFile);
+                        } catch (IOException e) {
+                            System.out.println(
+                                "\tFailed to save geometry for Model Index " +
+                                modelStr +
+                                ", continuing " +
+                                "to any remaining Models"
+                            );
+                            e.printStackTrace();
+                            continue;
+                        }
+
+                        // break point "pre_mesh_nerve"
+                        if ("pre_mesh_nerve".equals(break_point)) {
+                            models_exit_status[model_index] = false;
+                            System.out.println(
+                                "\tpre_mesh_nerve is the first break point encountered, moving on with next model index"
+                            );
+                            continue;
+                        }
+
+                        System.out.println("\tMeshing nerve parts... will take a while");
+
+                        long nerveMeshStartTime = System.nanoTime();
+                        try {
+                            model
+                                .component("comp1")
+                                .mesh("mesh1")
+                                .run(mw.im.get(meshNerveLabel));
+                        } catch (Exception e) {
+                            System.out.println(
+                                "\tFailed to mesh nerve geometry for Model Index " +
+                                modelStr +
+                                ", continuing to any remaining Models"
+                            );
+                            e.printStackTrace();
+                            continue;
+                        }
+
+                        if (meshNerveKey.equals("swe")) {
+                            String sweptConversionLabel = "meshNerveConversion";
+                            MeshFeature sweptConversion = model
+                                .component("comp1")
+                                .mesh("mesh1")
+                                .create(mw.im.next("conv", sweptConversionLabel), "Convert");
+                            sweptConversion.label(sweptConversionLabel);
+                            sweptConversion.selection().geom("geom1", 3);
+                            sweptConversion
+                                .selection()
+                                .named("geom1_" + mw.im.get(ModelWrapper.ALL_NERVE_PARTS_UNION + "Csel") + "_dom");
+                            model
+                                .component("comp1")
+                                .mesh("mesh1")
+                                .run(mw.im.get(sweptConversionLabel));
+                        }
+
+                        long estimatedNerveMeshTime = System.nanoTime() - nerveMeshStartTime;
+                        meshTimes.put("nerve", estimatedNerveMeshTime / Math.pow(10, 6)); // convert nanos to millis
+
+                        TimeUnit.SECONDS.sleep(1);
+
+                        // Saved model post-nerve-mesh for debugging
+                        model.save(meshFile);
+                        TimeUnit.SECONDS.sleep(5);
+
+                        // break point "post_mesh_nerve"
+                        if ("post_mesh_nerve".equals(break_point)) {
+                            models_exit_status[model_index] = false;
+                            System.out.println(
+                                "\tpost_mesh_nerve is the first break point encountered, moving on with next model index"
+                            );
+                            continue;
+                        }
 
                         // define MESH for PROXIMAL
                         // swept: name (Sweep) and im (swe), facemethod (tri)
@@ -1401,17 +1585,9 @@ public class ModelWrapper {
                                 meshProximalName
                             );
                         meshProximal.selection().geom("geom1", 3);
-                        assert partPrimitiveIM != null;
                         meshProximal
                             .selection()
-                            .named(
-                                "geom1" +
-                                "_" +
-                                mediumProximal_instanceID +
-                                "_" +
-                                partPrimitiveIM.get("MEDIUM") +
-                                "_dom"
-                            );
+                            .named(mw.im.get(diffProxLabel));
 
                         // if using a swept mesh, you need to define the face method
                         if (meshProximalKey.equals("swe")) {
@@ -1823,15 +1999,15 @@ public class ModelWrapper {
                     }
 
                     if (!keep_mesh) {
-                        File mesh_path = new File(meshPath);
-                        boolean delSuccess = deleteDir(mesh_path);
+                        File mesh_file = new File(meshFile);
+                        boolean delSuccess = mesh_file.delete();
                         if (delSuccess) {
                             System.out.println(
-                                "\tSuccessfully solved for /bases, therefore deleted /mesh directory."
+                                "\tSuccessfully solved for /bases, therefore deleted mesh.mph."
                             );
                         } else {
                             System.out.println(
-                                "\tSuccessfully solved for /bases; an issue occurred during deletion of mesh directory."
+                                "\tSuccessfully solved for /bases; an issue occurred during deletion of mesh.mph"
                             );
                         }
                     }
@@ -2207,42 +2383,12 @@ public class ModelWrapper {
                 JSONObject currentIDs = imdata.getJSONObject("currentIDs");
                 basesValid = new boolean[currentIDs.length()];
                 for (int cu = 0; cu < currentIDs.length(); cu++) {
-                    if ((currentIDs.getJSONObject(Integer.toString(cu + 1))).length()== 1) {
-                        // If currentID has one element, means that im.json was generated with old version of ascent before multi-cuffs.
-                        // Update to current structure (containing pcs, name, and cuff_index) if the bases do exist.
-                        File basisFile = new File(bases_directory + "/" + cu + ".mph");
-                        if (basisFile.exists()) {
-                            // Update im.json
-                            JSONObject current_object = currentIDs.getJSONObject(Integer.toString(cu + 1));
-                            String key = current_object.keys().next();
-                            current_object.put("pcs", current_object.get(key));
-                            current_object.put("name", cu + "_Cuff 0_" + key);
-                            current_object.put("cuff_index", "0");
-                            current_object.remove(key);
-                            String cuffNameIdPseudonym = imdata.getJSONObject("identifierPseudonyms").getString(key);
-                            imdata.getJSONObject("identifierPseudonyms").put(cu+"_Cuff 0_"+key, cuffNameIdPseudonym);
-                            imdata.getJSONObject("identifierPseudonyms").remove(key);
-                            currentIDs.put(Integer.toString(cu + 1), current_object);
-                            imdata.put("currentIDs", currentIDs);
-                            JSONio.write(imFile, imdata); // write to file
-
-                            // Rename bases files.
-                            File newBasisFile = new File(bases_directory + "/" + current_object.get("name") + ".mph");
-                            basisFile.renameTo(newBasisFile);
-                            basesValid[cu] = newBasisFile.exists();
-                        }
-                        else{
-                            basesValid = new boolean[] { false };
-                        }
-                    }
-                    else {
-                        // Check bases as you would for multi-cuffs.
-                        String bases_name = currentIDs
-                            .getJSONObject(Integer.toString(cu + 1))
-                            .getString("name");
-                        File basisFile = new File(bases_directory + "/" + cu + "_" + bases_name + ".mph");
-                        basesValid[cu] = basisFile.exists();
-                    }
+                    // Check bases as you would for multi-cuffs.
+                    String bases_name = currentIDs
+                        .getJSONObject(Integer.toString(cu + 1))
+                        .getString("name");
+                    File basisFile = new File(bases_directory + "/" +cu+"_"+bases_name + ".mph");
+                    basesValid[cu] = basisFile.exists();
                 }
             }
             catch (FileNotFoundException e) {

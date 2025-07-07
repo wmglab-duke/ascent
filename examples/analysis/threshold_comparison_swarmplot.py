@@ -29,7 +29,7 @@ q = Query(
     }
 ).run()
 
-data = q.threshold_data()
+data = q.common_data_extraction(data_types=['threshold'])
 g = sns.swarmplot(data=data, x='model', y='threshold')
 plt.title('Threshold swarmplot comparison')
 

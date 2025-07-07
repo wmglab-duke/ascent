@@ -1,0 +1,71 @@
+{
+  "sample": "Alien1-1",
+  "pseudonym": "Alien1-1",
+  "sex": "?",
+  "level": "?",
+  "scale": {
+    "scale_bar_length": 1000,
+    "shrinkage": 0.2
+  },
+  "boundary_separation": {
+    "fascicles": 0,
+    "nerve": 0
+  },
+  "modes": {
+    "mask_input": "INNERS",
+    "scale_input": "MASK",
+    "nerve": "PRESENT",
+    "deform": "NONE",
+    "ci_perineurium_thickness": "HUMAN_VN_INHOUSE_200601",
+    "reshape_nerve": "NONE",
+    "shrinkage_definition": "LENGTH_FORWARDS",
+    "contour_approximation": "SIMPLE"
+  },
+  "Morphology": {
+    "Nerve": {
+      "area": 667798.3207713735
+    },
+    "Fascicles": [
+      {
+        "outer": {
+          "area": 71453.0,
+          "x": -19.616294860839844,
+          "y": -106.32660675048828,
+          "a": 279.3059387207031,
+          "b": 325.8154296875,
+          "angle": 169.05735778808594
+        },
+        "inners": [
+          {
+            "area": 53593.87974523413,
+            "x": -18.712833404541016,
+            "y": -105.9070053100586,
+            "a": 239.14712524414062,
+            "b": 285.39434814453125,
+            "angle": 169.02224731445312
+          }
+        ]
+      },
+      {
+        "outer": {
+          "area": 48823.5,
+          "x": -312.6443786621094,
+          "y": -319.0860595703125,
+          "a": 225.87350463867188,
+          "b": 275.3556213378906,
+          "angle": 62.340782165527344
+        },
+        "inners": [
+          {
+            "area": 35420.24963912464,
+            "x": -311.70941162109375,
+            "y": -318.5970458984375,
+            "a": 189.0117950439453,
+            "b": 238.61680603027344,
+            "angle": 62.335269927978516
+          }
+        ]
+      }
+    ]
+  }
+}

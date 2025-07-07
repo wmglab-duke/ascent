@@ -55,6 +55,18 @@
         "name": "FreeTet"
       }
     },
+    "nerve": {
+      "hcurve": 0.2,
+      "hgrad": 2.2,
+      "hmax": 100,
+      "hmin": 10,
+      "hnarrow": 1,
+      "type": {
+        "facemethod": "tri",
+        "im": "swe",
+        "name": "Sweep"
+      }
+    },
     "proximal": {
       "hcurve": 0.2,
       "hgrad": 2.2,
@@ -76,7 +88,7 @@
   },
   "nerve_interp_tol": 0.002,
   "outer_interp_tol": 0.02,
-  "pseudonym": "template model",
+  "pseudonym": "give_me_a_name",
   "solver": {
     "sorder": 2,
     "type": "iterative"

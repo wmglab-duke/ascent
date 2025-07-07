@@ -49,11 +49,17 @@ def run(args):
     global INCLUDED_FILENAMES
     if args.filename:
         INCLUDED_FILENAMES = [args.filename]
+
+    if args.all:
+        sample_indices = [di for di in os.listdir('samples') if not di.startswith('.')]
+    else:
+        sample_indices = args.sample_indices
+
     proceed = input(
         'All files with names containing any of the following strings:\n'
         f'\t{INCLUDED_FILENAMES}\n'
         'will be removed from the following sample directories:\n'
-        f'\t{args.sample_indices}\n'
+        f'\t{sample_indices}\n'
         '\n\t Would you like to proceed?\n'
         '\t\t 0 = NO\n'
         '\t\t 1 = YES\n'
@@ -75,7 +81,7 @@ def run(args):
         else:
             print('Proceeding...')
 
-    for sample in args.sample_indices:
+    for sample in sample_indices:
         if args.verbose:
             print(f'Sample: {sample}')
             print('\n\t- - - - - - FILES - - - - - -\n')

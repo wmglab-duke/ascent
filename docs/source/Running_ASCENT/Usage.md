@@ -66,6 +66,38 @@ and \_.bat or \_.sh scripts. Run this script from your `"ASCENT_PROJECT_PATH"`. 
 
 `python run tidy_samples <list of sample indices>`
 
+### `scripts/build_from_input.py`
+
+You can organize your configuration files within the input directory. This will ensure repeatability for your
+runs by separating the input and output files for ASCENT. To use this configuration, create a directory
+`/input/<input_name>`, such as `/input/tutorial`. Place your image files in this directory as normal. Then create
+subfolders called `/runs`, `/samples`, `/models`, and `/sims`. Place your configuration JSON files in these folders
+respective to the configuration file type. In your `/runs` JSON files, instead of specifying integer indices for
+the sample, model, and sim files, use the file names from the subfolders. For example, the "sample" key in
+`/input/runs/run_tutorial.json` can have the value "sample_tutorial.json", which will specify the file
+`/input/<input_name>/samples/sample_tutorial.json` as the sample configuration json for this run. Unique integers will
+be created for these configuration files in the appropriate ASCENT configuration directories, and a new rungroup called
+<input_name> will be created for the runs. Also see -i argument in `pipeline.py`.
+
+`python run build_from_input <input_name>`
+
+### `scripts/compare.py`
+
+This script will compare two folders in the `/samples` directory and
+saves a line-by-line difference to the `/diff` directory. This comparison
+may be helpful if you would like to verify that multiple runs differ by
+only the intended parameters.
+
+The script iterates through the file tree and compares the files with
+Python's filecmp module. Each folder with differing contents will have
+an analogous folder and file_compare.txt that summarizes the differences.
+The script then uses difflib to make line-by line comparisons for differing
+files, which are saved as `<filename>_diff.txt`. Finally, the
+script will load numerical values and compute the percent difference. These
+values are saved as `<filename>_diff.dat` in the `/diff` folder.
+
+`python run compare <sample_index> <sample_index>`
+
 ## Data analysis tools
 
 ### Python Query class
@@ -108,8 +140,19 @@ of the pipeline searching for configurations (i.e., **_Sample_**,
 `run()` has been called, the results can be fetched using the `summary()`
 accessor method. In addition, the user may pass in a file path to
 `excel_output()` to generate an Excel sheet summarizing the Query
-results. Finally, use the `threshold_data()` method to return a DataFrame
-of thresholds with identifying information.
+results. Finally, use the `common_data_extraction(data_types=['threshold'])`
+method to return a DataFrame of thresholds with identifying information.
+Other data_types are available with appropriate sim `saving` configurations:
+ * `sfap`
+ * `threshold`
+ * `runtime`
+ * `activation`
+ * `istim`
+ * `time_gating`
+ * `time_vm`
+ * `space_gating`
+ * `space_vm`
+ * `aploctime`
 
 Query also has methods for accessing configurations and Python objects
 within the `samples/` directory based on a list of **_Sample_**,

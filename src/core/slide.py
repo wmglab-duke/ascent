@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from quantiphy import Quantity
 from shapely.geometry import Point
+from shapely.ops import unary_union
 
 from src.utils import MethodError, MorphologyError, NerveMode, ReshapeNerveMode, WriteMode
 
@@ -88,6 +89,8 @@ class Slide:
         die: bool = True,
         tolerance: float = None,
         plotpath=None,
+        plot_debug=False,
+        intersection_target='outers',
         shapely: bool = True,
     ) -> bool:
         """Check to make sure nerve geometry is not overlapping itself.
@@ -96,13 +99,15 @@ class Slide:
         :param tolerance: minimum separation distance for unit you are currently in
         :param plotpath: path to save plot to
         :param shapely: if True, uses shapely to check for valid polygons
+        :param intersection_target: which parts of fascicle to test for intersections (outers or inners)
+        :param plot_debug: if True, will show the plot instead of saving it
         :raises MorphologyError: if the nerve morphology is invalid
         :return: Boolean for True (no intersection) or False (issues with geometry overlap)
         """
 
         def debug_plot():
             print('Slide validation failed, saving debug sample plot.')
-            if plotpath is None:
+            if plotpath is None and not plot_debug:
                 return
             plt.figure()
             self.plot(
@@ -111,7 +116,11 @@ class Slide:
                 axlabel="\u03bcm",
                 title='Debug sample which failed validation.',
             )
-            plt.savefig(plotpath + '/sample_debug')
+            self.plot_poly_invalid()
+            if plot_debug:
+                plt.show()
+            else:
+                plt.savefig(plotpath + '/sample_debug')
             plt.clf()
             plt.close()
 
@@ -126,10 +135,10 @@ class Slide:
 
         if shapely and not self.polygons_are_valid():
             debug_plot()
-            error_message = "A polygon was detected which is invalid. Using smoothing may fix this error_message."
+            error_message = "A polygon was detected which is invalid."
 
         if not self.monofasc():
-            if self.fascicle_fascicle_intersection():
+            if self.fascicle_fascicle_intersection(target=intersection_target):
                 debug_plot()
                 error_message = "Fascicle-fascicle intersection found"
 
@@ -184,16 +193,23 @@ class Slide:
             check.extend([len(i.points) < 3 for i in f.inners])
         return any(check)
 
-    def fascicle_fascicle_intersection(self) -> bool:
+    def fascicle_fascicle_intersection(self, target) -> bool:
         """Check to see if any fascicles intersect each other.
 
         :raises MethodError: If called on a monofascicular slide
+        :raises ValueError: If target is invalid
+        :param target: 'outers' or 'inners', which part of the fascicle to check for intersections
         :return: True if any fascicle intersects another fascicle, otherwise False
         """
         if self.monofasc():
             raise MethodError("Method fascicle_fascicle_intersection does not apply for monofascicle nerves")
-
-        pairs = itertools.combinations(self.fascicles, 2)
+        if target == 'outers':
+            iterfasc = self.fascicles
+        elif target == 'inners':
+            iterfasc = [i for f in self.fascicles for i in f.inners]
+        else:
+            raise ValueError("Invalid target for fascicle_fascicle_intersection")
+        pairs = itertools.combinations(iterfasc, 2)
         return any(first.intersects(second) for first, second in pairs)
 
     def fascicle_nerve_intersection(self) -> bool:
@@ -218,19 +234,23 @@ class Slide:
 
         return any(not fascicle.within_nerve(self.nerve) for fascicle in self.fascicles)
 
-    def move_center(self, point: np.ndarray):
+    def move_center(self, point: np.ndarray, target="nerve"):
         """Shifts the center of the slide to the given point.
 
         :param point: the point of the new slide center
+        :param target: the target to shift to, either 'nerve' or 'fascicles'
         """
         if self.monofasc():
             # get shift from nerve centroid and point argument
             shift = list(point - np.array(self.fascicles[0].centroid())) + [0]
-        else:
+        elif target == "nerve":
             # get shift from nerve centroid and point argument
             shift = list(point - np.array(self.nerve.centroid())) + [0]
-
-            # apply shift to nerve trace and all fascicles
+        elif target in ["fascicle", "fascicles"]:
+            center = np.array(unary_union([fasc.outer.polygon() for fasc in self.fascicles]).centroid.coords[0])
+            shift = list(point - center) + [0]
+        # apply shift to nerve trace and all fascicles
+        if not self.monofasc():
             self.nerve.shift(shift)
 
         for fascicle in self.fascicles:
@@ -274,6 +294,8 @@ class Slide:
         scalebar_length: float = 1,
         scalebar_units: str = 'mm',
         line_kws=None,
+        colors_for_outers=False,
+        inners_flag=True,
     ):
         """Quick util for plotting the nerve and fascicles.
 
@@ -292,6 +314,9 @@ class Slide:
         :param scalebar: If True, add a scalebar to the plot
         :param scalebar_length: Length of scalebar
         :param scalebar_units: Units of scalebar
+        :param line_kws: keywords to pass to matplotlib.pyplot.plot
+        :param colors_for_outers: If True, use the first color in fascicle_colors for the outer trace color
+        :param inners_flag: If True, plot inner traces
         :raises ValueError: If fascicle_colors is not None and not the same length as the number of inners
         """
         if ax is None:
@@ -302,11 +327,15 @@ class Slide:
 
         # if not the last graph plotted
         if fix_aspect_ratio:
-            ax.set_aspect('equal', 'datalim')
+            ax.set_aspect('equal')
 
         # loop through constituents and plot each
+        line_kws = line_kws or {}
+        nerve_kws = line_kws.copy()
+        nerve_kws['linewidth'] = 1.5
+
         if not self.monofasc():
-            self.nerve.plot(plot_format='k-', ax=ax, linewidth=1.5, line_kws=line_kws)
+            self.nerve.plot(plot_format='k-', ax=ax, line_kws=nerve_kws)
 
         out_to_in = []
         inner_ind = 0
@@ -335,6 +364,8 @@ class Slide:
                 outer_flag=outers_flag,
                 inner_index_start=inner_index if inner_index_labels else None,
                 line_kws=line_kws,
+                outer_color=color[0] if colors_for_outers else None,
+                inners_flag=inners_flag,
             )
             inner_index += len(fascicle.inners)
 
@@ -346,30 +377,39 @@ class Slide:
             ax.set_ylabel(axlabel)
 
         if scalebar:
-            # apply aspect for correct scaling
-            ax.apply_aspect()
-            # convert scalebar length to meters and calculat span across axes
-            quantity = Quantity(scalebar_length, scalebar_units, scale='m')
-            scalespan = quantity.scale('micron') / np.diff(ax.get_xlim())[0]
-            # add scalebar and label
-            ax.add_patch(
-                plt.Rectangle(
-                    (0.99, 0.02), -scalespan, 0.02, fill='black', facecolor='black', linewidth=0, transform=ax.transAxes
-                )
-            )
-            ax.text(
-                0.99,
-                0.05,
-                f'{scalebar_length} {scalebar_units}',
-                horizontalalignment='right',
-                verticalalignment='bottom',
-                transform=ax.transAxes,
-                color='black',
-            )
+            self.add_scalebar(ax, scalebar_length, scalebar_units)
 
         # if final plot, show
         if final:
             plt.show()
+
+    def add_scalebar(self, ax, scalebar_length: float = 1, scalebar_units: str = 'mm'):
+        """Add a scalebar to the plot.
+
+        :param ax: axis to plot on
+        :param scalebar_length: Length of scalebar
+        :param scalebar_units: Units of scalebar
+        """
+        # apply aspect for correct scaling
+        ax.apply_aspect()
+        # convert scalebar length to meters and calculat span across axes
+        quantity = Quantity(scalebar_length, scalebar_units, scale='m')
+        scalespan = quantity.scale('micron') / np.diff(ax.get_xlim())[0]
+        # add scalebar and label
+        ax.add_patch(
+            plt.Rectangle(
+                (0.99, 0.02), -scalespan, 0.02, fill='black', facecolor='black', linewidth=0, transform=ax.transAxes
+            )
+        )
+        ax.text(
+            0.99,
+            0.05,
+            f'{scalebar_length} {scalebar_units}',
+            horizontalalignment='right',
+            verticalalignment='bottom',
+            transform=ax.transAxes,
+            color='black',
+        )
 
     def scale(self, factor: float, center: list[float] = None):
         """Scale the nerve and fascicles by a factor.
@@ -389,20 +429,21 @@ class Slide:
         for fascicle in self.fascicles:
             fascicle.scale(factor, center)
 
-    def smooth_traces(self, n_distance, i_distance):
+    def smooth_traces(self, n_distance, i_distance, as_ratios=False):
         """Smooth traces for the slide.
 
         :param n_distance: distance to inflate and deflate the nerve trace
         :param i_distance: distance to inflate and deflate the fascicle traces
+        :param as_ratios: if True, distances are treated as ratios (instead of um)
         :raises ValueError: if i_distance is None
         """
         if i_distance is None:
             raise ValueError("Fascicle smoothing distance cannot be None")
         for trace in self.trace_list():
             if isinstance(trace, Nerve):
-                trace.smooth(n_distance)
+                trace.smooth(n_distance, as_ratio=as_ratios)
             else:
-                trace.smooth(i_distance)
+                trace.smooth(i_distance, as_ratio=as_ratios)
 
     def generate_perineurium(self, fit: dict):
         """Generate perineurium for all fascicles in the slide.
@@ -516,12 +557,30 @@ class Slide:
 
         :return: True if all polygons are valid, False if not
         """
+        return all(trace.polygon().is_valid for trace in self.trace_list())
+
+    def plot_poly_invalid(self):
+        """Check if all polygons are valid and attempt to fix if not."""
         for trace in self.trace_list():
             if not trace.polygon().is_valid:
-                trace.offset(distance=0)
-                if not trace.polygon().is_valid:
-                    return False
-        return True
+                trace.plot(plot_format='r-')
+
+    def has_peanut_fasc(self):
+        """Check if any fascicles are peanut (multiple inner traces).
+
+        :return: True if any fascicle has multiple inner traces
+        """
+        return np.any(np.array([len(f.inners) for f in self.fascicles]) > 1)
+
+    def inners(self, polygon=False):
+        """Get all inner traces in the slide.
+
+        :param polygon: If True, return the inner traces as polygons
+        :return: List of inner traces
+        """
+        if polygon:
+            return [inner.polygon() for f in self.fascicles for inner in f.inners]
+        return [inner for f in self.fascicles for inner in f.inners]
 
     def map_points(self, points: np.ndarray) -> tuple[list, list]:
         """Map points to fascicles.

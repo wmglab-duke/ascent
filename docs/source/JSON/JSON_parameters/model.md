@@ -46,7 +46,6 @@ the following syntax:
   "inner_interp_tol": Double,
   "outer_interp_tol": Double,
   "nerve_interp_tol": Double,
-
   // EXAMPLE for modeling a single stimulation cuff
   "cuff": [{
     "preset": String,
@@ -91,11 +90,21 @@ the following syntax:
       }
     }
   ]
-
   "min_radius_enclosing_circle": Double,
   "mesh": {
   "quality_measure": String,
   "shape_order": String,
+    "nerve": {
+      "type": {
+        "im": String,
+        "name": String
+      },
+      "hmax": Double,
+      "hmin": Double,
+      "hgrad": Double,
+      "hcurve": Double,
+      "hnarrow": Double
+    },
     "proximal": {
       "type": {
         "im": String,
@@ -128,7 +137,8 @@ the following syntax:
       "volume": Double
       "mesh_times": {
         "distal": Double,
-        "proximal": Double
+        "proximal": Double,
+        "nerve": Double
       },
 
     }
@@ -285,6 +295,9 @@ cuff to model on the nerve in addition to how it is placed on the nerve
   from the list of filenames of the “preset” cuffs in
   `config/system/cuffs/<filename>.json` ([Fig 3A](https://doi.org/10.1371/journal.pcbi.1009285.g003) and [Creating Custom Cuffs](../../Primitives_and_Cuffs/Custom_Cuffs)). Required.
 
+- `“index”`: The value (Integer) is used to identify each cuff by a number. This parameter will correspond to the "cuff_index"
+  parameter in **_Simulation_** to define the given cuffs weights and if the cuff is used for stimulation (index matched with `"cuff_index"` in `"active_srcs"`) or recording (index matched with `"cuff_index"` in `"active_recs"`) . Each cuff should have a unique index value. The current implementation has only been tested for up to two cuffs. Required.
+
 - `“rotate”`: Contains two keys: `“pos_ang”` (automatically populated
   based on “CuffShiftMode”, i.e., `“cuff_shift”` parameter in
   **_Model_**) and `“add_ang”` (optionally set by user to rotate cuff
@@ -328,8 +341,36 @@ meshing statistics (automatically calculated).
 
 <!-- end list -->
 
+- `“nerve”`: Meshing parameters for the nerve domains
+  (epi-, peri-, and endoneurium). Optional, defaults to proximal parameters.
+
+  - `“type”`: JSON Object containing parameters/definitions specific
+    to meshing discretization method (e.g., free tetrahedral
+    “ftet”). We recommend free tetrahedral meshes. Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve-and-cuff-electrode)).
+
+    - `“im”`: COMSOL indexing prefix (String) (e.g., free
+      tetrahedral “ftet” or swept "swe"). Required.
+
+    - `“name”`: COMSOL system name (String) for the created mesh
+      (e.g., “FreeTet” or "Sweep"). Required.
+
+    - `"facemethod"`: Required "tri" (String) if using swept mesh.
+
+  - `“hmax”`: Maximum element size (Double, units: micrometer). We
+    recommend between 50-150 for swept meshes, otherwise same as proximal. 100 um is optimal for swept mesh to reducing COMSOL time >~50% and minimizing threshold error from tetrahedral mesh <~3% based on cursory testing. Required.
+
+  - `“hmin”`: Minimum element size (Double, units: micrometer). We
+    recommend 1. Required.
+
+  - `“hgrad”`: Maximum element growth (Double). We recommend between
+    1.8-2.5. Required.
+
+  - `“hcurve”`: Curvature factor (Double). We recommend 0.2. Required.
+
+  - `“hnarrow”`: Resolution of narrow regions (Double). We recommend 1. Required.
+
 - `“proximal”`: Meshing parameters for the proximal cylindrical domain
-  (as defined in “medium”). Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve-and-cuff-electrode)).
+  (as defined in “medium”) and cuff. Required ([Assigning Material Properties](../../Running_ASCENT/Info.md#control-of-medium-surrounding-nerve-and-cuff-electrode)).
 
   - `“type”`: JSON Object containing parameters/definitions specific
     to meshing discretization method (e.g., free tetrahedral

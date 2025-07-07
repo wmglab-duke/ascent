@@ -9,6 +9,7 @@ repository: https://github.com/wmglab-duke/ascent
 """
 
 import os
+import sys
 
 from src.core import Simulation
 from src.utils import Configurable
@@ -22,6 +23,7 @@ def run(args):
     env_path = os.path.join('config', 'system', 'env.json')
     assert os.path.isfile(env_path), f'Invalid env path: {env_path}'
 
+    skipped = 0
     for argument in args.run_indices:
         print(f'run {argument}')
 
@@ -50,17 +52,21 @@ def run(args):
                             sim,
                             os.path.join(nsim_source, 'n_sims'),
                             len(sim_config['protocol']['amplitudes']),
+                            verbose=args.verbose,
                         )
                     else:
-                        check = Simulation.thresholds_exist(sample, model, sim, os.path.join(nsim_source, 'n_sims'))
+                        check = Simulation.thresholds_exist(
+                            sample, model, sim, os.path.join(nsim_source, 'n_sims'), verbose=args.verbose
+                        )
                     if check is False:
+                        print('At least one threshold (or activation log if running FINITE AMPLITUDES) was missing...')
+                        if not args.verbose:
+                            print('Rerun with -v to see which files are missing')
                         if args.force is True:
                             print('Force argument passed, continuing with import')
                         else:
-                            print(
-                                'At least one threshold (or activation log if running FINITE AMPLITUDES) was missing,'
-                                f' skipping import for run {argument} sample {sample} model {model} sim {sim}'
-                            )
+                            print(f' skipping import for run {argument} sample {sample} model {model} sim {sim}')
+                            skipped += 1
                             continue
                     Simulation.import_n_sims(
                         sample,
@@ -70,3 +76,4 @@ def run(args):
                         os.path.join(nsim_source, 'n_sims'),
                         delete=args.delete_nsims,
                     )
+    sys.exit(skipped)

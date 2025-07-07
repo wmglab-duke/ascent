@@ -137,7 +137,7 @@ samples/
 submit/
 data/tmp/
 data/*.pickle
-data/
+diff/
 input/
 output/
 */user/*
@@ -147,14 +147,6 @@ output/
 out/
 */system/env.json
 
-# machine-specific neuron mod files
-src/neuron/MOD_Files/x86_64/
-src/neuron/MOD_Files/*.c
-src/neuron/MOD_Files/*.o
-
-# B-Fibers
-src/neuron/HOC_Files/CreateAxon_BFiber.hoc
-
 # temp files
 ~$master_index_key.xlsx
 *.py~
@@ -163,9 +155,11 @@ src/neuron/HOC_Files/CreateAxon_BFiber.hoc
 # not for distribution
 config/user/private/
 scripts/private/
-data/
 tmp
 bin/
 projects/
 schema/
 user_input_gui.py
+
+#Include all test data
+!tests/

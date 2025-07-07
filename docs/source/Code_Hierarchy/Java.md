@@ -339,7 +339,7 @@ in parameter sweeps of **_Model_** if the mesh can be recycled. The user
 is unlikely to interface directly with this method as it operates behind
 the scenes, but if the user adds new parameter values to **_Model_**,
 then the user must also add those values to
-`config/templates/mesh_dependent_model.json` to indicate whether the
+`config/system/mesh_dependent_model.json` to indicate whether the
 added parameter value needs to match between FEMs to recycle the mesh
 (explained further below). Generally, changes in geometry or meshing
 parameters need to match, but changes in material properties or boundary
@@ -349,7 +349,7 @@ Specifically, this class compares **_Model_** configurations to
 determine if their parameters are compatible to repurpose the geometry
 and mesh from a previously generated COMSOL model using the `meshMatch()`
 method. The `meshMatch()` method takes the inputs of a reference JSON
-(i.e., `config/templates/mesh_dependent_model.json`, see [Mesh Dependent Model](../JSON/JSON_parameters/mesh_dependent_model)) containing
+(i.e., `config/system/mesh_dependent_model.json`, see [Mesh Dependent Model](../JSON/JSON_parameters/mesh_dependent_model)) containing
 conditions for compatibility and a JSON Object for each of two
 **_Model_** configurations to compare. The parameter keys correspond
 one-to-one in **_Model_** and `mesh_dependent_model.json`. However, in

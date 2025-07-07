@@ -93,20 +93,7 @@
       }
     },
     "quality_measure": "vollength",
-    "shape_order": "quadratic",
-    "stats": {
-      "mean_quality": 0.714,
-      "mesh_times": {
-        "distal": 4031.2421,
-        "proximal": 25680.2748
-      },
-      "min_quality": 0.1707,
-      "min_volume": 6.136,
-      "name": "COMSOL Multiphysics 6.1 (Build: 282)",
-      "number_elements": 2108991,
-      "quality_measure_used": "vollength",
-      "volume": 187500000000.0
-    }
+    "shape_order": "quadratic"
   },
   "min_radius_enclosing_circle": 129.2749008895385,
   "modes": {

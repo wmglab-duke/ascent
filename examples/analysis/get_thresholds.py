@@ -34,4 +34,4 @@ q = Query(
 ).run()
 
 # %% obtain thresholds
-data = q.threshold_data(meanify=False, ignore_missing=False)
+data = q.common_data_extraction(data_types=['threshold'])

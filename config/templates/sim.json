@@ -41,16 +41,6 @@
       "seed": 123
     }
   },
-  "intracellular_stim": {
-    "amp": 0,
-    "ind": 2,
-    "pulse_repetition_freq": 0,
-    "times": {
-      "IntraStim_PulseTrain_delay": 0,
-      "IntraStim_PulseTrain_dur": 0,
-      "pw": 0
-    }
-  },
   "n_dimensions": 1,
   "protocol": {
     "bounds_search": {
@@ -73,14 +63,9 @@
       "value": -30
     }
   },
-  "pseudonym": "template sim",
+  "pseudonym": "give_me_a_name",
   "saving": {
     "aploctime": false,
-    "end_ap_times": {
-      "loc_max": 0.9,
-      "loc_min": 0.1,
-      "threshold": -30
-    },
     "runtimes": false,
     "space": {
       "gating": false,

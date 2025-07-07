@@ -57,7 +57,6 @@ class Map(Configurable):
 
     def __init__(self):
         """Initialize Map object."""
-
         # set up super class
         Configurable.__init__(self)
         self.slides = None
@@ -111,7 +110,7 @@ class Map(Configurable):
             self.source_path = os.path.join(inputpath, 'map.json')
 
             # load/edit map template
-            mapper = self.load(os.path.join('config', 'templates', 'map.json'))
+            mapper = self.load(os.path.join('config', 'templates', 'advanced', 'map.json'))
             mapper[0]['directory'] = self.source_path.split(os.sep)[:-1]
 
             # write synthetic map

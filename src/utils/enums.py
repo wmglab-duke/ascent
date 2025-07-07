@@ -86,7 +86,6 @@ class WriteMode(ASCENTEnum, Enum):
     SECTIONWISE = 0
     SECTIONWISE2D = 1
     DATA = 2
-    HOC = 3
     file_endings = ['.txt', '.txt', '.dat', '.hoc']
 
 
@@ -180,6 +179,14 @@ class ContourMode(ASCENTEnum, Enum):
     SIMPLE = cv2.CHAIN_APPROX_SIMPLE
 
 
+@unique
+class MaskSpaceMode(ASCENTEnum, Enum):
+    config = 'mask_space'
+
+    CARTESIAN = 0
+    IMAGE = 1
+
+
 # %% Fiber Position and Type
 
 
@@ -231,7 +238,7 @@ class FiberGeometry(ASCENTEnum, Enum):
     NONE = None
     MRG_DISCRETE = "MRG_DISCRETE"
     MRG_INTERPOLATION = "MRG_INTERPOLATION"
-    SMALL_MRG_INTERPOLATION_V1 = "SMALL_MRG_INTERPOLATION_V1"
+    SMALL_MRG_INTERPOLATION = "SMALL_MRG_INTERPOLATION"
     C_FIBER = "C_FIBER"
 
 

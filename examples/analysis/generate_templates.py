@@ -18,14 +18,13 @@ from scipy.io import savemat
 from scipy.signal import resample
 from scipy.stats import mode
 
+os.chdir('../..')
 sys.path.append(os.path.sep.join([os.getcwd(), '']))
 from src.core.query import Query  # noqa E402
 from src.utils import Config, Object, WaveformMode  # noqa E402
 
 # Please provide only one sample, model, and sim pairing at a time.
-sample = 0
-model = 0
-sim = 0
+sample, model, sim = 1, 0, 113
 
 q = Query(
     {
@@ -58,21 +57,14 @@ elif wave_mode == WaveformMode.BIPHASIC_PULSE_TRAIN_Q_BALANCED_UNEVEN_PW.name:
 else:
     stim_pulse_duration_ms = waveform_obj['global']['off'] - waveform_obj['global']['on']
 
-if fiber_type in [
-    'MRG_DISCRETE',
-    'MRG_INTERPOLATION',
-    'SMALL_MRG_INTERPOLATION_V1',
-]:  # Myelinated types that ascent allows
-    fiber_type = 'myelinated'
-    common_time_bounds_ms = [-2.4, 36]
-    n_compartments_per_repeatable_uit = 11
-else:  # Assuming ascent ran successfully, if not myelinated fiber, then input is unmyelinated fiber
-    fiber_type = 'unmyelinated'
-    common_time_bounds_ms = [-2, 60]
-    n_compartments_per_repeatable_uit = 1
+# using myelinated types in ASCENT, if not myelinated then assume unmyelinated
+fiber_type, common_time_bounds_ms, n_compartments_per_repeatable_uit = (
+    ('myelinated', [-2.4, 36], 11)
+    if fiber_type in ['MRG_DISCRETE', 'MRG_INTERPOLATION', 'SMALL_MRG_INTERPOLATION']
+    else ('unmyelinated', [-2, 60], 1)
+)
 
-output_data = []
-fiber_data_list = []
+output_data, fiber_data_list = [], []
 # Looping through nsims, but only generating templates for unique fiber diameters.
 unique_fiberset_index = 0
 for nsim_index, (potentials_product_index, _) in enumerate(sim_object.master_product_indices):
@@ -81,128 +73,149 @@ for nsim_index, (potentials_product_index, _) in enumerate(sim_object.master_pro
         active_rec_index,
         fiberset_index,
     ) = sim_object.potentials_product[potentials_product_index]
-    if fiberset_index == unique_fiberset_index:
-        unique_fiberset_index += 1
-        diameter = sim_object.fiberset_product[fiberset_index][0]
-        print(f"Constructing templates for nsim {nsim_index}: diameter = {diameter}")
-        coordinates_filename = os.path.join(
-            os.getcwd(), f"samples/{sample}/models/{model}/sims/{sim}/fibersets/{fiberset_index}/0.dat"
+
+    # if this is not a unique fiber diameter, skip to next iteration
+    if fiberset_index != unique_fiberset_index:
+        continue
+
+    diameter = sim_object.fiberset_product[fiberset_index][0]
+    print(f"Constructing templates for nsim {nsim_index}: diameter = {diameter}")
+    unique_fiberset_index += 1
+
+    coordinates_filename = os.path.join(
+        os.getcwd(), f"samples/{sample}/models/{model}/sims/{sim}/fibersets/{fiberset_index}/0.dat"
+    )
+    # Get rid of the zeros column and store the coordinates for the current fiber
+    z_locations_mm = 1e-3 * np.loadtxt(coordinates_filename, skiprows=1)[:, 2]  # [mm]
+
+    # Read in membrane current matrix
+    tstop, time_vector, transmembrane_current_matrix = q.import_tm_current_matrix(nsim=nsim_index)
+
+    # %% Preprocessing
+    # Extract templates from matrix - N (time) x Number of templates ( x 11 for myelinated fiber compartments)
+    # Blank out stim artifact - cut off from stim_pulse start time + stim pulse duration,
+    # but ensure t value is the same at that point
+    blanking_buffer_ms = stim_pulse_duration_ms + 0.029  # [ms]
+    valid_time_indices = np.where(time_vector > (stim_pulse_start_time_ms + stim_pulse_duration_ms))[0][:-1]
+    # 0 index returns list of indices from the tuple returned from .where().
+    # [:-1] removes the last index to avoid indexing conflicts
+
+    transmembrane_current_matrix = transmembrane_current_matrix[valid_time_indices, :]
+    time_vector = time_vector[valid_time_indices]
+    time_vector = time_vector - time_vector[0]
+    blanking_buffer_first_idx = np.argwhere(time_vector > blanking_buffer_ms)[0][0]
+    transmembrane_current_matrix = transmembrane_current_matrix[blanking_buffer_first_idx:, :]
+    time_vector = time_vector[time_vector > blanking_buffer_ms]
+
+    # Calculate CV - focus on myelinated fibers
+    node_indices = range(0, len(z_locations_mm), n_compartments_per_repeatable_uit)
+    node_z_locations = z_locations_mm[node_indices]
+    index_to_extract = round((len(node_z_locations) - 1) * 0.7)
+    value_at_70_percent = node_z_locations[index_to_extract]
+    dz_mm, _ = mode(np.diff(z_locations_mm[node_indices]), keepdims=False)
+    target_compartment_index = np.where(z_locations_mm == value_at_70_percent)[0][0]
+
+    # Resample around target compartment index at a high factor for peaks to align properly
+    resample_factor = 64
+    indices_for_upsample = target_compartment_index + np.arange(-6, 7) * n_compartments_per_repeatable_uit
+    indices_for_upsample = indices_for_upsample.tolist()
+
+    # Subset columns from the matrix
+    transmembrane_currents_all_compartments_subset = transmembrane_current_matrix[:, indices_for_upsample]
+    upsampled_transmembrane_currents_all_compartments_subset, upsampled_time_vector = resample(
+        transmembrane_currents_all_compartments_subset,
+        resample_factor * (len(transmembrane_currents_all_compartments_subset) - 1),
+        t=time_vector,
+    )
+    # Find the index of the maximum value in each column
+    max_idx = np.argmax(upsampled_transmembrane_currents_all_compartments_subset, axis=0)
+
+    # Calculate the time between maxima
+    measured_time_between_compartments_or_nodes = np.diff(upsampled_time_vector[max_idx])
+
+    # Refine the time between maxima by taking the median
+    refined_time_between_compartments_or_nodes = np.median(measured_time_between_compartments_or_nodes)
+
+    # Set the time_between_compartments_or_nodes to the refined value
+    time_between_compartments_or_nodes = refined_time_between_compartments_or_nodes
+
+    # Calculate conduction velocity
+    conduction_velocity_m_per_s = dz_mm / time_between_compartments_or_nodes
+
+    # Calculate dipole variable
+    dipolar_currents = -np.cumsum(transmembrane_current_matrix, 1)
+
+    # Pull out templates for both mono and dipole methods - myelinated has 11 surrounding compartments
+    if fiber_type == 'myelinated':
+        myel_compartments_around_target_idx = range(
+            target_compartment_index, target_compartment_index + n_compartments_per_repeatable_uit
         )
-        compartment_coordinates = np.loadtxt(coordinates_filename, skiprows=1)
-        # Get rid of the zeros column and store the coordinates for the current fiber
-        z_locations_mm = compartment_coordinates[:, 2] * 1e-3  # [mm]
+        monopolar_temporal_template = transmembrane_current_matrix[:, myel_compartments_around_target_idx]
+        dipole_temporal_template = dipolar_currents[:, myel_compartments_around_target_idx]
+    else:
+        monopolar_temporal_template = transmembrane_current_matrix[:, target_compartment_index]
+        dipole_temporal_template = dipolar_currents[:, target_compartment_index]
 
-        # Read in membrane current matrix
-        tstop, time_vector, transmembrane_current_matrix = q.import_tm_current_matrix(nsim=nsim_index)
+    # Upsample each template by factor of 15 - to get a more exact tpeak suitable for template alignment for
+    # interpolation over fiber diameter.
+    template_upsample_factor = 15
+    monopolar_signal, monopolar_time = resample(
+        monopolar_temporal_template,
+        template_upsample_factor * (len(monopolar_temporal_template) - 1),
+        t=time_vector,
+    )
+    dipole_signal, dipole_time = resample(
+        dipole_temporal_template, template_upsample_factor * (len(dipole_temporal_template) - 1), t=time_vector
+    )
 
-        # Preprocessing
-        # Extract templates from matrix - N (time) x Number of templates ( x 11 for myelinated fiber compartments)
-        # Blank out stim artifact - cut off from stim_pulse start time + stim pulse duration,
-        # but ensure t value is the same at that point
-        blanking_buffer_ms = stim_pulse_duration_ms + 0.029  # [ms]
-        valid_time_indices = np.where(time_vector > (stim_pulse_start_time_ms + stim_pulse_duration_ms))[0][:-1]
-        # 0 index returns list of indices from the tuple returned from .where().
-        # [:-1] removes the last index to avoid indexing conflicts
+    # Shifting time vectors so tpeak happens at time 0
+    if fiber_type == 'myelinated':
+        peak_idx_monopolar = np.argmax(monopolar_signal[:, 0])
+        peak_idx_dipole = np.argmax(dipole_signal[:, 0])
+    elif fiber_type == 'unmyelinated':
+        peak_idx_monopolar = np.argmax(monopolar_signal[0])
+        peak_idx_dipole = np.argmax(dipole_signal[0])
+    time_at_peak_monopolar = monopolar_time[peak_idx_monopolar]
+    time_at_peak_dipole = dipole_time[peak_idx_dipole]
+    monopolar_time -= time_at_peak_monopolar
+    dipole_time -= time_at_peak_dipole
 
-        transmembrane_current_matrix = transmembrane_current_matrix[valid_time_indices, :]
-        time_vector = time_vector[valid_time_indices]
-        time_vector = time_vector - time_vector[0]
-        blanking_buffer_first_idx = np.argwhere(time_vector > blanking_buffer_ms)[0][0]
-        transmembrane_current_matrix = transmembrane_current_matrix[blanking_buffer_first_idx:, :]
-        time_vector = time_vector[time_vector > blanking_buffer_ms]
-
-        # Calculate CV - focus on myelinated fibers
-        node_indices = range(0, len(z_locations_mm), n_compartments_per_repeatable_uit)
-        node_z_locations = z_locations_mm[node_indices]
-        index_to_extract = round((len(node_z_locations) - 1) * 0.7)
-        value_at_70_percent = node_z_locations[index_to_extract]
-        dz_mm, _ = mode(np.diff(z_locations_mm[node_indices]), keepdims=False)
-        target_compartment_index = np.where(z_locations_mm == value_at_70_percent)[0][0]
-
-        # Resample around target compartment index at a high factor for peaks to align properly
-        resample_factor = 64
-        indices_for_upsample = target_compartment_index + np.arange(-6, 7) * n_compartments_per_repeatable_uit
-        indices_for_upsample = indices_for_upsample.tolist()
-
-        # Subset columns from the matrix
-        transmembrane_currents_all_compartments_subset = transmembrane_current_matrix[:, indices_for_upsample]
-        upsampled_transmembrane_currents_all_compartments_subset, upsampled_time_vector = resample(
-            transmembrane_currents_all_compartments_subset,
-            resample_factor * (len(transmembrane_currents_all_compartments_subset) - 1),
-            t=time_vector,
+    # At this point, though peaks all happen at t=0, the previous x-points won't be aligned. Need a new standard
+    # time vector and use interp to resample the points.
+    dt_pre_resample, _ = mode(np.diff(time_vector), keepdims=False)  # [ms]
+    common_time_vector = np.concatenate(
+        (
+            np.flipud(np.arange(0, min(common_time_bounds_ms), -dt_pre_resample)),
+            np.arange(dt_pre_resample, max(common_time_bounds_ms) + dt_pre_resample, dt_pre_resample),
         )
-        # Find the index of the maximum value in each column
-        max_idx = np.argmax(upsampled_transmembrane_currents_all_compartments_subset, axis=0)
+    )
+    mono_interp = interp1d(monopolar_time, monopolar_signal, kind='cubic', axis=0, bounds_error=False, fill_value=0)
+    temporal_templates = mono_interp(common_time_vector)
 
-        # Calculate the time between maxima
-        measured_time_between_compartments_or_nodes = np.diff(upsampled_time_vector[max_idx])
+    # Template construction - interpolate to form mono and dipole temporal templates using spline.
+    dipole_interp = interp1d(dipole_time, dipole_signal, kind='cubic', axis=0, bounds_error=False, fill_value=0)
+    dipole_temporal_templates = dipole_interp(common_time_vector)
 
-        # Refine the time between maxima by taking the median
-        refined_time_between_compartments_or_nodes = np.median(measured_time_between_compartments_or_nodes)
+    target_compartment_index_z_loc = z_locations_mm[target_compartment_index]
+    import matplotlib.pyplot as plt
 
-        # Set the time_between_compartments_or_nodes to the refined value
-        time_between_compartments_or_nodes = refined_time_between_compartments_or_nodes
+    plt.figure()
+    plt.plot(common_time_vector, temporal_templates)
+    plt.figure()
+    plt.plot(common_time_vector, dipole_temporal_templates)
+    print(
+        conduction_velocity_m_per_s,
+        time_at_peak_monopolar,
+        time_at_peak_dipole,
+        target_compartment_index,
+        target_compartment_index_z_loc,
+    )
+    plt.figure()
+    plt.plot(z_locations_mm)
 
-        # Calculate conduction velocity
-        conduction_velocity_m_per_s = dz_mm / time_between_compartments_or_nodes
-
-        # Calculate dipole variable
-        dipolar_currents = -np.cumsum(transmembrane_current_matrix, 1)
-
-        # Pull out templates for both mono and dipole methods - myelinated has 11 surrounding compartments
-        if fiber_type == 'myelinated':
-            myel_compartments_around_target_idx = range(
-                target_compartment_index, target_compartment_index + n_compartments_per_repeatable_uit
-            )
-            monopolar_temporal_template = transmembrane_current_matrix[:, myel_compartments_around_target_idx]
-            dipole_temporal_template = dipolar_currents[:, myel_compartments_around_target_idx]
-        else:
-            monopolar_temporal_template = transmembrane_current_matrix[:, target_compartment_index]
-            dipole_temporal_template = dipolar_currents[:, target_compartment_index]
-
-        # Upsample each template by factor of 15 - to get a more exact tpeak suitable for template alignment for
-        # interpolation over fiber diameter.
-        template_upsample_factor = 15
-        monopolar_signal, monopolar_time = resample(
-            monopolar_temporal_template,
-            template_upsample_factor * (len(monopolar_temporal_template) - 1),
-            t=time_vector,
-        )
-        dipole_signal, dipole_time = resample(
-            dipole_temporal_template, template_upsample_factor * (len(dipole_temporal_template) - 1), t=time_vector
-        )
-
-        # Shifting time vectors so tpeak happens at time 0
-        if fiber_type == 'myelinated':
-            peak_idx_monopolar = np.argmax(monopolar_signal[:, 0])
-            peak_idx_dipole = np.argmax(dipole_signal[:, 0])
-        elif fiber_type == 'unmyelinated':
-            peak_idx_monopolar = np.argmax(monopolar_signal[0])
-            peak_idx_dipole = np.argmax(dipole_signal[0])
-        time_at_peak_monopolar = monopolar_time[peak_idx_monopolar]
-        time_at_peak_dipole = dipole_time[peak_idx_dipole]
-        monopolar_time -= time_at_peak_monopolar
-        dipole_time -= time_at_peak_dipole
-
-        # At this point, though peaks all happen at t=0, the previous x-points won't be aligned. Need a new standard
-        # time vector and use interp to resample the points.
-        dt_pre_resample, _ = mode(np.diff(time_vector), keepdims=False)  # [ms]
-        common_time_vector = np.concatenate(
-            (
-                np.flipud(np.arange(0, min(common_time_bounds_ms), -dt_pre_resample)),
-                np.arange(dt_pre_resample, max(common_time_bounds_ms) + dt_pre_resample, dt_pre_resample),
-            )
-        )
-        mono_interp = interp1d(monopolar_time, monopolar_signal, kind='cubic', axis=0, bounds_error=False, fill_value=0)
-        temporal_templates = mono_interp(common_time_vector)
-
-        # Template construction - interpolate to form mono and dipole temporal templates using spline.
-        dipole_interp = interp1d(dipole_time, dipole_signal, kind='cubic', axis=0, bounds_error=False, fill_value=0)
-        dipole_temporal_templates = dipole_interp(common_time_vector)
-
-        target_compartment_index_z_loc = z_locations_mm[target_compartment_index]
-        # Outputs - store variables for this single node template.
-        fiber_data = (
+    # Append variables for this single node template to list of node templates per fiber.
+    fiber_data_list.append(
+        (
             nsim_index,
             diameter,
             temporal_templates,
@@ -215,8 +228,7 @@ for nsim_index, (potentials_product_index, _) in enumerate(sim_object.master_pro
             target_compartment_index_z_loc,
             z_locations_mm,
         )
-        # Append single node template to list of node templates per fiber.
-        fiber_data_list.append(fiber_data)
+    )
 
 # Constructing structured array to allow for matlab export of 'output_data' to be in the form of a struct, not a cell.
 # A struct is necessary for follow-up CAPulator matlab script (https://github.com/eurypt/CAPulator).

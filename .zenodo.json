@@ -55,15 +55,15 @@
     }
   ],
 
-  "description": "v1.3.1 -> v1.4.0:\nnew features\n•\tadded post-hoc interpolation of fiber diameters and locations\n•\tadded “init_slides” property to Sample object representing the nerve geometry before transforms (centering, smoothing, perineurium generation, etc.)\nv1.3.1 -> v1.4.0: docs\n•\tadded documentation the new post-hoc analysis script\n•\treformatted documentation\nv1.3.1 -> v1.4.0: bug fixes\n•\tfixed SFAP extraction time offset and indexing\n•\tfixed NEURON file export dutils error\n•\tfixed model basis recycling naming convention\n•\tfixed checks for missing thresholds on import\n•\tfixed “inners_on_off” missing threshold handling\nv1.3.1 -> v1.4.0: miscellaneous\n•\tupgraded environment Python to version 3.11\n•\tadded Mock Morphology Generator warning about area uncertainty\n•\tadded warning for COMSOL version differences\n•\trefactored Mock Morphology Generator implementation\n•\tupdated linting and typehints\n•\tadded warning for ARM architectures\n",
+  "description": "ASCENT Release Notes\nv1.4.0 -> v1.5.0: new features\n• **PyFibers replaces HOC files for NEURON simulation**\n• Reconciled PyFibers simulation configurations to sim configurable (intrinsic_activity, i_membrane, cap_recording, find_threshold_kws, run_sim_kws)\n• Added `build_from_input` script centralizing run configs to /input folder\n• Added -i pipeline argument to silently call `build_from_input`\n• Added -R pipeline argument for rungroups `config/user/rungroups.json`\n• Added `compare` script to create file diff between samples\n• Added integration tests for version verification\n• Added `swept mesh` for FEM nerve domains\n• Changed Query usage to common_data_extraction([data_type])\n• Removed backwards compatibility for model `trace_interp_tol` parameter\n• Removed sim `end_ap_times` for PyFibers\n• Removed sim `intracellular_stim` for PyFibers\nv1.4.0 -> v1.5.0: docs\n• Integrated PyFibers documentation and usage\n• Added `build_from_input`, `compare` script usage\n• Added new command line argument documentation\n• Added integration test documentation in tests/README.md\nv1.4.0 -> v1.5.0: bug fixes\n• Fixed fiber and inner indexing in plotting functions\nv1.4.0 -> v1.5.0: miscellaneous\n• Added `mask_space` mode to define image inversion\n• Changed `SMALL_MRG_INTERPOLATION_V1` fiber mode to `SMALL_MRG_INTERPOLATION`\n• Added environment export to pipeline runs\n• Moved rarely used template files to config/templates/advanced\n• Added `run_tracking.json` for basic tracking of samples and run indices\n• Removed HOC and MOD NEURON files for PyFibers\n• Replaced most sys.exit() with exceptions\n",
 
   "notes": "Research supported by the National Institutes of Health SPARC Program (OT2 OD025340) (75N98022C00018)",
 
   "license": "GPL-2.0-only",
 
-  "title": "ASCENT V1.4.0",
+  "title": "ASCENT V1.5.0",
 
-  "version": "1.4.0",
+  "version": "1.5.0",
 
   "keywords": ["Peripheral Nerve Stimulation", "Finite Element Model"],
 
