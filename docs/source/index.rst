@@ -16,19 +16,15 @@ This documentation is an adaptation and update of the supplements associated wit
 
     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2021). ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A pipeline for sample-specific computational modeling of electrical stimulation of peripheral nerves. PLOS Computational Biology, 17(9), e1009285. https://doi.org/10.1371/journal.pcbi.1009285.
 
-     **Peña, E.**, Pelot, N. A., & Grill, W. M. (2024). Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters. PLoS computational biology, 20(3), e1011833. https://doi.org/10.1371/journal.pcbi.1011833
-
   .. tab:: MLA
 
     Musselman, Eric D., et al. "ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves." PLOS Computational Biology, vol. 17, no. 9, Sept. 2021, p. e1009285. PLoS Journals, https://doi.org/10.1371/journal.pcbi.1009285.
-
-      Peña, Edgar et al. “Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters.” PLoS computational biology vol. 20,3 e1011833. 1 Mar. 2024, doi:10.1371/journal.pcbi.1011833
 
   .. tab:: BibTeX
 
     .. code-block:: BibTeX
 
-         @article{Musselman2021,
+        @article{Musselman2021,
           doi = {10.1371/journal.pcbi.1009285},
           url = {https://doi.org/10.1371/journal.pcbi.1009285},
           year = {2021},
@@ -65,7 +61,7 @@ This documentation is an adaptation and update of the supplements associated wit
 
   .. tab:: MLA
 
-      Peña, Edgar, Nicole A. Pelot, and Warren M. Grill. "Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters." PLoS computational biology 20.3 (2024): e1011833. https://doi.org/10.1371/journal.pcbi.1011833.
+     Peña, Edgar, Nicole A. Pelot, and Warren M. Grill. "Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters." PLoS computational biology 20.3 (2024): e1011833. https://doi.org/10.1371/journal.pcbi.1011833.
 
   .. tab:: BibTeX
 
@@ -86,26 +82,28 @@ This documentation is an adaptation and update of the supplements associated wit
           journal = {{PLOS} Computational Biology}
         }
 
-* **Cite the code (use the DOI for the version of code used):** |doi|
+* **Cite the code :**
+    Replace instances of <DOI> and <version> below with the DOI and version number of code used.
+    Latest release: |doi| (click to see all releases).
 
   .. tab:: APA
 
-     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2025). wmglab-duke/ascent: ASCENT v1.5.0 (v1.5.0) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.10608262.
+     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2025). wmglab-duke/ascent: ASCENT v<version> (v<version>) [Computer software]. Zenodo. https://doi.org/<DOI>.
 
   .. tab:: MLA
 
-      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.5.0, Zenodo, 2025, doi:10.5281/ZENODO.10608262.
+      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v<version>, Zenodo, 2025, doi:<DOI>.
 
 
   .. tab:: BibTeX
 
     .. code-block:: BibTeX
 
-        @misc{https://doi.org/10.5281/zenodo.10608262,
-          doi = {10.5281/ZENODO.10608262},
-          url = {https://zenodo.org/record/10608262},
+        @misc{https://doi.org/<DOI>,
+          doi = {<DOI>},
+          url = {https://doi.org/<DOI>},
           author = {Musselman,  Eric D and Cariello,  Jake E and Grill,  Warren M and Pelot,  Nicole A},
-          title = {wmglab-duke/ascent: ASCENT v1.5.0},
+          title = {wmglab-duke/ascent: ASCENT v<version>},
           publisher = {Zenodo},
           year = {2025},
           copyright = {MIT License}
