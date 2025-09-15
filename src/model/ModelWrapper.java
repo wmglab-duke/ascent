@@ -1146,6 +1146,8 @@ public class ModelWrapper {
 
                         // Define model object
                         model = ModelUtil.createUnique("Model");
+                        // Set default geom kernel to COMSOL (instead of CAD)
+                        ModelUtil.setDefaultGeometryKernel("comsol");
                         // Add component node 1
                         model.component().create("comp1", true);
                         // Add 3D geom to component node 1
