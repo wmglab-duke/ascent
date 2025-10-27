@@ -30,9 +30,10 @@ class ListAction(argparse.Action):
     """Custom action for argparse to list run info."""
 
     def __call__(self, parser, values, *args, option_string=None, **kwargs):
-        """Print run info and exit. # noqa: DAR101.
+        """Print run info and exit.
 
-        This function is called when the --list option is used and should not be called directly.
+        # noqa: DAR101.
+                This function is called when the --list option is used and should not be called directly.
         """
         run_path = 'runs'
         jsons = [file for file in os.listdir(run_path) if file.endswith('.json')]
@@ -201,8 +202,9 @@ def load(config_path: str):
 
 
 def ensure_dir(directory):
-    """Ensure that a directory exists. If it does not, create it.
+    """Ensure that a directory exists.
 
+    If it does not, create it.
     :param directory: the string path to the directory
     """
     os.makedirs(directory, exist_ok=True)
@@ -519,9 +521,11 @@ def make_fiber_tasks(submission_list, submission_context):
 
 
 def make_run_sub_list(run_number: int):
-    """Create a list of all fiber simulations to be run. Skips fiber sims with existing output.
+    """Create a list of all fiber simulations to be run.
 
-    :param run_number: the number of the run
+    Skips fiber sims with existing output.
+
+    :param run_number: the index of the run
     :return: a dict of all fiber simulations to be run
     """
     # build configuration filename
@@ -705,7 +709,6 @@ def main():
     """Prepare fiber submissions and run NEURON sims.
 
     :raises ImportError: If PyFibers is not installed.
-    :raises NotImplementedError: If PyFibers version is not supported.
     """
     # check for PyFibers
     try:
@@ -714,12 +717,19 @@ def main():
         sys.exit('Error: PyFibers is not installed. Please install it to run this script.')
     # check version
     reqver = '0.1.4'
-    if Version(pyfibers.__version__) < Version(reqver):
+    pyfibers_version = Version(pyfibers.__version__)
+    if pyfibers_version < Version(reqver):
         raise ImportError(f'Error: PyFibers version is {pyfibers.__version__}, but version {reqver} is required.')
-    if Version(pyfibers.__version__) >= Version('0.5.0'):
-        raise NotImplementedError(
-            'Support for version 0.5.0 of PyFibers has not been verified, please downgrade to an older version'
+
+    if pyfibers_version > Version('0.8'):
+        warnings.warn(
+            f'PyFibers version {pyfibers.__version__} has not been fully tested with ASCENT. Proceed with caution.',
+            stacklevel=2,
         )
+
+    # enable logging to stdout for pyfibers if version >= 0.8
+    if pyfibers_version >= Version('0.8'):
+        pyfibers.enable_logging(stream=sys.stdout)
 
     # pre submit setup
     run_inds, submission_context = pre_submit_setup()
