@@ -8,7 +8,7 @@ pandas~=2.2
 pillow~=11.3
 pip
 pyclipper~=1.3
-pyfibers~=0.4
+pyfibers>=0.4
 pygame~=2.6
 pymunk~=7.1
 quantiphy~=2.20
