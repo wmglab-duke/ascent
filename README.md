@@ -18,8 +18,7 @@
 
 - **Cite the PyFibers paper:**
 
-  > PyFibers paper citation will be available soon: See <https://wmglab-duke.github.io/pyfibers/> for most recent updates
-
+  > Marshall, D. P., Farah, E. S., Musselman, E. D., Pelot, N. A., & Grill, W. M. (2025). PyFibers: An open-source NEURON-Python package to simulate responses of model nerve fibers to electrical stimulation. PLOS Computational Biology, 21(12), e1013764. <https://doi.org/10.1371/journal.pcbi.1013764>
 
 - **If you use the neural recording feature or SMALL_MRG_INTERPOLATION model, also cite the nerve recording modeling paper:**
 

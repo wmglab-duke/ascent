@@ -16,14 +16,6 @@ This documentation is an adaptation and update of the supplements associated wit
 
     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2021). ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A pipeline for sample-specific computational modeling of electrical stimulation of peripheral nerves. PLOS Computational Biology, 17(9), e1009285. https://doi.org/10.1371/journal.pcbi.1009285.
 
-     **Peña, E.**, Pelot, N. A., & Grill, W. M. (2024). Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters. PLoS computational biology, 20(3), e1011833. https://doi.org/10.1371/journal.pcbi.1011833
-
-  .. tab:: MLA
-
-    Musselman, Eric D., et al. "ASCENT (Automated Simulations to Characterize Electrical Nerve Thresholds): A Pipeline for Sample-Specific Computational Modeling of Electrical Stimulation of Peripheral Nerves." PLOS Computational Biology, vol. 17, no. 9, Sept. 2021, p. e1009285. PLoS Journals, https://doi.org/10.1371/journal.pcbi.1009285.
-
-      Peña, Edgar et al. “Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters.” PLoS computational biology vol. 20,3 e1011833. 1 Mar. 2024, doi:10.1371/journal.pcbi.1011833
-
   .. tab:: BibTeX
 
     .. code-block:: BibTeX
@@ -47,25 +39,33 @@ This documentation is an adaptation and update of the supplements associated wit
 
   .. tab:: APA
 
-    PyFibers paper citation will be available soon: See <https://wmglab-duke.github.io/pyfibers/> for most recent updates
-
-  .. tab:: MLA
-
-    PyFibers paper citation will be available soon: See <https://wmglab-duke.github.io/pyfibers/> for most recent updates
+    Marshall, D. P., Farah, E. S., Musselman, E. D., Pelot, N. A., & Grill, W. M. (2025). PyFibers: An open-source NEURON-Python package to simulate responses of model nerve fibers to electrical stimulation. PLOS Computational Biology, 21(12), e1013764. https://doi.org/10.1371/journal.pcbi.1013764
 
   .. tab:: BibTeX
 
-    PyFibers paper citation will be available soon: See <https://wmglab-duke.github.io/pyfibers/> for most recent updates
+    .. code-block:: BibTeX
+
+        @article{Marshall2025,
+          title = {PyFibers: An open-source NEURON-Python package to simulate responses of model nerve fibers to electrical stimulation},
+          volume = {21},
+          ISSN = {1553-7358},
+          url = {http://dx.doi.org/10.1371/journal.pcbi.1013764},
+          DOI = {10.1371/journal.pcbi.1013764},
+          number = {12},
+          journal = {PLOS Computational Biology},
+          publisher = {Public Library of Science (PLoS)},
+          author = {Marshall,  Daniel P. and Farah,  Elie S. and Musselman,  Eric D. and Pelot,  Nicole A. and Grill,  Warren M.},
+          editor = {Nogaret,  Alain},
+          year = {2025},
+          month = dec,
+          pages = {e1013764}
+        }
 
 * **Cite the neural recording paper:**
 
   .. tab:: APA
 
      Peña, E., Pelot, N. A., & Grill, W. M. (2024). Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters. PLoS computational biology, 20(3), e1011833. https://doi.org/10.1371/journal.pcbi.1011833.
-
-  .. tab:: MLA
-
-      Peña, Edgar, Nicole A. Pelot, and Warren M. Grill. "Computational models of compound nerve action potentials: Efficient filter-based methods to quantify effects of tissue conductivities, conduction distance, and nerve fiber parameters." PLoS computational biology 20.3 (2024): e1011833. https://doi.org/10.1371/journal.pcbi.1011833.
 
   .. tab:: BibTeX
 
@@ -91,11 +91,6 @@ This documentation is an adaptation and update of the supplements associated wit
   .. tab:: APA
 
      **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2025). wmglab-duke/ascent: ASCENT v1.5.0 (v1.5.0) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.10608262.
-
-  .. tab:: MLA
-
-      Musselman, Eric D., et al. Wmglab-Duke/Ascent: ASCENT v1.5.0, Zenodo, 2025, doi:10.5281/ZENODO.10608262.
-
 
   .. tab:: BibTeX
 

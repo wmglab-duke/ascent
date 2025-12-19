@@ -233,10 +233,10 @@ The div element has its own alignment attribute, align.
 Fiber response to electrical stimulation is computed by applying
 electric potentials along the length of a fiber from COMSOL as a
 time-varying signal in NEURON. The stimulation waveform, saved in a
-`n_sim’s data/inputs/` directory as `waveform.dat`, is unscaled (i.e., the
+`n_sim's data/inputs/` directory as `waveform.dat`, is unscaled (i.e., the
 maximum current magnitude at any timestep is +/-1), and is then scaled
 by the current amplitude in the NEURON simulation using
-`PyFibers` (available on [PyPi](https://pypi.org/project/pyfibers/) or [GitHub](https://github.com/wmglab-duke/pyfibers)) to either simulate fiber thresholds of
+`PyFibers` {cite:p}`Marshall2025` (available on [PyPi](https://pypi.org/project/pyfibers/) or [GitHub](https://github.com/wmglab-duke/pyfibers)) to either simulate fiber thresholds of
 activation or block with a binary search algorithm, or response to set
 amplitudes.
 
