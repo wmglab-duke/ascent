@@ -1,2 +1,0 @@
-cd ../../
-python -u run_controls.py "4" "3" "-1" "-0.01" "n_sims\2147483003_2147483003_2147483003_0\data\inputs\src_inner4_fiber3.dat" "n_sims\2147483003_2147483003_2147483003_0\data\inputs\waveform.dat" "n_sims\2147483003_2147483003_2147483003_0" "0" 

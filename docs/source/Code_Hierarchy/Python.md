@@ -431,10 +431,7 @@ corresponding to its sample, model, sim, and `master_product_index`
 and is therefore unique. Analogously, `export_run()` creates a copy of
 **_Run_** within the target directory in a directory named `runs/`.
 `export_neuron_files()` is used to create a copy of the NEURON `*.py`
-and `*.mod` files in the target directory in directories named
-`"NEURON_Files"` and `"MOD_Files"`, respectively. `export_src_files()` is used to
-create a copy of the necessary files `src/core/` and `src/utils/`
-for submitting NEURON jobs. Finally, `export_system_config_files()` is used to
+files controlling PyFibers in the target directory. Finally, `export_slurm_files()` is used to
 create a copy of necessary system configuration files in `config/system/`.
 
 ## Fiberset

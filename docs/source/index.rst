@@ -20,7 +20,7 @@ This documentation is an adaptation and update of the supplements associated wit
 
     .. code-block:: BibTeX
 
-         @article{Musselman2021,
+        @article{Musselman2021,
           doi = {10.1371/journal.pcbi.1009285},
           url = {https://doi.org/10.1371/journal.pcbi.1009285},
           year = {2021},
@@ -86,21 +86,23 @@ This documentation is an adaptation and update of the supplements associated wit
           journal = {{PLOS} Computational Biology}
         }
 
-* **Cite the code (use the DOI for the version of code used):** |doi|
+* **Cite the code :**
+    Replace instances of <DOI> and <version> below with the DOI and version number of code used.
+    Latest release: |doi| (click to see all releases).
 
   .. tab:: APA
 
-     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2025). wmglab-duke/ascent: ASCENT v1.5.0 (v1.5.0) [Computer software]. Zenodo. https://doi.org/10.5281/ZENODO.10608262.
+     **Musselman, E. D.**, **Cariello, J. E.**, Grill, W. M., & Pelot, N. A. (2025). wmglab-duke/ascent: ASCENT v<version> (v<version>) [Computer software]. Zenodo. https://doi.org/<DOI>.
 
   .. tab:: BibTeX
 
     .. code-block:: BibTeX
 
-        @misc{https://doi.org/10.5281/zenodo.10608262,
-          doi = {10.5281/ZENODO.10608262},
-          url = {https://zenodo.org/record/10608262},
+        @misc{https://doi.org/<DOI>,
+          doi = {<DOI>},
+          url = {https://doi.org/<DOI>},
           author = {Musselman,  Eric D and Cariello,  Jake E and Grill,  Warren M and Pelot,  Nicole A},
-          title = {wmglab-duke/ascent: ASCENT v1.5.0},
+          title = {wmglab-duke/ascent: ASCENT v<version>},
           publisher = {Zenodo},
           year = {2025},
           copyright = {MIT License}
