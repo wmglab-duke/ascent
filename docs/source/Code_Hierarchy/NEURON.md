@@ -1,6 +1,6 @@
 # NEURON Files
 ## NEURON simulations
-All NEURON simulations are handled using the `PyFibers` Python package ([PyPi](https://pypi.org/project/pyfibers/), [GitHub](https://github.com/wmglab-duke/pyfibers)).
+All NEURON simulations are handled using the `PyFibers` Python package {cite:p}`Marshall2025` ([PyPi](https://pypi.org/project/pyfibers/), [GitHub](https://github.com/wmglab-duke/pyfibers)).
 
 ### Create fiber model
 

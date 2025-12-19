@@ -1,6 +1,6 @@
 # Template for Reporting Methods in a Publication
 
-For uses of ASCENT, either stand-alone in its publicly available form, as a starting point upon which further work is developed, or as a component of a system (e.g., connected with other organ models or engineering optimization techniques), we ask that the author(s) cite both the ASCENT [publication](https://doi.org/10.1371/journal.pcbi.100928) and the release of ASCENT (e.g., ASCENT v1.1.2). Make sure to use the correct [DOI](https://zenodo.org/badge/latestdoi/379064819) for the release used.
+For uses of ASCENT, either stand-alone in its publicly available form, as a starting point upon which further work is developed, or as a component of a system (e.g., connected with other organ models or engineering optimization techniques), we ask that the author(s) cite both the [ASCENT publication](https://doi.org/10.1371/journal.pcbi.1009285), the [PyFibers publication](https://doi.org/10.1371/journal.pcbi.1013764), and the release of ASCENT (e.g., ASCENT v1.1.2). Make sure to use the correct [DOI](https://zenodo.org/badge/latestdoi/379064819) for the release used.
 
 If you use ASCENT, ask for it to be added to our list of [Publications Utilizing ASCENT](../Publications_Using_ASCENT.md) by sending a message to the user support email listed in the [README](https://github.com/wmglab-duke/ascent/blob/master/README.md).
 
