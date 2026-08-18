@@ -1,7 +1,7 @@
 # ASCENT: Automated Simulations to Characterize Electrical Nerve Thresholds
 
 [![Releases](https://img.shields.io/github/v/release/wmglab-duke/ascent)](https://github.com/wmglab-duke/ascent/releases) [![Documentation](https://img.shields.io/readthedocs/wmglab-duke-ascent?logo=read-the-docs&logoColor=white)](https://wmglab-duke-ascent.readthedocs.io/en/latest/) [![DOI](https://zenodo.org/badge/379064819.svg)](https://zenodo.org/badge/latestdoi/379064819) [![GitHub Clones](https://img.shields.io/badge/dynamic/json?color=success&label=Clone&query=count&url=https://gist.githubusercontent.com/thedannymarsh/82261b7dd594402baa81aca580ef2d2b/raw/clone.json&logo=github)](https://github.com/MShawon/github-clone-count-badge)
-
+[![GitHub Traffic](https://img.shields.io/badge/dynamic/json?color=success&label=Views&query=count&url=https://gist.githubusercontent.com/thedannymarsh/3af045401770f431afb5a88f3ca81879/raw/traffic.json&logo=github)](https://github.com/MShawon/github-clone-count-badge)
 
 **User support: nikki.pelot@duke.edu**
 
