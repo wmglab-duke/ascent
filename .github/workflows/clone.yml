@@ -48,9 +48,7 @@ jobs:
           fi
 
       - name: update clone.json
-        run: |
-          curl https://raw.githubusercontent.com/MShawon/github-clone-count-badge/master/main.py > main.py
-          python3 main.py
+        run: python3 .github/scripts/merge_clones.py
 
       - name: Update gist with latest count
         run: |
